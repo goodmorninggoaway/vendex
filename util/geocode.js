@@ -5,24 +5,60 @@ const googleMapsClient = require('@google/maps').createClient({
 
 const file = '/Users/mjd/code/thalba-sync/.samples/geocode.json';
 
-module.exports = (address) => {
-    return new Promise((resolve, reject) => {
-        try {
-            const data = jsonfile.readFileSync(file);
-            return resolve(data);
-        } catch (err) {
-            console.log(err, 'hitting Google');
+module.exports = (address) => new Promise((resolve, reject) => {
+    try {
+        const data = jsonfile.readFileSync(file);
+        return resolve(data);
+    } catch (err) {
+        console.log(err, 'hitting Google');
+    }
+
+    googleMapsClient.geocode({ address }, (err, response) => {
+        if (err) {
+            return reject(err);
         }
 
-        googleMapsClient.geocode({ address }, (err, response) => {
-            if (err) {
-                return reject(err);
-            }
+        jsonfile.writeFileSync(file, response.json.results);
 
-            jsonfile.writeFileSync(file, response.json.results);
+        resolve(response.json.results);
+    });
+})
+    .then((geocodeResults) => {
+        if (geocodeResults.length) {
+            const {
+                address_components,
+                formatted_address: addressDescription,
+                geometry: { location: { lat: latitude, lng: longitude } },
+            } = geocodeResults[0];
 
-            // console.log(JSON.stringify(response.json.results, null, 2));
-            resolve(response.json.results);
-        });
-    })
-};
+            const {
+                street_number: addressLine1,
+                route: street,
+                locality: city,
+                administrative_area_level_1: state,
+                country: countryCode,
+                postal_code: postalCode,
+            } = address_components
+                .reduce((memo, { short_name, types }) => {
+                    return types.reduce((_, type) => {
+                        memo[type] = short_name;
+                        return memo;
+                    }, memo)
+                }, {});
+
+            return {
+                raw: geocodeResults,
+                addressDescription,
+                latitude,
+                longitude,
+                addressLine1,
+                street,
+                city,
+                state,
+                countryCode,
+                postalCode
+            };
+        }
+
+        return {};
+    });
