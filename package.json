@@ -9,8 +9,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@google/maps": "^0.4.3",
     "cli": "^1.0.1",
     "csvtojson": "^1.1.7",
-    "excel-as-json": "^2.0.1"
+    "dotenv": "^4.0.0",
+    "excel-as-json": "^2.0.1",
+    "jsonfile": "^3.0.1"
   }
 }
