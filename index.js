@@ -18,8 +18,8 @@ const options = Object
         return memo;
     }, {});
 
-const alba = require('./alba');
-const territoryHelper = require('./territoryHelper');
+const alba = require('./lib/alba');
+const territoryHelper = require('./lib/territoryHelper');
 
 alba
     .loadJson(options.alba)

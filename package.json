@@ -8,6 +8,8 @@
   },
   "author": "",
   "license": "ISC",
+  "repository": "https://github.com/goodmorninggoaway/thalba-sync",
+
   "dependencies": {
     "@google/maps": "^0.4.3",
     "cli": "^1.0.1",
