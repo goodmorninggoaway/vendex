@@ -1,0 +1,456 @@
+{
+  "alba": [
+    {
+      "id": "alba-EiMxMTc1IEFsc2FjZSBEciwgQXBleCwgTkMgMjc1MDIsIFVTQQ",
+      "source": "alba",
+      "externalId": "7182625",
+      "territoryType": null,
+      "territoryId": null,
+      "locationType": "Triangle Park Hindi",
+      "language": "Hindi",
+      "contactType": "Foreign-language",
+      "latitude": 35.7376363,
+      "longitude": -78.87154079999999,
+      "addressDescription": "1175 Alsace Dr, Apex, NC 27502, USA",
+      "addressLine1": "1175",
+      "addressLine2": "",
+      "street": "Alsace Dr",
+      "city": "Apex",
+      "postalCode": "27502",
+      "state": "NC",
+      "countryCode": "US",
+      "notes": "",
+      "lastVisit": null,
+      "updated": null,
+      "created": null,
+      "raw": [
+        {
+          "address_components": [
+            {
+              "long_name": "1175",
+              "short_name": "1175",
+              "types": [
+                "street_number"
+              ]
+            },
+            {
+              "long_name": "Alsace Drive",
+              "short_name": "Alsace Dr",
+              "types": [
+                "route"
+              ]
+            },
+            {
+              "long_name": "Apex",
+              "short_name": "Apex",
+              "types": [
+                "locality",
+                "political"
+              ]
+            },
+            {
+              "long_name": "White Oak",
+              "short_name": "White Oak",
+              "types": [
+                "administrative_area_level_3",
+                "political"
+              ]
+            },
+            {
+              "long_name": "Wake County",
+              "short_name": "Wake County",
+              "types": [
+                "administrative_area_level_2",
+                "political"
+              ]
+            },
+            {
+              "long_name": "North Carolina",
+              "short_name": "NC",
+              "types": [
+                "administrative_area_level_1",
+                "political"
+              ]
+            },
+            {
+              "long_name": "United States",
+              "short_name": "US",
+              "types": [
+                "country",
+                "political"
+              ]
+            },
+            {
+              "long_name": "27502",
+              "short_name": "27502",
+              "types": [
+                "postal_code"
+              ]
+            }
+          ],
+          "formatted_address": "1175 Alsace Dr, Apex, NC 27502, USA",
+          "geometry": {
+            "location": {
+              "lat": 35.7376363,
+              "lng": -78.87154079999999
+            },
+            "location_type": "RANGE_INTERPOLATED",
+            "viewport": {
+              "northeast": {
+                "lat": 35.7389852802915,
+                "lng": -78.8701918197085
+              },
+              "southwest": {
+                "lat": 35.7362873197085,
+                "lng": -78.8728897802915
+              }
+            }
+          },
+          "place_id": "EiMxMTc1IEFsc2FjZSBEciwgQXBleCwgTkMgMjc1MDIsIFVTQQ",
+          "types": [
+            "street_address"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "alba-EiMxMTc1IEFsc2FjZSBEciwgQXBleCwgTkMgMjc1MDIsIFVTQQ",
+      "source": "alba",
+      "externalId": "7159816",
+      "territoryType": null,
+      "territoryId": null,
+      "locationType": "Triangle Park Hindi",
+      "language": "Hindi",
+      "contactType": "Foreign-language",
+      "latitude": 35.7376363,
+      "longitude": -78.87154079999999,
+      "addressDescription": "1175 Alsace Dr, Apex, NC 27502, USA",
+      "addressLine1": "1175",
+      "addressLine2": "",
+      "street": "Alsace Dr",
+      "city": "Apex",
+      "postalCode": "27502",
+      "state": "NC",
+      "countryCode": "US",
+      "notes": "",
+      "lastVisit": null,
+      "updated": null,
+      "created": null,
+      "raw": [
+        {
+          "address_components": [
+            {
+              "long_name": "1175",
+              "short_name": "1175",
+              "types": [
+                "street_number"
+              ]
+            },
+            {
+              "long_name": "Alsace Drive",
+              "short_name": "Alsace Dr",
+              "types": [
+                "route"
+              ]
+            },
+            {
+              "long_name": "Apex",
+              "short_name": "Apex",
+              "types": [
+                "locality",
+                "political"
+              ]
+            },
+            {
+              "long_name": "White Oak",
+              "short_name": "White Oak",
+              "types": [
+                "administrative_area_level_3",
+                "political"
+              ]
+            },
+            {
+              "long_name": "Wake County",
+              "short_name": "Wake County",
+              "types": [
+                "administrative_area_level_2",
+                "political"
+              ]
+            },
+            {
+              "long_name": "North Carolina",
+              "short_name": "NC",
+              "types": [
+                "administrative_area_level_1",
+                "political"
+              ]
+            },
+            {
+              "long_name": "United States",
+              "short_name": "US",
+              "types": [
+                "country",
+                "political"
+              ]
+            },
+            {
+              "long_name": "27502",
+              "short_name": "27502",
+              "types": [
+                "postal_code"
+              ]
+            }
+          ],
+          "formatted_address": "1175 Alsace Dr, Apex, NC 27502, USA",
+          "geometry": {
+            "location": {
+              "lat": 35.7376363,
+              "lng": -78.87154079999999
+            },
+            "location_type": "RANGE_INTERPOLATED",
+            "viewport": {
+              "northeast": {
+                "lat": 35.7389852802915,
+                "lng": -78.8701918197085
+              },
+              "southwest": {
+                "lat": 35.7362873197085,
+                "lng": -78.8728897802915
+              }
+            }
+          },
+          "place_id": "EiMxMTc1IEFsc2FjZSBEciwgQXBleCwgTkMgMjc1MDIsIFVTQQ",
+          "types": [
+            "street_address"
+          ]
+        }
+      ]
+    }
+  ],
+  "th": [
+    {
+      "id": null,
+      "source": "th",
+      "territoryType": "Homes",
+      "territoryId": 133,
+      "locationType": "House",
+      "language": "English",
+      "contactType": "Do not call",
+      "latitude": 35.7376363,
+      "longitude": -78.87154079999999,
+      "addressDescription": "1175 Alsace Dr, Apex, NC 27502, USA",
+      "addressLine1": "1175",
+      "addressLine2": null,
+      "street": "Alsace Dr",
+      "city": "Apex",
+      "postalCode": "27502",
+      "state": "NC",
+      "countryCode": "US",
+      "notes": "",
+      "lastVisit": "",
+      "updated": 42935.6850578704,
+      "created": 42880.0486458333,
+      "raw": [
+        {
+          "address_components": [
+            {
+              "long_name": "1175",
+              "short_name": "1175",
+              "types": [
+                "street_number"
+              ]
+            },
+            {
+              "long_name": "Alsace Drive",
+              "short_name": "Alsace Dr",
+              "types": [
+                "route"
+              ]
+            },
+            {
+              "long_name": "Apex",
+              "short_name": "Apex",
+              "types": [
+                "locality",
+                "political"
+              ]
+            },
+            {
+              "long_name": "White Oak",
+              "short_name": "White Oak",
+              "types": [
+                "administrative_area_level_3",
+                "political"
+              ]
+            },
+            {
+              "long_name": "Wake County",
+              "short_name": "Wake County",
+              "types": [
+                "administrative_area_level_2",
+                "political"
+              ]
+            },
+            {
+              "long_name": "North Carolina",
+              "short_name": "NC",
+              "types": [
+                "administrative_area_level_1",
+                "political"
+              ]
+            },
+            {
+              "long_name": "United States",
+              "short_name": "US",
+              "types": [
+                "country",
+                "political"
+              ]
+            },
+            {
+              "long_name": "27502",
+              "short_name": "27502",
+              "types": [
+                "postal_code"
+              ]
+            }
+          ],
+          "formatted_address": "1175 Alsace Dr, Apex, NC 27502, USA",
+          "geometry": {
+            "location": {
+              "lat": 35.7376363,
+              "lng": -78.87154079999999
+            },
+            "location_type": "RANGE_INTERPOLATED",
+            "viewport": {
+              "northeast": {
+                "lat": 35.7389852802915,
+                "lng": -78.8701918197085
+              },
+              "southwest": {
+                "lat": 35.7362873197085,
+                "lng": -78.8728897802915
+              }
+            }
+          },
+          "place_id": "EiMxMTc1IEFsc2FjZSBEciwgQXBleCwgTkMgMjc1MDIsIFVTQQ",
+          "types": [
+            "street_address"
+          ]
+        }
+      ]
+    },
+    {
+      "id": null,
+      "source": "th",
+      "territoryType": "Homes",
+      "territoryId": 31,
+      "locationType": "House",
+      "language": "English",
+      "contactType": "Do not call",
+      "latitude": 35.7376363,
+      "longitude": -78.87154079999999,
+      "addressDescription": "1175 Alsace Dr, Apex, NC 27502, USA",
+      "addressLine1": "1175",
+      "addressLine2": null,
+      "street": "Alsace Dr",
+      "city": "Apex",
+      "postalCode": "27502",
+      "state": "NC",
+      "countryCode": "US",
+      "notes": "",
+      "lastVisit": "",
+      "updated": 42879.9961226852,
+      "created": 42875.0344791667,
+      "raw": [
+        {
+          "address_components": [
+            {
+              "long_name": "1175",
+              "short_name": "1175",
+              "types": [
+                "street_number"
+              ]
+            },
+            {
+              "long_name": "Alsace Drive",
+              "short_name": "Alsace Dr",
+              "types": [
+                "route"
+              ]
+            },
+            {
+              "long_name": "Apex",
+              "short_name": "Apex",
+              "types": [
+                "locality",
+                "political"
+              ]
+            },
+            {
+              "long_name": "White Oak",
+              "short_name": "White Oak",
+              "types": [
+                "administrative_area_level_3",
+                "political"
+              ]
+            },
+            {
+              "long_name": "Wake County",
+              "short_name": "Wake County",
+              "types": [
+                "administrative_area_level_2",
+                "political"
+              ]
+            },
+            {
+              "long_name": "North Carolina",
+              "short_name": "NC",
+              "types": [
+                "administrative_area_level_1",
+                "political"
+              ]
+            },
+            {
+              "long_name": "United States",
+              "short_name": "US",
+              "types": [
+                "country",
+                "political"
+              ]
+            },
+            {
+              "long_name": "27502",
+              "short_name": "27502",
+              "types": [
+                "postal_code"
+              ]
+            }
+          ],
+          "formatted_address": "1175 Alsace Dr, Apex, NC 27502, USA",
+          "geometry": {
+            "location": {
+              "lat": 35.7376363,
+              "lng": -78.87154079999999
+            },
+            "location_type": "RANGE_INTERPOLATED",
+            "viewport": {
+              "northeast": {
+                "lat": 35.7389852802915,
+                "lng": -78.8701918197085
+              },
+              "southwest": {
+                "lat": 35.7362873197085,
+                "lng": -78.8728897802915
+              }
+            }
+          },
+          "place_id": "EiMxMTc1IEFsc2FjZSBEciwgQXBleCwgTkMgMjc1MDIsIFVTQQ",
+          "types": [
+            "street_address"
+          ]
+        }
+      ]
+    }
+  ]
+}

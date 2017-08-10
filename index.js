@@ -1,7 +1,13 @@
 require('dotenv').config();
 const cli = require('cli');
+const jsonfile = require('jsonfile');
 
 const sources = ['alba', 'th'];
+
+console.passthrough = (...args) => {
+    console.log(...args);
+    return args[0];
+};
 
 const options = Object
     .entries(cli.parse({
@@ -20,13 +26,21 @@ const options = Object
 
 const alba = require('./lib/alba');
 const territoryHelper = require('./lib/territoryHelper');
+const genericInterface = require('./lib/genericInterface');
 
-alba
-    .loadJson(options.alba)
-    .then(x => {
-        const location = x[0];
-        console.log(location);
-        return alba.convert(location);
+genericInterface.merge(
+    alba
+        .loadJson(options.alba)
+        .then(x => Promise.all(x.slice(0, 2).map(alba.convert.toGeneric))),
+
+    territoryHelper
+        .files.load(options.th)
+        .then(x => Promise.all(x.slice(0, 2).map(territoryHelper.convert.toGeneric))),
+)
+    .then(x => x.map(territoryHelper.convert.fromGeneric))
+    .then((thResults) => {
+        const file = `${process.env.TEMP_DIR}/th_output_${new Date().valueOf()}.json`;
+        jsonfile.writeFileSync(file, thResults, { spaces: 2 });
     })
-    .then(x => console.log(x));
+    .catch(console.error);
 // territoryHelper.loadJson(options.th).then(x => console.log(x[0]));
