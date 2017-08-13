@@ -1,6 +1,6 @@
 require('dotenv').config();
 const cli = require('cli');
-const proveConcept = require('./lib/prove');
+const proveConcept = require('./lib-old/prove');
 
 const sources = ['alba', 'th'];
 

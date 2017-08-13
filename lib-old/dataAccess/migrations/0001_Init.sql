@@ -4,7 +4,6 @@ create table language (
 );
 
 insert into language values (1, 'English');
-insert into language values (2, 'Hindi');
 
 create table congregation (
     congregationId int primary key,
@@ -14,7 +13,6 @@ create table congregation (
 );
 
 insert into congregation values (1, 'Bond Park', 1);
-insert into congregation values (2, 'Triangle Park Hindi', 2);
 
 create table territory (
     territoryId bigint primary key,
@@ -40,7 +38,7 @@ create table location (
     city nvarchar(255),
     postalCode nvarchar(255),
     province nvarchar(255),
-    countryCode nvarchar(255),
+    country nvarchar(255),
     externalLocationId varchar(512),
     externalLocationLastRefreshedDateTime varchar(32)
 );
@@ -50,7 +48,7 @@ create table congregationLocation (
     locationId bigint not null,
     languageId int not null,
     territoryId bigint,
-    source varchar(64) null, -- ALBA, TERRITORY HELPER
+    source varchar(64) not null, -- ALBA, TERRITORY HELPER
     sourceLocationId varchar(64),
     isPendingTerritoryMapping boolean not null,
     isDeleted boolean not null,
