@@ -1,5 +1,5 @@
 create table language (
-    languageId int primary key,
+    languageId integer primary key autoincrement,
     language varchar(255) not null
 );
 
@@ -7,9 +7,9 @@ insert into language values (1, 'English');
 insert into language values (2, 'Hindi');
 
 create table congregation (
-    congregationId int primary key,
+    congregationId integer primary key autoincrement,
     name nvarchar(255) not null,
-    languageId int,
+    languageId integer,
     foreign key(languageId) references language(languageId)
 );
 
@@ -17,13 +17,13 @@ insert into congregation values (1, 'Bond Park', 1);
 insert into congregation values (2, 'Triangle Park Hindi', 2);
 
 create table territory (
-    territoryId bigint primary key,
-    congregationId int not null,
+    territoryId integer primary key autoincrement,
+    congregationId integer not null,
     foreign key(congregationId) references congregation(congregationId)
 );
 
 create table territoryVertex (
-    territoryId bigint,
+    territoryId integer,
     latitude double,
     longitude double,
     foreign key(territoryId) references territory(territoryId),
@@ -31,7 +31,7 @@ create table territoryVertex (
 );
 
 create table location (
-    locationId bigint primary key,
+    locationId integer primary key autoincrement,
     latitude double,
     longitude double,
     addressLine1 nvarchar(255),
@@ -46,10 +46,10 @@ create table location (
 );
 
 create table congregationLocation (
-    congregationId int not null,
-    locationId bigint not null,
-    languageId int not null,
-    territoryId bigint,
+    congregationId integer not null,
+    locationId integer not null,
+    languageId integer not null,
+    territoryId integer,
     source varchar(64) null, -- ALBA, TERRITORY HELPER
     sourceLocationId varchar(64),
     isPendingTerritoryMapping boolean not null,
