@@ -1,8 +1,2 @@
-#!/bin/sh
-DIR="$(dirname "$0")"
-source $DIR/env.sh
-
-for SQL in `ls -v $MIGRATIONS_PATH/*.sql`;
-do
-    sqlite3 -init "$SQL" "$DB_FILENAME" .quit
-done;
+psql -d postgres -f /Users/mjd/code/thalba-sync/lib/dataAccess/migrations/0000_Create.sql
+psql -d thalba -f /Users/mjd/code/thalba-sync/lib/dataAccess/migrations/0001_Init.sql
