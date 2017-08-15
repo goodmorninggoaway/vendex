@@ -51,7 +51,8 @@ create table "location" (
     "province" varchar(255),
     "countryCode" varchar(255),
     "externalLocationId" varchar(512),
-    "externalLocationLastRefreshedDateTime" varchar(32)
+    "externalLocationLastRefreshedDateTime" varchar(32),
+    "externalSource" varchar(32)
 );
 
 create table "congregationLocation" (
@@ -73,3 +74,10 @@ create table "congregationLocation" (
     foreign key("locationId") references "location"("locationId"),
     primary key("congregationId", "locationId")
 );
+
+create table "geocodeResponse" (
+    "geocodeResponseId" BIGSERIAL primary key,
+    "address" varchar(256) unique,
+    "response" jsonb,
+    "source" varchar(32) not null
+)
