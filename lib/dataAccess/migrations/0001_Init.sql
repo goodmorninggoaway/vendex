@@ -28,15 +28,13 @@ insert into "congregation" values (2, 'Triangle Park Hindi', 2);
 create table "territory" (
     "territoryId" BIGSERIAL PRIMARY KEY,
     "congregationId" int not null,
+    "name" varchar(256),
+    "boundary" polygon not null,
+    "userDefined1" text,
+    "userDefined2" text,
+    "externalTerritoryId" varchar(256),
+    "externalTerritorySource" varchar(32),
     foreign key("congregationId") references "congregation"("congregationId")
-);
-
-create table "territoryVertex" (
-    "territoryId" bigint,
-    "latitude" numeric(20, 18),
-    "longitude" numeric(20, 18),
-    foreign key("territoryId") references "territory"("territoryId"),
-    primary key("territoryId", "latitude", "longitude")
 );
 
 create table "location" (
@@ -80,4 +78,12 @@ create table "geocodeResponse" (
     "address" varchar(256) unique,
     "response" jsonb,
     "source" varchar(32) not null
-)
+);
+
+/*
+
+delete from "congregationLocation";
+delete from "location";
+delete from "territory";
+
+*/
