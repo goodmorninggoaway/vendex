@@ -6,24 +6,14 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public
   GRANT SELECT, USAGE ON sequences TO thalba;
 
 
-
-create table "language" (
-    "languageId" SERIAL PRIMARY KEY,
-    "language" varchar(255) not null
-);
-
-insert into "language" values (1, 'English');
-insert into "language" values (2, 'Hindi');
-
 create table "congregation" (
     "congregationId" SERIAL PRIMARY KEY,
     "name" varchar(255) not null,
-    "languageId" int,
-    foreign key("languageId") references "language"("languageId")
+    "language" varchar(64) not null
 );
 
-insert into "congregation" values (1, 'Bond Park', 1);
-insert into "congregation" values (2, 'Triangle Park Hindi', 2);
+insert into "congregation" values (1, 'Bond Park', 'ENGLISH');
+insert into "congregation" values (2, 'Triangle Park Hindi', 'HINDI');
 
 create table "territory" (
     "territoryId" BIGSERIAL PRIMARY KEY,
@@ -43,7 +33,6 @@ create table "location" (
     "longitude" numeric(20, 18),
     "addressLine1" varchar(255),
     "addressLine2" varchar(255),
-    "street" varchar(255),
     "city" varchar(255),
     "postalCode" varchar(255),
     "province" varchar(255),
@@ -56,9 +45,9 @@ create table "location" (
 create table "congregationLocation" (
     "congregationId" int not null,
     "locationId" bigint not null,
-    "languageId" int not null,
+    "language" varchar(64) not null,
     "territoryId" bigint,
-    "source" varchar(64) null, -- ALBA, TERRITORY HELPER
+    "source" varchar(64) null, -- ALBA, TERRITORY HELPER TODO add enumeration
     "sourceLocationId" varchar(64),
     "isPendingTerritoryMapping" boolean not null,
     "isDeleted" boolean not null,
@@ -68,7 +57,6 @@ create table "congregationLocation" (
     "userDefined2" text,
     foreign key("congregationId") references "congregation"("congregationId"),
     foreign key("territoryId") references "territory"("territoryId"),
-    foreign key("languageId") references "language"("languageId"),
     foreign key("locationId") references "location"("locationId"),
     primary key("congregationId", "locationId")
 );
@@ -80,6 +68,15 @@ create table "geocodeResponse" (
     "source" varchar(32) not null
 );
 
+create table "congregationLocationActivity" (
+    "congregationLocationActivityId" BIGSERIAL primary key,
+    "locationId" bigint not null,
+    "congregationId" int not null,
+    "operation" char(1) not null,
+    "source" varchar(32) not null,
+    foreign key("congregationId") references "congregation"("congregationId"),
+    foreign key("locationId") references "location"("locationId")
+);
 /*
 
 delete from "congregationLocation";
