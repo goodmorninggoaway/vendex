@@ -47,7 +47,7 @@ create table "congregationLocation" (
     "locationId" bigint not null,
     "language" varchar(64) not null,
     "territoryId" bigint,
-    "source" varchar(64) null, -- ALBA, TERRITORY HELPER TODO add enumeration
+    "source" varchar(64) not null,
     "sourceLocationId" varchar(64),
     "isPendingTerritoryMapping" boolean not null,
     "isDeleted" boolean not null,
@@ -58,7 +58,7 @@ create table "congregationLocation" (
     foreign key("congregationId") references "congregation"("congregationId"),
     foreign key("territoryId") references "territory"("territoryId"),
     foreign key("locationId") references "location"("locationId"),
-    primary key("congregationId", "locationId")
+    primary key("congregationId", "locationId", "source")
 );
 
 create table "geocodeResponse" (
@@ -77,6 +77,14 @@ create table "congregationLocationActivity" (
     foreign key("congregationId") references "congregation"("congregationId"),
     foreign key("locationId") references "location"("locationId")
 );
+
+create table "exportActivity" (
+    "exportActivityId" BIGSERIAL primary key,
+    "congregationId" int not null,
+    "lastCongregationLocationActivityId" bigint not null,
+    "destination" varchar(32),
+    foreign key("congregationId") references "congregation"("congregationId")
+)
 /*
 
 delete from "congregationLocation";
