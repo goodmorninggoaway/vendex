@@ -24,6 +24,7 @@ create table "territory" (
     "userDefined2" text,
     "externalTerritoryId" varchar(256),
     "externalTerritorySource" varchar(32),
+    "deleted" boolean not null default false,
     foreign key("congregationId") references "congregation"("congregationId")
 );
 
@@ -48,6 +49,7 @@ create table "congregationLocation" (
     "language" varchar(64) not null,
     "territoryId" bigint,
     "source" varchar(64) not null,
+    "sourceData" jsonb,
     "sourceLocationId" varchar(64),
     "isPendingTerritoryMapping" boolean not null,
     "isDeleted" boolean not null,
