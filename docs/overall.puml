@@ -1,0 +1,18 @@
+@startuml
+title Overall POC Workflow
+
+"Admin" -> "Alba": Get locations export (*.tsv)
+"Alba" --> "Admin": Copy, Paste, Save file
+"Admin" -> "Territory Helper": Get locations export (*.xlsx)
+"Territory Helper" --> "Admin": File
+|||
+|||
+"Admin" -> "Vendex": Import Alba file
+"Admin" -> "Vendex": Import Territory Helper file
+note right: The import order and\nfrequency doesn't matter
+"Admin" -> "Vendex": Request export for Alba
+"Vendex" --> "Admin": tsv file
+"Admin" -> "Vendex": Request export for Territory Helper
+"Vendex" --> "Admin": xlsx file
+
+@enduml
