@@ -19,6 +19,7 @@
     "knex": "^0.13.0",
     "lodash": "^4.17.4",
     "object-hash": "^1.1.8",
+    "parse-address": "0.0.7",
     "pg": "^7.1.2",
     "usps-webtools": "^0.2.3",
     "xlsx": "^0.11.2"

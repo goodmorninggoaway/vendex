@@ -30,8 +30,8 @@ create table "territory" (
 
 create table "location" (
     "locationId" BIGSERIAL PRIMARY KEY,
-    "latitude" numeric(20, 18),
-    "longitude" numeric(20, 18),
+    "latitude" numeric(21, 18),
+    "longitude" numeric(21, 18),
     "addressLine1" varchar(255),
     "addressLine2" varchar(255),
     "city" varchar(255),
