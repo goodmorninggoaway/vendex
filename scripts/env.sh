@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 ROOT=~/code/thalba-sync
 FILES_ROOT=$ROOT/.files
 TOOLS_ROOT=$ROOT/tools
