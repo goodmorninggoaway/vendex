@@ -7,5 +7,20 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "repository": "https://github.com/goodmorninggoaway/thalba-sync",
+  "dependencies": {
+    "@google/maps": "^0.4.3",
+    "cli": "^1.0.1",
+    "csvtojson": "^1.1.7",
+    "dotenv": "^4.0.0",
+    "excel-as-json": "^2.0.1",
+    "jsonfile": "^3.0.1",
+    "knex": "^0.13.0",
+    "lodash": "^4.17.4",
+    "object-hash": "^1.1.8",
+    "pg": "^7.1.2",
+    "usps-webtools": "^0.2.3",
+    "xlsx": "^0.11.2"
+  }
 }

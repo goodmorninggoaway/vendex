@@ -1,0 +1,13 @@
+@startuml
+title Exporting Vendex Locations in **Source** Format
+
+"Admin" -> "Territory Helper UI": Export territories
+"Territory Helper UI" --> "Admin": XLSX File
+|||
+|||
+|||
+"Admin" -> "Vendex": Run "import-territory-helper-terrories.js"
+"Vendex" -> "Vendex": Load JSON
+"Vendex" -> "Vendex": Insert, Update, Delete
+"Vendex" -> "Admin": Success
+@enduml

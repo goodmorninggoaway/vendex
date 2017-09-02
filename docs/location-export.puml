@@ -1,0 +1,22 @@
+@startuml
+title Exporting Vendex Locations in **Source** Format
+
+"Admin" -> "Vendex": Export data for source
+note right: source = ALBA | TERRITORY HELPER
+"Vendex" -> "Reconciler": Get activity since last export
+"Reconciler" -> "DB": Get last export
+"DB" --> "Reconciler": Export attributes
+note right: Includes the last id exported
+"Reconciler" -> "DB": Fetch operations affecting\ncongregation since last id
+"DB" --> "Reconciler": Operations
+"Reconciler" -> "Reconciler": Determine operation for each\nlocation from **source**'s perspective
+"Reconciler" -> "Source Rules Engine": Apply rules for source interface
+"Source Rules Engine" --> "Reconciler": Filtered+Updated locations
+note left: Rules Engine does not\nexist yet
+"Reconciler" --> "Vendex": Locations grouped by \nCUD operation
+"Vendex" -> "Converter": Convert to source object format
+"Converter" -> "Vendex": External objects
+"Vendex" -> "Packager": Create file in source format (xlsx, tsv, etc)
+"Packager" --> "Vendex": Success
+"Vendex" --> "Admin": Success
+@enduml

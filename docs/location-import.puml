@@ -1,0 +1,29 @@
+@startuml
+title Importing **Source** Locations to Vendex
+
+"Admin" -> "External UI": Export locations
+"External UI" --> "Admin": Some file
+|||
+|||
+|||
+"Admin" -> "Vendex": Run "import-*.js" (* = ALBA | TERRITORY HELPER)
+"Vendex" -> "Importer": [0..n] raw locations as JSON
+"Importer" -> "Converter": Convert to generic vendex location
+"Converter" -> "USPS": Normalize Address
+"USPS" --> "Converter": Address
+"Converter" -> "Converter": fingerprint
+note right: generated using SHA1\nhash of normalized address\nobject to uniquely ID\naddresses from different\nsystems
+"Converter" -> "Google Geocode": Geocode address
+"Google Geocode" --> "Converter": Geocode results
+"Converter" -> "Converter": Update address with coordinates
+"Converter" --> "Importer": Location, CongregationLocation
+note left: Location:\nAddress+Lat/Long
+note right: CongregationLocation:\nLanguage, notes, data source,\nraw external location, etc.
+
+"Importer" -> "DB": Fetch locations associated with congregation
+"DB" --> "Importer": Locations, CongregationLocations
+"Importer" -> "DB": Upsert Locations, CongregationLocations
+"Importer" -> "DB": Deletes
+note left: Each CUD operation is logged
+"Importer" --> "Vendex": Success
+@enduml
