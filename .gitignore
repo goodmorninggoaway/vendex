@@ -1,5 +1,5 @@
 node_modules
 .idea
-.samples
+samples
 .env
-.files
+files
