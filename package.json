@@ -1,14 +1,14 @@
 {
-  "name": "thalba-sync",
+  "name": "vendex",
   "version": "0.0.1",
   "description": "",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "create-db": "./scripts/createdb.sh",
+    "import-th-territories": "node --harmony ./lib/public/import-territory-helper-territories.js --congregationId=1 --file=\"../vendex-files/th-territories.json\" --source=\"TERRITORY HELPER\""
   },
   "author": "",
   "license": "ISC",
-  "repository": "https://github.com/goodmorninggoaway/thalba-sync",
+  "repository": "https://github.com/goodmorninggoaway/vendex",
   "dependencies": {
     "@google/maps": "^0.4.3",
     "cli": "^1.0.1",
