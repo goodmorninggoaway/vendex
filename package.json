@@ -6,6 +6,7 @@
     "create-db": "./scripts/createdb.sh",
     "import-th-territories": "node --harmony ./lib/public/import-territory-helper-territories.js --congregationId=1 --file=\"../vendex-files/th-territories.json\" --source=\"TERRITORY HELPER\"",
     "import-th": "node --harmony ./lib/public/import-territory-helper.js --congregationId=1 --file=\"../vendex-files/th.xlsx\" --source=\"TERRITORY HELPER\"",
+    "import-th2": "node $NODE_DEBUG_OPTION --harmony ./lib/public/import-territory-helper.js --congregationId=1 --file=\"../vendex-files/th2.xlsx\" --source=\"TERRITORY HELPER\"",
     "import-alba-territories": "node --harmony ./lib/public/import-alba-territories.js --congregationId=1 --file=\"../vendex-files/alba-territories.json\" --source=\"ALBA\"",
     "import-alba": "node --harmony ./lib/public/import-alba.js --congregationId=1 --file=\"../vendex-files/alba.tsv\" --source=\"ALBA\"",
     "export-th": "node --harmony ./lib/public/export-territory-helper.js --congregationId=1 --outputDirectory=\"../vendex-files/output/\" --destination=\"TERRITORY HELPER\""
