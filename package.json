@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "description": "",
   "scripts": {
-    "create-db": "./scripts/createdb.sh"
+    "create-db": "./scripts/createdb.sh",
+    "import-th-territories": "node --harmony ./lib/public/import-territory-helper-territories.js --congregationId=1 --file=\"../vendex-files/th-territories.json\" --source=\"TERRITORY HELPER\""
   },
   "author": "",
   "license": "ISC",
