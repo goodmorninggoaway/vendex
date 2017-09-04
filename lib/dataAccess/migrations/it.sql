@@ -8,4 +8,5 @@ delete from "congregationLocation";
 delete from "location";
 
 
-ALTER TABLE "location" ALTER COLUMN "longitude" TYPE NUMERIC (20, 16); commit;
+ALTER TABLE "location" ALTER COLUMN "longitude" TYPE NUMERIC (21, 18); commit;
+ALTER TABLE "location" ALTER COLUMN "latitude" TYPE NUMERIC (21, 18); commit;

@@ -4,7 +4,8 @@
   "description": "",
   "scripts": {
     "create-db": "./scripts/createdb.sh",
-    "import-th-territories": "node --harmony ./lib/public/import-territory-helper-territories.js --congregationId=1 --file=\"../vendex-files/th-territories.json\" --source=\"TERRITORY HELPER\""
+    "import-th-territories": "node --harmony ./lib/public/import-territory-helper-territories.js --congregationId=1 --file=\"../vendex-files/th-territories.json\" --source=\"TERRITORY HELPER\"",
+    "import-th": "node --harmony ./lib/public/import-territory-helper.js --congregationId=1 --file=\"../vendex-files/th.xlsx\" --source=\"TERRITORY HELPER\""
   },
   "author": "",
   "license": "ISC",
