@@ -5,13 +5,15 @@
   "description": "a Sails application",
   "keywords": [],
   "dependencies": {
-    "sails": "^1.0.0-37",
+    "async": "2.0.1",
+    "dotenv": "^4.0.0",
     "grunt": "1.0.1",
-    "sails-hook-orm": "^2.0.0-16",
-    "sails-hook-sockets": "^1.4.0",
-    "sails-hook-grunt": "^2.0.0",
     "lodash": "3.10.1",
-    "async": "2.0.1"
+    "npm-run-all": "^4.1.1",
+    "sails": "^1.0.0-37",
+    "sails-hook-grunt": "^2.0.0",
+    "sails-hook-orm": "^2.0.0-16",
+    "sails-hook-sockets": "^1.4.0"
   },
   "devDependencies": {
     "eslint": "3.5.0"
@@ -21,7 +23,12 @@
     "test": "npm run lint && npm run custom-tests && echo 'Done.'",
     "lint": "node ./node_modules/eslint/bin/eslint . --max-warnings=0 && echo '✔  Your code looks good.'",
     "custom-tests": "echo \"(No other custom tests yet.)\" && echo",
-    "debug": "node debug app.js"
+    "debug": "node debug app.js",
+    "x:import-alba-territories": "http POST http://localhost:1337/alba/territories congregationId:=1 file=\"/Users/mjd/code/vendex-files/alba-territories.json\"",
+    "x:import-alba-locations": "http POST http://localhost:1337/alba/locations congregationId:=1 file=\"/Users/mjd/code/vendex-files/alba.tsv\"",
+    "x:import-th-territories": "http POST http://localhost:1337/territoryhelper/territories congregationId:=1 file=\"/Users/mjd/code/vendex-files/th-territories.json\"",
+    "x:import-th-locations": "http POST http://localhost:1337/territoryhelper/locations congregationId:=1 file=\"/Users/mjd/code/vendex-files/th.xlsx\"",
+    "x:export-th-locations": "http POST http://localhost:1337/territoryhelper/locations/export congregationId:=1 outputDirectory=\"/Users/mjd/code/vendex-files/output\""
   },
   "main": "app.js",
   "repository": {
