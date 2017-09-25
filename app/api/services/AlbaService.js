@@ -1,5 +1,4 @@
 const importLocations = require('../../../lib/public/import-alba');
-// const exportLocations = require('../../../lib/public/export-alba');
 const importTerritories = require('../../../lib/public/import-alba-territories');
 
 module.exports = {
@@ -18,13 +17,5 @@ module.exports = {
       done(ex);
     }
   },
-
-  // async exportLocations(options, done) {
-  //   try {
-  //     done(null, await exportLocations(options));
-  //   } catch (ex) {
-  //     done(ex);
-  //   }
-  // },
 
 };

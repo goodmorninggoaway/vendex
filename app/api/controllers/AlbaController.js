@@ -8,25 +8,12 @@
 module.exports = {
 
   /**
-   * `AlbaController.importTerritories()`
-   */
-  importTerritories: async function (req, res) {
-    const { file, congregationId } = req.body;
-    await AlbaService.importTerritories({ congregationId, file }, (err, data) => {
-      if (err) {
-        return res.serverError(err);
-      }
-
-      return res.json(data);
-    });
-  },
-
-  /**
    * `AlbaController.importLocations()`
    */
   importLocations: async function (req, res) {
-    const { file, congregationId } = req.body;
-    await AlbaService.importLocations({ congregationId, file }, (err, data) => {
+    const { congregationid } = req.headers;
+
+    AlbaService.importLocations({ congregationId: congregationid, inputData: req.body }, (err, data) => {
       if (err) {
         return res.serverError(err);
       }
@@ -36,13 +23,18 @@ module.exports = {
   },
 
   /**
-   * `AlbaController.export()`
+   * `AlbaController.importTerritories()`
    */
-  exportLocations: function (req, res) {
-    return res.json({
-      todo: 'export() is not implemented yet!'
+  importTerritories: async function (req, res) {
+    const { congregationid } = req.headers;
+    await AlbaService.importTerritories({ congregationId: congregationid, inputData: req.body }, (err, data) => {
+      if (err) {
+        return res.serverError(err);
+      }
+
+      return res.json(data);
     });
-  }
+  },
 
 };
 

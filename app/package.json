@@ -6,6 +6,7 @@
   "keywords": [],
   "dependencies": {
     "async": "2.0.1",
+    "body-parser": "^1.18.2",
     "dotenv": "^4.0.0",
     "excel": "^0.1.7",
     "grunt": "1.0.1",
