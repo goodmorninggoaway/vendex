@@ -1,6 +1,6 @@
 const differenceBy = require('lodash/differenceBy');
-const DAL = require('../dataAccess').DAL;
-const { serializeTasks } = require('../util');
+const DAL = require('./dataAccess').DAL;
+const { serializeTasks } = require('./util');
 
 module.exports = async ({ congregationId, inputData }) => {
     const importTerritory = async (externalTerritory) => {

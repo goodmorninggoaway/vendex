@@ -1,7 +1,7 @@
 const fs = require('fs');
-const importLocations = require('../../../lib/public/import-territory-helper');
-const exportLocations = require('../../../lib/public/export-territory-helper');
-const importTerritories = require('../../../lib/public/import-territory-helper-territories');
+const importLocations = require('../domain/import-territory-helper');
+const exportLocations = require('../domain/export-territory-helper');
+const importTerritories = require('../domain/import-territory-helper-territories');
 
 module.exports = {
   async importLocations(options, done) {

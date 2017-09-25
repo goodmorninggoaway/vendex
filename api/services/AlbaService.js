@@ -1,5 +1,5 @@
-const importLocations = require('../../../lib/public/import-alba');
-const importTerritories = require('../../../lib/public/import-alba-territories');
+const importLocations = require('../domain/import-alba');
+const importTerritories = require('../domain/import-alba-territories');
 
 module.exports = {
   async importLocations(options, done) {

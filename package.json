@@ -2,30 +2,45 @@
   "name": "vendex",
   "version": "0.0.1",
   "description": "",
-  "scripts": {
-    "create-db": "./scripts/createdb.sh",
-    "import-th-territories": "node --harmony ./lib/public/import-territory-helper-territories.js --congregationId=1 --file=\"../vendex-files/th-territories.json\" --source=\"TERRITORY HELPER\"",
-    "import-th": "node --harmony ./lib/public/import-territory-helper.js --congregationId=1 --file=\"../vendex-files/th.xlsx\" --source=\"TERRITORY HELPER\"",
-    "import-alba-territories": "node --harmony ./lib/public/import-alba-territories.js --congregationId=1 --file=\"../vendex-files/alba-territories.json\" --source=\"ALBA\"",
-    "import-alba": "node --harmony ./lib/public/import-alba.js --congregationId=1 --file=\"../vendex-files/alba.tsv\" --source=\"ALBA\"",
-    "export-th": "node $NODE_DEBUG_OPTION --harmony ./lib/public/export-territory-helper.js --congregationId=1 --outputDirectory=\"../vendex-files/output/\" --destination=\"TERRITORY HELPER\""
-  },
-  "author": "",
-  "license": "ISC",
-  "repository": "https://github.com/goodmorninggoaway/vendex",
+  "private": true,
+  "keywords": [],
   "dependencies": {
     "@google/maps": "^0.4.3",
-    "cli": "^1.0.1",
+    "async": "2.0.1",
+    "body-parser": "^1.18.2",
     "csvtojson": "^1.1.7",
     "dotenv": "^4.0.0",
-    "excel-as-json": "^2.0.1",
-    "jsonfile": "^3.0.1",
+    "excel": "^0.1.7",
+    "grunt": "1.0.1",
     "knex": "^0.13.0",
-    "lodash": "^4.17.4",
+    "lodash": "^3.10.1",
+    "npm-run-all": "^4.1.1",
     "object-hash": "^1.1.8",
-    "parse-address": "0.0.7",
-    "pg": "^7.1.2",
-    "usps-webtools": "^0.2.3",
-    "xlsx": "^0.11.2"
+    "parse-address": "0.0.8",
+    "pg": "^7.3.0",
+    "sails": "^1.0.0-37",
+    "sails-hook-grunt": "^2.0.0",
+    "sails-hook-orm": "^2.0.0-16",
+    "sails-hook-sockets": "^1.4.0",
+    "xlsx": "^0.11.4"
+  },
+  "devDependencies": {
+    "eslint": "3.5.0"
+  },
+  "scripts": {
+    "start": "NODE_ENV=production node app.js",
+    "test": "npm run lint && npm run custom-tests && echo 'Done.'",
+    "lint": "node ./node_modules/eslint/bin/eslint . --max-warnings=0 && echo '✔  Your code looks good.'",
+    "custom-tests": "echo \"(No other custom tests yet.)\" && echo",
+    "debug": "node debug app.js"
+  },
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/goodmorninggoaway/vendex"
+  },
+  "license": "",
+  "engines": {
+    "node": "8"
   }
 }

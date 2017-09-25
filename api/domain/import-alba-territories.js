@@ -1,4 +1,4 @@
-const DAL = require('../dataAccess').DAL;
+const DAL = require('./dataAccess').DAL;
 
 const importTerritory = async (externalTerritory, congregationId) => {
     let vertices = externalTerritory.boundary.map(([longitude, latitude]) => `( ${longitude}, ${latitude} )`);

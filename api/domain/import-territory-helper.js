@@ -1,52 +1,35 @@
-const csv = require('csvtojson');
+const util = require('util');
 const differenceBy = require('lodash/differenceBy');
 const hash = require('object-hash');
-const geocode = require('../geocode');
-const addressUtils = require('../validateAddress');
-const DAL = require('../dataAccess').DAL;
-const { serializeTasks } = require('../util');
+const excelAsJson = require('./excelToJson');
+const geocode = require('./geocode');
+const addressUtils = require('./validateAddress');
+const DAL = require('./dataAccess').DAL;
+const convertExcelToJson = util.promisify(excelAsJson.processStream);
+const { serializeTasks } = require('./util');
 
-const source = 'ALBA';
-
-const loadFile = async (file) => {
-    console.log('loading csv inputData', file);
-    const result = await new Promise((resolve, reject) => {
-        const rows = [];
-
-        csv({ delimiter: '\t' })
-            .fromString(file)
-            .on('json', (jsonObj) => {
-                rows.push(jsonObj);
-            })
-            .on('done', (error) => {
-                if (error) {
-                    return reject(error);
-                }
-
-                resolve(rows);
-            });
-    });
-    console.log('loaded csv inputData', result.length);
-    return result;
-};
-
-module.exports = async ({ congregationId, inputData }) => {
+module.exports = async ({ congregationId, fileStream }) => {
+    const source = 'TERRITORY HELPER';
     const importLocation = async (locations, externalLocation) => {
-        const address = `${externalLocation.Address} ${externalLocation.Suite} ${externalLocation.City} ${externalLocation.Province} ${externalLocation['Postal_code']}`;
+        // Ignore english DNCs
+        if (externalLocation.Status !== 'Language') {
+            return;
+        }
+
+        const address = `${externalLocation.Address} ${externalLocation.City} ${externalLocation.State} ${externalLocation['Postal code']}`;
         const translatedLocation = addressUtils.getAddressParts(address);
 
         let translatedCongregationLocation = {
             congregationId,
             source,
             sourceData: externalLocation,
-            language: externalLocation.Language ? externalLocation.Language.toUpperCase() : 'N/A', // TODO create automanaged enumeration
-            sourceLocationId: externalLocation.Address_ID,
-            isPendingTerritoryMapping: 0,
+            language: externalLocation.Language.toUpperCase(), // TODO create automanaged enumeration
+            sourceLocationId: null,
+            isPendingTerritoryMapping: 1,
             isDeleted: 0,
             isActive: 1,
             notes: externalLocation.Notes,
-            userDefined1: externalLocation.Kind,
-            userDefined2: externalLocation.Account,
+            userDefined1: externalLocation.Status,
         };
 
         const addressHash = hash.sha1(translatedLocation);
@@ -54,16 +37,7 @@ module.exports = async ({ congregationId, inputData }) => {
         // TODO mark the address as "encountered" so we can handle the negative space
 
         if (!location) {
-            location = Object.assign(
-                {},
-                translatedLocation,
-                await geocode(address),
-                {
-                    externalLocationId: addressHash,
-                    externalSource: 'ALBA',
-                }
-            );
-
+            location = Object.assign({}, await geocode(address), translatedLocation, { externalLocationId: addressHash });
             location = await DAL.insertLocation(location);
         }
 
@@ -71,13 +45,15 @@ module.exports = async ({ congregationId, inputData }) => {
         const territory = await DAL.findTerritory({
             congregationId,
             externalTerritorySource: source,
-            externalTerritoryId: 1,
+            externalTerritoryId: externalLocation['Territory number'],
         });
 
-        translatedCongregationLocation = Object.assign({}, translatedCongregationLocation, {
-            locationId,
-            territoryId: territory ? territory.territoryId : null
-        });
+        translatedCongregationLocation.locationId = locationId;
+
+        if (territory) {
+            translatedCongregationLocation.territoryId = territory.territoryId;
+            translatedCongregationLocation.isPendingTerritoryMapping = 0;
+        }
 
         if (!congregationLocation) {
             congregationLocation = await DAL.insertCongregationLocation(translatedCongregationLocation);
@@ -104,7 +80,7 @@ module.exports = async ({ congregationId, inputData }) => {
         return { location, congregationLocation };
     };
 
-    const sourceData = await loadFile(inputData);
+    const sourceData = await convertExcelToJson(fileStream, null, {});
     const existingLocations = await DAL.getLocationsForCongregationFromSource(congregationId, source);
     const updatedLocations = await serializeTasks(sourceData.map(x => () => importLocation(existingLocations, x)));
 

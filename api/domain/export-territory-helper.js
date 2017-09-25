@@ -2,20 +2,9 @@ const path = require('path');
 const fs = require('fs');
 const groupBy = require('lodash/groupBy');
 const keyBy = require('lodash/keyBy');
-const { serializeTasks } = require('../util');
-
-/**
- * Fetch last export metadata
- * Fetch activity since last export
- * Build insert list
- * Build update list
- * Build delete list
- */
-
-const promisify = require('util').promisify;
+const { serializeTasks } = require('./util');
 const XLSX = require('xlsx');
-const DAL = require('../dataAccess').DAL;
-const writeExcelFile = promisify(XLSX.writeFileAsync);
+const DAL = require('./dataAccess').DAL;
 
 const destination = 'TERRITORY HELPER';
 
@@ -25,16 +14,6 @@ const isDir = (dpath) => {
     } catch (e) {
         return false;
     }
-};
-
-const mkdirp = (dirname) => {
-    const segments = path.normalize(dirname).split(path.sep);
-    segments.forEach((sdir, index) => {
-        const pathInQuestion = segments.slice(0, index + 1).join(path.sep);
-        if (!isDir(pathInQuestion) && pathInQuestion) {
-            fs.mkdirSync(pathInQuestion);
-        }
-    });
 };
 
 const getActivityRange = (locationActivities) => ({
