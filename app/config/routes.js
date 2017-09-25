@@ -30,7 +30,7 @@ module.exports.routes = {
 
   'POST /territoryhelper/territories': 'TerritoryHelperController.importTerritories',
   'POST /territoryhelper/locations': 'TerritoryHelperController.importLocations',
-  'POST /territoryhelper/locations/export': 'TerritoryHelperController.exportLocations',
+  'GET /territoryhelper/locations': 'TerritoryHelperController.exportLocations',
 
 
   /***************************************************************************

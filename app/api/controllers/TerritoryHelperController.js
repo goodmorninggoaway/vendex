@@ -50,13 +50,23 @@ module.exports = {
    * `TerritoryHelperController.export()`
    */
   exportLocations: async function (req, res) {
-    const { outputDirectory, congregationId } = req.body;
-    await TerritoryHelperService.exportLocations({ congregationId, outputDirectory }, (err, data) => {
+    const { congregationid, accept } = req.headers;
+    const wantsFile = !accept
+      || accept.includes('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+      || accept.includes('application/vnd.ms-excel');
+
+    await TerritoryHelperService.exportLocations({ congregationId: congregationid, wantsFile }, (err, data) => {
       if (err) {
         return res.serverError(err);
       }
 
-      return res.json(data);
+      if (!wantsFile) {
+        return res.json(data);
+      } else {
+        res.set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.set('content-disposition', `attachment; filename=territory_helper_${Date.now().valueOf()}.xlsx`);
+        res.send(data);
+      }
     });
   },
 
