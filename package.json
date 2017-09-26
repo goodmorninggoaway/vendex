@@ -13,7 +13,7 @@
     "excel": "^0.1.7",
     "grunt": "1.0.1",
     "knex": "^0.13.0",
-    "lodash": "^3.10.1",
+    "lodash": "^4.17.4",
     "npm-run-all": "^4.1.1",
     "object-hash": "^1.1.8",
     "parse-address": "0.0.8",

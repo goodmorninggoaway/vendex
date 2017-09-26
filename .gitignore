@@ -130,3 +130,4 @@ nbproject
 .node_history
 dump.rdb
 .env
+.gradle
