@@ -1,3 +1,4 @@
+/* eslint-disable */
 // Forked from https://github.com/stevetarver/excel-as-json. Converted from coffeescript to es6 and added processStream
 // TODO Create a PR against https://github.com/stevetarver/excel-as-json
 /***
@@ -67,15 +68,15 @@ const isArray = obj => Object.prototype.toString.call(obj) === '[object Array]';
 // for names[]  return [true,  keyName,  undefined]
 // for names    return [false, keyName,  undefined]
 const parseKeyName = function (key) {
-    const index = key.match(/\[(\d+)\]$/);
-    switch (false) {
-        case !index:
-            return [true, key.split('[')[0], Number(index[1])];
-        case key.slice(-2) !== '[]':
-            return [true, key.slice(0, -2), undefined];
-        default:
-            return [false, key, undefined];
-    }
+  const index = key.match(/\[(\d+)\]$/);
+  switch (false) {
+    case !index:
+      return [true, key.split('[')[0], Number(index[1])];
+    case key.slice(-2) !== '[]':
+      return [true, key.slice(0, -2), undefined];
+    default:
+      return [false, key, undefined];
+  }
 };
 
 
@@ -86,76 +87,76 @@ const convertValueList = list => Array.from(list).map((item) => convertValue(ite
 // Convert values to native types
 // Note: all values from the excel module are text
 var convertValue = function (value) {
-    // isFinite returns true for empty or blank strings, check for those first
-    if ((value.length === 0) || !/\S/.test(value)) {
-        return value;
-    } else if (isFinite(value)) {
-        return Number(value);
+  // isFinite returns true for empty or blank strings, check for those first
+  if ((value.length === 0) || !/\S/.test(value)) {
+    return value;
+  } else if (isFinite(value)) {
+    return Number(value);
+  } else {
+    const testVal = value.toLowerCase();
+    if (Array.from(BOOLTEXT).includes(testVal)) {
+      return BOOLVALS[testVal];
     } else {
-        const testVal = value.toLowerCase();
-        if (Array.from(BOOLTEXT).includes(testVal)) {
-            return BOOLVALS[testVal];
-        } else {
-            return value;
-        }
+      return value;
     }
+  }
 };
 
 
 // Assign a value to a dotted property key - set values on sub-objects
 var assign = function (obj, key, value, options) {
-    // On first call, a key is a string. Recursed calls, a key is an array
-    let i;
-    if (typeof key !== 'object') {
-        key = key.split('.');
-    }
-    // Array element accessors look like phones[0].type or aliases[]
-    const [keyIsList, keyName, index] = Array.from(parseKeyName(key.shift()));
+  // On first call, a key is a string. Recursed calls, a key is an array
+  let i;
+  if (typeof key !== 'object') {
+    key = key.split('.');
+  }
+  // Array element accessors look like phones[0].type or aliases[]
+  const [keyIsList, keyName, index] = Array.from(parseKeyName(key.shift()));
 
-    if (key.length) {
-        if (keyIsList) {
-            // if our object is already an array, ensure an object exists for this index
-            if (isArray(obj[keyName])) {
-                if (!obj[keyName][index]) {
-                    let asc, end;
-                    for (i = obj[keyName].length, end = index, asc = obj[keyName].length <= end; asc ? i <= end : i >= end; asc ? i++ : i--) {
-                        obj[keyName].push({});
-                    }
-                }
-                // else set this value to an array large enough to contain this index
-            } else {
-                obj[keyName] = ((() => {
-                    let asc1, end1;
-                    const result = [];
-                    for (i = 0, end1 = index, asc1 = 0 <= end1; asc1 ? i <= end1 : i >= end1; asc1 ? i++ : i--) {
-                        result.push({});
-                    }
-                    return result;
-                })());
-            }
-            return assign(obj[keyName][index], key, value, options);
-        } else {
-            if (obj[keyName] == null) {
-                obj[keyName] = {};
-            }
-            return assign(obj[keyName], key, value, options);
+  if (key.length) {
+    if (keyIsList) {
+      // if our object is already an array, ensure an object exists for this index
+      if (isArray(obj[keyName])) {
+        if (!obj[keyName][index]) {
+          let asc, end;
+          for (i = obj[keyName].length, end = index, asc = obj[keyName].length <= end; asc ? i <= end : i >= end; asc ? i++ : i--) {
+            obj[keyName].push({});
+          }
         }
+        // else set this value to an array large enough to contain this index
+      } else {
+        obj[keyName] = ((() => {
+          let asc1, end1;
+          const result = [];
+          for (i = 0, end1 = index, asc1 = 0 <= end1; asc1 ? i <= end1 : i >= end1; asc1 ? i++ : i--) {
+            result.push({});
+          }
+          return result;
+        })());
+      }
+      return assign(obj[keyName][index], key, value, options);
     } else {
-        if (keyIsList && (index != null)) {
-            console.error(`WARNING: Unexpected key path terminal containing an indexed list for <${keyName}>`);
-            console.error("WARNING: Indexed arrays indicate a list of objects and should not be the last element in a key path");
-            console.error("WARNING: The last element of a key path should be a key name or flat array. E.g. alias, aliases[]");
-        }
-        if (keyIsList && (index == null)) {
-            if (!(options.omitEmptyFields && (value === ''))) {
-                return obj[keyName] = convertValueList(value.split(';'));
-            }
-        } else {
-            if (!(options.omitEmptyFields && (value === ''))) {
-                return obj[keyName] = convertValue(value);
-            }
-        }
+      if (obj[keyName] == null) {
+        obj[keyName] = {};
+      }
+      return assign(obj[keyName], key, value, options);
     }
+  } else {
+    if (keyIsList && (index != null)) {
+      console.error(`WARNING: Unexpected key path terminal containing an indexed list for <${keyName}>`);
+      console.error("WARNING: Indexed arrays indicate a list of objects and should not be the last element in a key path");
+      console.error("WARNING: The last element of a key path should be a key name or flat array. E.g. alias, aliases[]");
+    }
+    if (keyIsList && (index == null)) {
+      if (!(options.omitEmptyFields && (value === ''))) {
+        return obj[keyName] = convertValueList(value.split(';'));
+      }
+    } else {
+      if (!(options.omitEmptyFields && (value === ''))) {
+        return obj[keyName] = convertValue(value);
+      }
+    }
+  }
 };
 
 
@@ -166,41 +167,41 @@ const transpose = matrix => __range__(0, matrix[0].length, false).map((i) => (Ar
 // Convert 2D array to nested objects. If row oriented data, row 0 is dotted key names.
 // Column oriented data is transposed
 const convert = function (data, options) {
-    if (options.isColOriented) {
-        data = transpose(data);
-    }
+  if (options.isColOriented) {
+    data = transpose(data);
+  }
 
-    const keys = data[0];
-    const rows = data.slice(1);
+  const keys = data[0];
+  const rows = data.slice(1);
 
-    const result = [];
-    for (let row of Array.from(rows)) {
-        const item = {};
-        for (let index = 0; index < row.length; index++) {
-            const value = row[index];
-            assign(item, keys[index], value, options);
-        }
-        result.push(item);
+  const result = [];
+  for (let row of Array.from(rows)) {
+    const item = {};
+    for (let index = 0; index < row.length; index++) {
+      const value = row[index];
+      assign(item, keys[index], value, options);
     }
-    return result;
+    result.push(item);
+  }
+  return result;
 };
 
 
 // Write JSON encoded data to file
 // call back is callback(err)
 const write = function (data, dst, callback) {
-    // Create the target directory if it does not exist
-    const dir = path.dirname(dst);
-    if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir);
+  // Create the target directory if it does not exist
+  const dir = path.dirname(dst);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir);
+  }
+  return fs.writeFile(dst, JSON.stringify(data, null, 2), function (err) {
+    if (err) {
+      return callback(`Error writing file ${dst}: ${err}`);
+    } else {
+      return callback(undefined);
     }
-    return fs.writeFile(dst, JSON.stringify(data, null, 2), function (err) {
-        if (err) {
-            return callback(`Error writing file ${dst}: ${err}`);
-        } else {
-            return callback(undefined);
-        }
-    });
+  });
 };
 
 
@@ -224,119 +225,119 @@ const write = function (data, dst, callback) {
 //   will parse a row oriented xslx using default options and return errors and the parsed data in the callback
 //
 const _DEFAULT_OPTIONS = {
-    sheet: '1',
-    isColOriented: false,
-    omitEmptyFields: false
+  sheet: '1',
+  isColOriented: false,
+  omitEmptyFields: false
 };
 
 // Ensure options sane, provide defaults as appropriate
 const _validateOptions = function (options) {
-    if (!options) {
-        options = _DEFAULT_OPTIONS;
+  if (!options) {
+    options = _DEFAULT_OPTIONS;
+  } else {
+    if (!options.hasOwnProperty('sheet')) {
+      options.sheet = '1';
     } else {
-        if (!options.hasOwnProperty('sheet')) {
-            options.sheet = '1';
+      // ensure sheet is a text representation of a number
+      if (!isNaN(parseFloat(options.sheet)) && isFinite(options.sheet)) {
+        if (options.sheet < 1) {
+          options.sheet = '1';
         } else {
-            // ensure sheet is a text representation of a number
-            if (!isNaN(parseFloat(options.sheet)) && isFinite(options.sheet)) {
-                if (options.sheet < 1) {
-                    options.sheet = '1';
-                } else {
-                    // could be 3 or '3'; force to be '3'
-                    options.sheet = `${options.sheet}`;
-                }
-            } else {
-                // something bizarre like true, [Function: isNaN], etc
-                options.sheet = '1';
-            }
+          // could be 3 or '3'; force to be '3'
+          options.sheet = `${options.sheet}`;
         }
-        if (!options.hasOwnProperty('isColOriented')) {
-            options.isColOriented = false;
-        }
-        if (!options.hasOwnProperty('omitEmptyFields')) {
-            options.omitEmptyFields = false;
-        }
+      } else {
+        // something bizarre like true, [Function: isNaN], etc
+        options.sheet = '1';
+      }
     }
-    return options;
+    if (!options.hasOwnProperty('isColOriented')) {
+      options.isColOriented = false;
+    }
+    if (!options.hasOwnProperty('omitEmptyFields')) {
+      options.omitEmptyFields = false;
+    }
+  }
+  return options;
 };
 
 
 const processFile = function (src, dst, options, callback) {
-    if (options == null) {
-        options = _DEFAULT_OPTIONS;
-    }
-    if (callback == null) {
-        callback = undefined;
-    }
-    options = _validateOptions(options);
+  if (options == null) {
+    options = _DEFAULT_OPTIONS;
+  }
+  if (callback == null) {
+    callback = undefined;
+  }
+  options = _validateOptions(options);
 
-    // provide a callback if the user did not
-    if (!callback) {
-        callback = function (err, data) {
-        };
-    }
+  // provide a callback if the user did not
+  if (!callback) {
+    callback = function (err, data) {
+    };
+  }
 
-    // NOTE: 'excel' does not properly bubble file not found and prints
-    //       an ugly error we can't trap, so look for this common error first
-    if (!fs.existsSync(src)) {
-        return callback(`Cannot find src file ${src}`);
-    } else {
-        return excel(src, options.sheet, function (err, data) {
+  // NOTE: 'excel' does not properly bubble file not found and prints
+  //       an ugly error we can't trap, so look for this common error first
+  if (!fs.existsSync(src)) {
+    return callback(`Cannot find src file ${src}`);
+  } else {
+    return excel(src, options.sheet, function (err, data) {
+      if (err) {
+        return callback(`Error reading ${src}: ${err}`);
+      } else {
+        const result = convert(data, options);
+        if (dst) {
+          return write(result, dst, function (err) {
             if (err) {
-                return callback(`Error reading ${src}: ${err}`);
+              return callback(err);
             } else {
-                const result = convert(data, options);
-                if (dst) {
-                    return write(result, dst, function (err) {
-                        if (err) {
-                            return callback(err);
-                        } else {
-                            return callback(undefined, result);
-                        }
-                    });
-                } else {
-                    return callback(undefined, result);
-                }
+              return callback(undefined, result);
             }
-        });
-    }
+          });
+        } else {
+          return callback(undefined, result);
+        }
+      }
+    });
+  }
 };
 
 const processStream = function (src, dst, options, callback) {
-    if (options == null) {
-        options = _DEFAULT_OPTIONS;
-    }
-    if (callback == null) {
-        callback = undefined;
-    }
-    options = _validateOptions(options);
+  if (options == null) {
+    options = _DEFAULT_OPTIONS;
+  }
+  if (callback == null) {
+    callback = undefined;
+  }
+  options = _validateOptions(options);
 
-    // provide a callback if the user did not
-    if (!callback) {
-        callback = function (err, data) {
-        };
-    }
+  // provide a callback if the user did not
+  if (!callback) {
+    callback = function (err, data) {
+    };
+  }
 
-    // NOTE: 'excel' does not properly bubble file not found and prints
-    //       an ugly error we can't trap, so look for this common error first
-    return excel(src, options.sheet, function (err, data) {
-        if (err) {
-            return callback(`Error reading stream: ${err}`);
-        } else {
-            const result = convert(data, options);
-            if (dst) {
-                return write(result, dst, function (err) {
-                    if (err) {
-                        return callback(err);
-                    } else {
-                        return callback(undefined, result);
-                    }
-                });
-            } else {
-                return callback(undefined, result);
-            }
-        }
-    });
+  // NOTE: 'excel' does not properly bubble file not found and prints
+  //       an ugly error we can't trap, so look for this common error first
+  return excel(src, options.sheet, function (err, data) {
+    if (err) {
+      return callback(`Error reading stream: ${err}`);
+    } else {
+      const result = convert(data, options);
+      if (dst) {
+        return write(result, dst, function (err) {
+          if (err) {
+            return callback(err);
+          } else {
+            return callback(undefined, result);
+          }
+        });
+      } else {
+        return callback(undefined, result);
+      }
+    }
+  });
 };
 
 // This is the single expected module entry point
@@ -353,11 +354,11 @@ exports._validateOptions = _validateOptions;
 exports.transpose = transpose;
 
 function __range__(left, right, inclusive) {
-    let range = [];
-    let ascending = left < right;
-    let end = !inclusive ? right : ascending ? right + 1 : right - 1;
-    for (let i = left; ascending ? i < end : i > end; ascending ? i++ : i--) {
-        range.push(i);
-    }
-    return range;
+  let range = [];
+  let ascending = left < right;
+  let end = !inclusive ? right : ascending ? right + 1 : right - 1;
+  for (let i = left; ascending ? i < end : i > end; ascending ? i++ : i--) {
+    range.push(i);
+  }
+  return range;
 }

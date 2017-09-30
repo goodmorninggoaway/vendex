@@ -9,26 +9,26 @@ module.exports = {
       const fileStream = fs.createReadStream(options.file);
       const result = await importLocations(Object.assign({ fileStream }, options));
       fs.unlink(options.file, () => {
-        done(null, result);
+        return done(null, result);
       });
     } catch (ex) {
-      done(ex);
+      return done(ex);
     }
   },
 
   async importTerritories(options, done) {
     try {
-      done(null, await importTerritories(options));
+      return done(null, await importTerritories(options));
     } catch (ex) {
-      done(ex);
+      return done(ex);
     }
   },
 
   async exportLocations(options, done) {
     try {
-      done(null, await exportLocations(options));
+      return done(null, await exportLocations(options));
     } catch (ex) {
-      done(ex);
+      return done(ex);
     }
   },
 
