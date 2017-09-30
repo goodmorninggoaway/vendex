@@ -44,13 +44,14 @@ const findActivityAttributes = (locations, operation, { locationId, congregation
   }
 
   const congregationLocation = location.congregationLocations.find(x => x.source === destination);
+  const otherCongregationLocations = location.congregationLocations.filter(x => x !== congregationLocation);
 
   return {
     operation,
     congregationLocation,
     congregationLocationActivityId,
+    otherCongregationLocations,
     location: location.location,
-    otherCongregationLocations: location.congregationLocations.filter(x => x !== congregationLocation),
   };
 };
 
@@ -66,7 +67,7 @@ const getStartCongregationLocationActivityId = async (congregationId) => {
 
 const convert = ({ location, congregationLocation = {}, externals, message }) => Object.assign({
   'Territory type': 'Homes', // TODO This should be a tag on the territory
-  'Territory number': location.territoryId, // TODO handle conflicts
+  'Territory number': congregationLocation.territoryId, // TODO handle conflicts
   'Location type': 'Language',
   'Location Status': 'Do not call', // TODO setting both because there is a conflict between the sample and export
   'Status': 'Do not call', // TODO setting both because there is a conflict between the sample and export
@@ -152,18 +153,18 @@ const applyRules = (attributes) => {
   }
 
   if (isInsert) {
-    return Object.assign({}, attributes, { congregationLocation: albaCongregationLocation });
+    return Object.assign({}, attributes, { congregationLocation: Object.assign({}, albaCongregationLocation, { territoryId: null }) });
   }
 
   return attributes;
 };
 
-const applyTerritory = async (location) => {
+const updateWithTerritory = async (location, congregationId) => {
   const containingTerritories = await DAL.findTerritoryContainingPoint(congregationId, location.location);
-  const originalTerritoryId = location.otherCongregationLocations.length && location.otherCongregationLocations[0].territoryId;
+  const originalTerritoryId = location.congregationLocation ? location.congregationLocation.territoryId : null;
 
   if (containingTerritories.length === 1) {
-    const { territoryId } = containingTerritories[0];
+    const { externalTerritoryId, territoryId } = containingTerritories[0];
     if (territoryId === originalTerritoryId) {
       // Nothing changed and it's all good
       return;
@@ -171,7 +172,8 @@ const applyTerritory = async (location) => {
 
     if (!originalTerritoryId) {
       // No territory was set, but we found a single match
-      location.congregationLocation.territoryId = territoryId;
+      location.congregationLocation = location.congregationLocation || {};
+      location.congregationLocation.territoryId = externalTerritoryId;
       return;
     }
   } else {
@@ -186,40 +188,40 @@ const applyTerritory = async (location) => {
   location.territoryMatches = containingTerritories;
 };
 
+const createExportFromActivity = async (activity, congregationId) => {
+  await updateWithTerritory(activity, congregationId);
+  return convert(activity);
+};
+
+const createExports = (activities, congregationId) => serializeTasks(activities.map(x => () => createExportFromActivity(x, congregationId)));
+
+const getRawDataToExport = async (startAt, congregationId) => {
+  const activities = await DAL.getCongregationLocationActivity({ congregationId, source: 'ALBA' }, startAt);
+  let locations = await DAL.getLocationsForCongregation(congregationId);
+
+  locations = keyBy(locations, 'location.locationId');
+
+  return Object.values(groupBy(activities, 'locationId'))
+    .reduce((memo, locationActivities) => {
+      const range = getActivityRange(locationActivities);
+      const operation = determineExportOperation(range);
+      const attributes = applyRules(findActivityAttributes(locations, operation, range.terminalActivity));
+      if (attributes) {
+        memo[attributes.operation].push(attributes);
+        memo.congregationLocationActivityId = attributes.congregationLocationActivityId;
+      }
+
+      return memo;
+    }, { I: [], D: [], U: [], congregationLocationActivityId: 0 });
+};
+
 module.exports = async ({ congregationId, wantsFile }) => {
-  const getRawDataToExport = async (startAt, congregationId) => {
-    const activities = await DAL.getCongregationLocationActivity({ congregationId, source: 'ALBA' }, startAt);
-    let locations = await DAL.getLocationsForCongregation(congregationId);
-
-    locations = keyBy(locations, 'location.locationId');
-
-    return Object.values(groupBy(activities, 'locationId'))
-      .reduce((memo, locationActivities) => {
-        const range = getActivityRange(locationActivities);
-        const operation = determineExportOperation(range);
-        const attributes = applyRules(findActivityAttributes(locations, operation, range.terminalActivity));
-        if (attributes) {
-          memo[attributes.operation].push(attributes);
-          memo.congregationLocationActivityId = attributes.congregationLocationActivityId;
-        }
-
-        return memo;
-      }, { I: [], D: [], U: [], congregationLocationActivityId: 0 });
-  };
-
-  const createExportFromActivity = async (activity) => {
-    await applyTerritory(activity);
-    return convert(activity);
-  };
-
-  const createExports = (activities) => serializeTasks(activities.map(x => () => createExportFromActivity(x)));
-
   const startAt = await getStartCongregationLocationActivityId(congregationId);
   const exportActivities = await getRawDataToExport(startAt, congregationId);
   const output = {
-    inserts: await createExports(exportActivities.I),
-    updates: await createExports(exportActivities.U),
-    deletes: await createExports(exportActivities.D),
+    inserts: await createExports(exportActivities.I, congregationId),
+    updates: await createExports(exportActivities.U, congregationId),
+    deletes: await createExports(exportActivities.D, congregationId),
   };
 
   return wantsFile ? await createFile(output) : output;
