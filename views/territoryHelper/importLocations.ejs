@@ -1,11 +1,11 @@
-<h4>Alba | Import Locations</h4>
-<form id="alba-location-import">
-  <label for="alba-export-tsv">
-    Paste ALBA location export:
-    <textarea id="alba-export-tsv" style="height: 400px;"></textarea>
+<h4>Territory Helper | Import Locations</h4>
+<form id="th-location-import">
+  <label for="th-export-tsv">
+    Choose a Territory Helper location export file to upload
+    <input type="file" name="file">
   </label>
 
-  <button id="alba-submit">Submit</button>
+  <button id="th-submit">Submit</button>
 
   <div class="progress hide">
     <div class="indeterminate"></div>
@@ -14,7 +14,7 @@
   <div id="error-message"></div>
 </form>
 <script>
-  const submitEl = document.getElementById('alba-submit');
+  const submitEl = document.getElementById('th-submit');
 
   submitEl.addEventListener('click', (e) => {
     e.preventDefault();
@@ -25,14 +25,12 @@
 
     progressEl.classList.remove('hide');
 
-    const body = document.getElementById('alba-export-tsv').value;
-    fetch('/alba/locations', {
+    const body = new FormData(document.getElementById('th-location-import'));
+    fetch('/territoryhelper/locations', {
       body,
       method: 'POST',
       headers: new Headers({
         'congregationid': 1,
-        'content-type': 'text/plain',
-        'content-length': body.length,
       }),
     })
       .then((response) => {
