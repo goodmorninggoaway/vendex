@@ -1,0 +1,54 @@
+<h4>Territory Helper | Import Locations</h4>
+<form id="th-location-import">
+  <label for="th-import-file">
+    Choose a Territory Helper location export file to upload
+    <input type="file" name="file" id="th-import-file">
+  </label>
+
+  <button id="th-submit">Submit</button>
+
+  <div class="progress hide">
+    <div class="indeterminate"></div>
+  </div>
+
+  <div id="error-message"></div>
+</form>
+<script>
+  const submitEl = document.getElementById('th-submit');
+
+  submitEl.addEventListener('click', (e) => {
+    e.preventDefault();
+
+    submitEl.setAttribute('disabled', 'disabled');
+    const progressEl = document.querySelector('.progress');
+    const errorMessageEl = document.getElementById('error-message');
+
+    progressEl.classList.remove('hide');
+
+    const body = new FormData(document.getElementById('th-location-import'));
+    fetch('/territoryhelper/locations', {
+      body,
+      method: 'POST',
+      headers: new Headers({
+        'congregationid': 1,
+      }),
+    })
+      .then((response) => {
+        progressEl.classList.add('hide');
+        submitEl.removeAttribute('disabled');
+
+        if (response.ok) {
+          Materialize.toast('Locations successfully imported.', 5000);
+          return;
+        }
+
+        Materialize.toast('Error importing locations.', 5000);
+        return response.text().then(x => errorMessageEl.innerText);
+      })
+      .catch((err) => {
+        submitEl.removeAttribute('disabled');
+
+        Materialize.toast(err, 5000);
+      });
+  })
+</script>

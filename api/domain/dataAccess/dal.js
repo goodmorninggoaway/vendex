@@ -1,6 +1,7 @@
 const keyBy = require('lodash/keyBy');
 const groupBy = require('lodash/groupBy');
 const property = require('lodash/property');
+const { serializeTasks } = require('../util');
 
 let db;
 
@@ -116,3 +117,19 @@ module.exports.getCongregationLocationActivity = (filter, startAt) => db
   .where(filter)
   .where('congregationLocationActivityId', '>=', startAt)
   .orderBy('congregationLocationActivityId');
+
+module.exports.reset = (includeGeocode = false) => {
+  const tables = [
+    'exportActivity',
+    'congregationLocationActivity',
+    'congregationLocation',
+    'location',
+    'territory',
+  ];
+
+  if (includeGeocode) {
+    tables.push('geocodeResponse');
+  }
+
+  return serializeTasks(tables.map(x => () => db(x).del()));
+};

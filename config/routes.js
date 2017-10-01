@@ -24,9 +24,15 @@ module.exports.routes = {
     view: 'homepage'
   },
 
-  'POST /alba/territories': 'AlbaController.importTerritories',
+  'GET /ui/reset': 'GeneralUIController.resetDatabase',
+  'GET /ui/alba/locations': 'AlbaUIController.importLocations',
+  'GET /ui/territoryhelper/locations': 'TerritoryHelperUIController.importLocations',
+  'GET /ui/territoryhelper/territories': 'TerritoryHelperUIController.importTerritories',
+  'GET /ui/territoryhelper/export': 'TerritoryHelperUIController.exportLocations',
+
+  'DELETE /reset': 'GeneralController.resetDatabase',
+
   'POST /alba/locations': 'AlbaController.importLocations',
-  'GET /alba/locations': 'AlbaController.exportLocations',
 
   'POST /territoryhelper/territories': 'TerritoryHelperController.importTerritories',
   'POST /territoryhelper/locations': 'TerritoryHelperController.importLocations',

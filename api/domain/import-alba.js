@@ -68,11 +68,7 @@ module.exports = async ({ congregationId, inputData }) => {
     }
 
     const { locationId } = location;
-    const territory = await DAL.findTerritory({
-      congregationId,
-      externalTerritorySource: source,
-      externalTerritoryId: 1,
-    });
+    const territory = null;
 
     translatedCongregationLocation = Object.assign({}, translatedCongregationLocation, {
       locationId,
