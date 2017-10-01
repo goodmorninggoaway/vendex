@@ -1,9 +1,10 @@
-﻿
+﻿/*
 ALTER DEFAULT PRIVILEGES IN SCHEMA public
   GRANT SELECT, INSERT, UPDATE, DELETE ON tables TO thalba;
 
 ALTER DEFAULT PRIVILEGES IN SCHEMA public
   GRANT SELECT, USAGE ON sequences TO thalba;
+*/
 
 
 create table "congregation" (
@@ -88,11 +89,4 @@ create table "exportActivity" (
     "lastCongregationLocationActivityId" bigint not null,
     "destination" varchar(32),
     foreign key("congregationId") references "congregation"("congregationId")
-)
-/*
-
-delete from "congregationLocation";
-delete from "location";
-delete from "territory";
-
-*/
+);
