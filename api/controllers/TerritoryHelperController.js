@@ -53,12 +53,15 @@ module.exports = {
    * `TerritoryHelperController.export()`
    */
   exportLocations: async function (req, res) {
-    const { congregationid, accept } = req.headers;
+    const { accept } = req.headers;
     const wantsFile = !accept
       || accept.includes('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-      || accept.includes('application/vnd.ms-excel');
+      || accept.includes('application/vnd.ms-excel')
+      || req.query.format === 'xls'
+      || req.query.format === 'xlsx';
 
-    await TerritoryHelperService.exportLocations({ congregationId: congregationid, wantsFile }, (err, data) => {
+    const congregationId = req.headers.congregationid || req.query.congregationid;
+    await TerritoryHelperService.exportLocations({ congregationId, wantsFile }, (err, data) => {
       if (err) {
         sails.log.error(err);
         return res.serverError(err);
