@@ -15,6 +15,7 @@ module.exports = {
 
     req.file('file').upload({ maxBytes: process.env.FILE_UPLOAD_MAX_BYTES }, (err, files) => {
       if (err) {
+        sails.log.error(err);
         return res.serverError(err);
       }
 
@@ -24,6 +25,7 @@ module.exports = {
 
       TerritoryHelperService.importLocations({ congregationId: congregationid, file: files[0].fd }, (err, data) => {
         if (err) {
+          sails.log.error(err);
           return res.serverError(err);
         }
 
@@ -39,6 +41,7 @@ module.exports = {
     const { congregationid } = req.headers;
     await TerritoryHelperService.importTerritories({ congregationId: congregationid, inputData: req.body }, (err, data) => {
       if (err) {
+        sails.log.error(err);
         return res.serverError(err);
       }
 
@@ -57,6 +60,7 @@ module.exports = {
 
     await TerritoryHelperService.exportLocations({ congregationId: congregationid, wantsFile }, (err, data) => {
       if (err) {
+        sails.log.error(err);
         return res.serverError(err);
       }
 

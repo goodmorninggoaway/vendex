@@ -15,6 +15,7 @@ module.exports = {
 
     AlbaService.importLocations({ congregationId: congregationid, inputData: req.body }, (err, data) => {
       if (err) {
+        sails.log.error(err);
         return res.serverError(err);
       }
 
@@ -29,6 +30,7 @@ module.exports = {
     const { congregationid } = req.headers;
     await AlbaService.importTerritories({ congregationId: congregationid, inputData: req.body }, (err, data) => {
       if (err) {
+        sails.log.error(err);
         return res.serverError(err);
       }
 
