@@ -1,14 +1,15 @@
 const DAL = require('./dal');
 
-const knex = require('knex')({
-  client: 'pg',
-  connection: {
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-  },
-});
+// Use Heroku env variable, or let it create a connection with default values
+// https://node-postgres.com/api/client
+let connection;
+if (process.env.DATABASE_URL) {
+  connection = {
+    connectionString: process.env.DATABASE_URL,
+  };
+}
+
+const knex = require('knex')({ connection, client: 'pg' });
 
 DAL.initialize(knex);
 
