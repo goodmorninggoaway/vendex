@@ -1,0 +1,43 @@
+<button class="waves-effect waves-light btn-large" id="trigger-reset">
+  Delete almost everything
+  <i class="material-icons left">delete_sweep</i>
+</button>
+
+<div class="progress hide">
+  <div class="indeterminate"></div>
+</div>
+
+<div id="error-message"></div>
+
+<script>
+  const submitEl = document.getElementById('trigger-reset');
+
+  submitEl.addEventListener('click', (e) => {
+    e.preventDefault();
+
+    submitEl.setAttribute('disabled', 'disabled');
+    const progressEl = document.querySelector('.progress');
+    const errorMessageEl = document.getElementById('error-message');
+
+    progressEl.classList.remove('hide');
+
+    fetch('/reset', { method: 'DELETE' })
+      .then((response) => {
+        progressEl.classList.add('hide');
+        submitEl.removeAttribute('disabled');
+
+        if (response.ok) {
+          Materialize.toast('Everything deleted (except geocodeResponse).', 5000);
+          return;
+        }
+
+        Materialize.toast('Error deleting everything.', 5000);
+        return response.text().then(x => errorMessageEl.innerText);
+      })
+      .catch((err) => {
+        submitEl.removeAttribute('disabled');
+
+        Materialize.toast(err, 5000);
+      });
+  })
+</script>
