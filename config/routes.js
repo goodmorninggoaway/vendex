@@ -26,6 +26,8 @@ module.exports.routes = {
 
   'GET /ui/alba/locations': 'AlbaUIController.importLocations',
   'GET /ui/territoryhelper/locations': 'TerritoryHelperUIController.importLocations',
+  'GET /ui/territoryhelper/territories': 'TerritoryHelperUIController.importTerritories',
+  'GET /ui/territoryhelper/export': 'TerritoryHelperUIController.exportLocations',
 
   'POST /alba/territories': 'AlbaController.importTerritories',
   'POST /alba/locations': 'AlbaController.importLocations',
