@@ -1,21 +1,17 @@
-﻿/*
-ALTER DEFAULT PRIVILEGES IN SCHEMA public
-  GRANT SELECT, INSERT, UPDATE, DELETE ON tables TO thalba;
-
-ALTER DEFAULT PRIVILEGES IN SCHEMA public
-  GRANT SELECT, USAGE ON sequences TO thalba;
-*/
-
-
+exports.up = function (knex, Promise) {
+  return Promise.all([
+    knex.schema.raw(`
 create table "congregation" (
     "congregationId" SERIAL PRIMARY KEY,
     "name" varchar(255) not null,
     "language" varchar(64) not null
 );
+  `),
 
-insert into "congregation" values (1, 'Bond Park', 'ENGLISH');
-insert into "congregation" values (2, 'Triangle Park Hindi', 'HINDI');
+    knex.schema.raw(`insert into "congregation" values (1, 'Test Local Language', 'ENGLISH');`),
+    knex.schema.raw(`insert into "congregation" values (2, 'Test Foreign Language', 'HINDI');`),
 
+    knex.schema.raw(`
 create table "territory" (
     "territoryId" BIGSERIAL PRIMARY KEY,
     "congregationId" int not null,
@@ -28,7 +24,9 @@ create table "territory" (
     "deleted" boolean not null default false,
     foreign key("congregationId") references "congregation"("congregationId")
 );
+  `),
 
+    knex.schema.raw(`
 create table "location" (
     "locationId" BIGSERIAL PRIMARY KEY,
     "latitude" numeric(21, 18),
@@ -44,8 +42,10 @@ create table "location" (
     "externalLocationId" varchar(512),
     "externalLocationLastRefreshedDateTime" varchar(32),
     "externalSource" varchar(32)
-);
+);  
+  `),
 
+    knex.schema.raw(`
 create table "congregationLocation" (
     "congregationId" int not null,
     "locationId" bigint not null,
@@ -64,15 +64,19 @@ create table "congregationLocation" (
     foreign key("territoryId") references "territory"("territoryId"),
     foreign key("locationId") references "location"("locationId"),
     primary key("congregationId", "locationId", "source")
-);
+);  
+  `),
 
+    knex.schema.raw(`
 create table "geocodeResponse" (
     "geocodeResponseId" BIGSERIAL primary key,
     "address" varchar(256) unique,
     "response" jsonb,
     "source" varchar(32) not null
-);
+);  
+  `),
 
+    knex.schema.raw(`
 create table "congregationLocationActivity" (
     "congregationLocationActivityId" BIGSERIAL primary key,
     "locationId" bigint not null,
@@ -81,12 +85,29 @@ create table "congregationLocationActivity" (
     "source" varchar(32) not null,
     foreign key("congregationId") references "congregation"("congregationId"),
     foreign key("locationId") references "location"("locationId")
-);
+);  
+  `),
 
+    knex.schema.raw(`
 create table "exportActivity" (
     "exportActivityId" BIGSERIAL primary key,
     "congregationId" int not null,
     "lastCongregationLocationActivityId" bigint not null,
     "destination" varchar(32),
     foreign key("congregationId") references "congregation"("congregationId")
-);
+);  
+  `),
+  ]);
+};
+
+exports.down = function (knex, Promise) {
+  return Promise.all([
+    knex.schema.dropTable('exportActivity'),
+    knex.schema.dropTable('congregationLocationActivity'),
+    knex.schema.dropTable('geocodeResponse'),
+    knex.schema.dropTable('congregationLocation'),
+    knex.schema.dropTable('location'),
+    knex.schema.dropTable('territory'),
+    knex.schema.dropTable('congregation'),
+  ]);
+};
