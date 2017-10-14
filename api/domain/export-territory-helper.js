@@ -60,19 +60,20 @@ const getStartCongregationLocationActivityId = async (congregationId) => {
   const lastExport = await DAL.getLastExportActivity({ congregationId, destination });
   let minCongregationLocationActivityId = 0;
   if (lastExport) {
-    minCongregationLocationActivityId = lastExport.lastCongregationLocationActivityId;
+    // TODO Why am I getting a string for a BIGINT lastCongregationLocationActivityId?
+    minCongregationLocationActivityId = parseInt(lastExport.lastCongregationLocationActivityId);
   }
 
   return minCongregationLocationActivityId + 1;
 };
 
-const convert = ({ location, congregationLocation = {}, externals, message }) => Object.assign({
+const convert = ({ location, congregationLocation = {}, externals, message, otherCongregationLocations }) => Object.assign({
   'Territory type': 'Homes', // TODO This should be a tag on the territory
   'Territory number': congregationLocation.territoryId, // TODO handle conflicts
   'Location type': 'Language',
   'Location Status': 'Do not call', // TODO setting both because there is a conflict between the sample and export
   'Status': 'Do not call', // TODO setting both because there is a conflict between the sample and export
-  'Language': congregationLocation.language,
+  'Language': congregationLocation.language || otherCongregationLocations[0].sourceData.Language,
   'Latitude': location.latitude,
   'Longitude': location.longitude,
   'Address': `${location.number} ${location.street}`,
@@ -108,20 +109,23 @@ const applyRules = (attributes) => {
 
   const { operation, otherCongregationLocations, congregationLocation } = attributes;
   const [albaCongregationLocation] = otherCongregationLocations.filter(x => x.source === 'ALBA');
-  const isDoNotCall = albaCongregationLocation.sourceData['Status'] === 'Do not call';
+  const isDoNotCall = albaCongregationLocation.sourceData['Status'].toLowerCase() === 'do not call';
   const isForeignLanguageInSource = albaCongregationLocation.sourceData['Language'] && albaCongregationLocation.sourceData['Language'].toUpperCase() !== 'ENGLISH'; // TODO this should be congrgration.language
+  const isLocalLanguageInSource = albaCongregationLocation.sourceData['Language'] && albaCongregationLocation.sourceData['Language'].toUpperCase() === 'ENGLISH'; // TODO this should be congrgration.language
   const sourceLocationType = congregationLocation ? congregationLocation.sourceData['Location Type'] : null;
   const isForeignLanguageInDestination = sourceLocationType === 'Language';
-  const isTrackedByAlbaCongregation = albaCongregationLocation.sourceData['Kind'] === 'Foreign-Language' && albaCongregationLocation.sourceData['Status'] !== '';
+  const isTrackedByAlbaCongregation = albaCongregationLocation.sourceData['Kind'].toLowerCase() === 'foreign-language' && albaCongregationLocation.sourceData['Status'] !== '';
   const isPassthroughIgnore = !operation;
   const { isInsert } = booleanOperation(operation);
+  const existsInDestination = congregationLocation && Object.keys(congregationLocation).length > 1;
 
   if (isPassthroughIgnore) {
     return false;
   }
 
-  if (isDoNotCall && !isForeignLanguageInSource && !isInsert) {
-    if (isForeignLanguageInDestination) {
+  // Converted to a local-language DNC in the foreign-language system, so add/update it as a DNC
+  if (isDoNotCall && !isForeignLanguageInSource) {
+    if (isForeignLanguageInDestination && !isInsert) {
       // Assume it came from the source
       return false;
     }
@@ -141,8 +145,8 @@ const applyRules = (attributes) => {
     );
   }
 
-  if (!isDoNotCall && !isForeignLanguageInSource && !isForeignLanguageInDestination && !isInsert) {
-    return Object.assign({}, attributes, { conflict: true, message: 'This is a foreign-language location in ALBA, but not in TH.' });
+  if (!isDoNotCall && !isForeignLanguageInSource && !isForeignLanguageInDestination) {
+    return Object.assign({}, attributes, { operation: 'D', message: 'This location no longer tracked by foreign-language.' });
   }
 
   if (!isTrackedByAlbaCongregation && !isForeignLanguageInSource && isForeignLanguageInDestination) {
@@ -178,7 +182,7 @@ const updateWithTerritory = async (location, congregationId) => {
       return;
     }
   } else {
-    const matchesExistingTerritory = containingTerritories.some(x => x.territoryId === location.congregationLocation.territoryId);
+    const matchesExistingTerritory = containingTerritories.some(x => location.congregationLocation && x.territoryId === location.congregationLocation.territoryId);
     if (matchesExistingTerritory) {
       // Assume the existing system is already correct and do nothing
       return;
