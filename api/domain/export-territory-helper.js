@@ -1,5 +1,6 @@
 const groupBy = require('lodash/groupBy');
 const keyBy = require('lodash/keyBy');
+const pluck = require('lodash/map');
 const { serializeTasks } = require('./util');
 const XLSX = require('xlsx');
 const DAL = require('./dataAccess').DAL;
@@ -223,6 +224,12 @@ module.exports = async ({ congregationId, wantsFile }) => {
     updates: await createExports(exportActivities.U, congregationId),
     deletes: await createExports(exportActivities.D, congregationId),
   };
+
+  const ids = pluck([...exportActivities.I, ...exportActivities.U, ...exportActivities.D], 'congregationLocationActivityId');
+  const lastCongregationLocationActivityId = Math.max(...ids);
+  if (lastCongregationLocationActivityId > 0) {
+    await DAL.insertExportActivity({ lastCongregationLocationActivityId, destination, congregationId });
+  }
 
   return wantsFile ? await createFile(output) : output;
 };

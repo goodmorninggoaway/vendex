@@ -106,6 +106,8 @@ module.exports.getLastExportActivity = async (filter) => {
   return result.length ? result[0] : null;
 };
 
+module.exports.insertExportActivity = (values) => insert({ values, table: 'exportActivity', idColumn: 'exportActivityId' });
+
 module.exports.addCongregationLocationActivity = (values) => insert({
   values,
   idColumn: 'congregationLocationActivityId',
