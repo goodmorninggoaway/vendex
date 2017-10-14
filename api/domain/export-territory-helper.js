@@ -72,7 +72,6 @@ const convert = ({ location, congregationLocation = {}, externals, message, othe
   'Territory number': congregationLocation.territoryId, // TODO handle conflicts
   'Location type': 'Language',
   'Location Status': 'Do not call', // TODO setting both because there is a conflict between the sample and export
-  'Status': 'Do not call', // TODO setting both because there is a conflict between the sample and export
   'Language': congregationLocation.language || otherCongregationLocations[0].sourceData.Language,
   'Latitude': location.latitude,
   'Longitude': location.longitude,
@@ -137,7 +136,6 @@ const applyRules = (attributes) => {
         external: {
           'Location type': 'Home',
           'Location Status': 'Do not call',
-          'Status': 'Do not call',
           'Language': 'English',
         },
         message: 'Converting to a regular DNC for this congregation\'s language',
