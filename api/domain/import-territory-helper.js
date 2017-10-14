@@ -1,3 +1,4 @@
+const Logger = global.Logger;
 const util = require('util');
 const differenceBy = require('lodash/differenceBy');
 const hash = require('object-hash');
@@ -39,6 +40,7 @@ module.exports = async ({ congregationId, fileStream }) => {
     if (!location) {
       location = Object.assign({}, await geocode(address), translatedLocation, { externalLocationId: addressHash });
       location = await DAL.insertLocation(location);
+      Logger.log(`Created "location": ${location.locationId}`);
     }
 
     const { locationId } = location;
@@ -57,6 +59,8 @@ module.exports = async ({ congregationId, fileStream }) => {
 
     if (!congregationLocation) {
       congregationLocation = await DAL.insertCongregationLocation(translatedCongregationLocation);
+      Logger.log(`Created "congregationLocation": locationId=${locationId}, congregationId=${congregationId}`);
+
       await DAL.addCongregationLocationActivity({ congregationId, locationId, operation: 'I', source });
 
     } else {
@@ -72,6 +76,8 @@ module.exports = async ({ congregationId, fileStream }) => {
 
       if (hasDiff) {
         await DAL.updateCongregationLocation(congregationId, locationId, diff);
+        Logger.log(`Updated "congregationLocation": locationId=${locationId}, congregationId=${congregationId}`);
+
         await DAL.addCongregationLocationActivity({ congregationId, locationId, operation: 'U', source });
         congregationLocation = Object.assign({}, congregationLocation, diff);
       }
@@ -82,11 +88,16 @@ module.exports = async ({ congregationId, fileStream }) => {
 
   const sourceData = await convertExcelToJson(fileStream, null, {});
   const existingLocations = await DAL.getLocationsForCongregationFromSource(congregationId, source);
-  const updatedLocations = await serializeTasks(sourceData.map(x => () => importLocation(existingLocations, x)));
+  const updatedLocations = await serializeTasks(sourceData.map((x, index) => () => {
+    Logger.log(`Processing Territory Helper Location Import ${index + 1}/${sourceData.length}`);
+    return importLocation(existingLocations, x);
+  }));
 
   const deletedLocations = differenceBy(existingLocations, updatedLocations, 'location.locationId');
-  await serializeTasks(deletedLocations.map(({ location: { locationId } }) => async () => {
+  await serializeTasks(deletedLocations.map(({ location: { locationId } }, index) => async () => {
     await DAL.deleteCongregationLocation({ congregationId, locationId });
+    Logger.log(`Deleted "congregationLocation": locationId=${locationId}, congregationId=${congregationId}`);
+
     await DAL.addCongregationLocationActivity({ congregationId, locationId, operation: 'D', source });
   }));
 };

@@ -1,3 +1,4 @@
+const Logger = global.Logger;
 const differenceBy = require('lodash/differenceBy');
 const DAL = require('./dataAccess').DAL;
 const { serializeTasks } = require('./util');
@@ -27,8 +28,12 @@ module.exports = async ({ congregationId, inputData }) => {
 
     if (!existingTerritory) {
       territory = await DAL.insertTerritory(territory, vertices);
+      Logger.log(`Created "territory": ${territory.territoryId}`);
+
     } else {
       await DAL.updateTerritory({ territoryId: existingTerritory.territoryId }, territory);
+      Logger.log(`Updated "territory": ${existingTerritory.territoryId}`);
+
       territory = Object.assign(existingTerritory, territory);
     }
 
@@ -40,5 +45,8 @@ module.exports = async ({ congregationId, inputData }) => {
   const updatedTerritories = await serializeTasks(sourceData.map(x => () => importTerritory(x)));
 
   const deletedTerritories = differenceBy(existingTerritories, updatedTerritories, 'territoryId');
-  await serializeTasks(deletedTerritories.map(({ territoryId }) => () => DAL.deleteTerritory(territoryId)));
+  await serializeTasks(deletedTerritories.map(({ territoryId }) => async () => {
+    await DAL.deleteTerritory(territoryId);
+    Logger.log(`Created "territory": ${territoryId}`);
+  }));
 };

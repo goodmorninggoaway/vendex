@@ -23,6 +23,7 @@
     "sails-hook-grunt": "^2.0.0",
     "sails-hook-orm": "^2.0.0-16",
     "sails-hook-sockets": "^1.4.0",
+    "winston": "^2.4.0",
     "xlsx": "^0.11.4"
   },
   "devDependencies": {

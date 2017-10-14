@@ -1,3 +1,5 @@
+global.Logger = require('./api/domain/logger');
+
 /**
  * app.js
  *

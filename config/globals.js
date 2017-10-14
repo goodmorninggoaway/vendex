@@ -49,4 +49,5 @@ module.exports.globals = {
 
   sails: true,
 
+  Logger: require('../api/domain/logger'),
 };
