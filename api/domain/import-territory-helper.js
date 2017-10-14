@@ -3,7 +3,6 @@ const util = require('util');
 const differenceBy = require('lodash/differenceBy');
 const hash = require('object-hash');
 const excelAsJson = require('./excelToJson');
-const geocode = require('./geocode');
 const addressUtils = require('./validateAddress');
 const DAL = require('./dataAccess').DAL;
 const convertExcelToJson = util.promisify(excelAsJson.processStream);
@@ -38,7 +37,11 @@ module.exports = async ({ congregationId, fileStream }) => {
     // TODO mark the address as "encountered" so we can handle the negative space
 
     if (!location) {
-      location = Object.assign({}, await geocode(address), translatedLocation, { externalLocationId: addressHash });
+      location = Object.assign({}, translatedLocation, {
+        externalLocationId: addressHash,
+        latitude: externalLocation.Latitude,
+        longitude: externalLocation.Longitude,
+      });
       location = await DAL.insertLocation(location);
       Logger.log(`Created "location": ${location.locationId}`);
     }
