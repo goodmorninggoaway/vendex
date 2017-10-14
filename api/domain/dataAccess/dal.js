@@ -76,7 +76,7 @@ module.exports.deleteTerritory = (territoryId) => module.exports.updateTerritory
 module.exports.getLocationsForCongregationFromSource = async (congregationId, source) => {
   const locationsPromise = db.from('location')
     .innerJoin('congregationLocation', 'location.locationId', 'congregationLocation.locationId')
-    .where({ congregationId })
+    .where({ congregationId, externalSource: source })
     .select('location.*');
 
   const congregationLocationsPromise = db.from('congregationLocation').where({ congregationId, source }).select();
