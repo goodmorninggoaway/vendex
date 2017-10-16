@@ -4,6 +4,7 @@ const pluck = require('lodash/map');
 const { serializeTasks } = require('./util');
 const XLSX = require('xlsx');
 const DAL = require('./dataAccess').DAL;
+const TAGS = require('./models/enums/tags');
 
 const destination = 'TERRITORY HELPER';
 
@@ -108,12 +109,12 @@ const applyRules = (attributes) => {
 
   const { operation, otherCongregationLocations, congregationLocation } = attributes;
   const [albaCongregationLocation] = otherCongregationLocations.filter(x => x.source === 'ALBA');
-  const isDoNotCall = albaCongregationLocation.sourceData['Status'].toLowerCase() === 'do not call';
+  const isDoNotCall = albaCongregationLocation.userDefined1.includes(TAGS.DO_NOT_CALL);
   const isForeignLanguageInSource = albaCongregationLocation.sourceData['Language'] && albaCongregationLocation.sourceData['Language'].toUpperCase() !== 'ENGLISH'; // TODO this should be congrgration.language
   const isLocalLanguageInSource = albaCongregationLocation.sourceData['Language'] && albaCongregationLocation.sourceData['Language'].toUpperCase() === 'ENGLISH'; // TODO this should be congrgration.language
   const sourceLocationType = congregationLocation ? congregationLocation.sourceData['Location Type'] : null;
   const isForeignLanguageInDestination = sourceLocationType === 'Language';
-  const isTrackedByAlbaCongregation = albaCongregationLocation.sourceData['Kind'].toLowerCase() === 'foreign-language' && albaCongregationLocation.sourceData['Status'] !== '';
+  const isTrackedByAlbaCongregation = albaCongregationLocation.userDefined1.includes(TAGS.FOREIGN_LANGUAGE) && albaCongregationLocation.userDefined1.includes(TAGS.PENDING);
   const isPassthroughIgnore = !operation;
   const { isInsert } = booleanOperation(operation);
   const existsInDestination = congregationLocation && Object.keys(congregationLocation).length > 1;

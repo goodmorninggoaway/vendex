@@ -1,0 +1,3 @@
+exports.FOREIGN_LANGUAGE = 'FOREIGN_LANGUAGE';
+exports.DO_NOT_CALL = 'DO_NOT_CALL';
+exports.PENDING = 'PENDING';
