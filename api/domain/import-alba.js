@@ -24,6 +24,9 @@ const loadFile = async (file) => {
           return reject(error);
         }
 
+        if (rows[0] && !rows[0].Address_ID) {
+          return reject('Missing header row');
+        }
         resolve(rows);
       });
   });
