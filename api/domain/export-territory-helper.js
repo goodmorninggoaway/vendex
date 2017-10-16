@@ -73,7 +73,7 @@ const convert = ({ location, congregationLocation = {}, externals, message, othe
   'Territory number': congregationLocation.territoryId, // TODO handle conflicts
   'Location type': 'Language',
   'Location Status': 'Do not call', // TODO setting both because there is a conflict between the sample and export
-  'Language': congregationLocation.language || otherCongregationLocations[0].sourceData.Language,
+  'Language': congregationLocation.language || otherCongregationLocations[0].language,
   'Latitude': location.latitude,
   'Longitude': location.longitude,
   'Address': `${location.number} ${location.street}`,
@@ -109,12 +109,12 @@ const applyRules = (attributes, congregation) => {
 
   const { operation, otherCongregationLocations, congregationLocation } = attributes;
   const [albaCongregationLocation] = otherCongregationLocations.filter(x => x.source === 'ALBA');
-  const isDoNotCall = albaCongregationLocation.userDefined1.includes(TAGS.DO_NOT_CALL);
+  const isDoNotCall = albaCongregationLocation.attributes.includes(TAGS.DO_NOT_CALL);
   const isForeignLanguageInSource = albaCongregationLocation.language && albaCongregationLocation.language !== congregation.language;
   const isLocalLanguageInSource = albaCongregationLocation.language && albaCongregationLocation.language === congregation.language;
   const sourceLocationType = congregationLocation ? congregationLocation.sourceData['Location Type'] : null;
   const isForeignLanguageInDestination = sourceLocationType === 'Language';
-  const isTrackedByAlbaCongregation = albaCongregationLocation.userDefined1.includes(TAGS.FOREIGN_LANGUAGE) && albaCongregationLocation.userDefined1.includes(TAGS.PENDING);
+  const isTrackedByAlbaCongregation = albaCongregationLocation.attributes.includes(TAGS.FOREIGN_LANGUAGE) && albaCongregationLocation.attributes.includes(TAGS.PENDING);
   const isPassthroughIgnore = !operation;
   const { isInsert } = booleanOperation(operation);
   const existsInDestination = congregationLocation && Object.keys(congregationLocation).length > 1;
@@ -210,7 +210,7 @@ const getRawDataToExport = async (startAt, congregation) => {
     .reduce((memo, locationActivities) => {
       const range = getActivityRange(locationActivities);
       const operation = determineExportOperation(range);
-      const attributes = applyRules(findActivityAttributes(locations, operation, range.terminalActivity));
+      const attributes = applyRules(findActivityAttributes(locations, operation, range.terminalActivity), congregation);
       if (attributes) {
         memo[attributes.operation].push(attributes);
         memo.congregationLocationActivityId = attributes.congregationLocationActivityId;
@@ -221,7 +221,7 @@ const getRawDataToExport = async (startAt, congregation) => {
 };
 
 module.exports = async ({ congregationId, wantsFile }) => {
-  const congregation = await DAL.findCongregration({ congregationId });
+  const congregation = await DAL.findCongregation({ congregationId });
   const startAt = await getStartCongregationLocationActivityId(congregationId);
   const exportActivities = await getRawDataToExport(startAt, congregation);
   const output = {

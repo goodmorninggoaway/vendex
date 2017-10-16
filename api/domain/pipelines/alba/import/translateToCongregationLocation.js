@@ -15,7 +15,7 @@ const sourceStatusTagMap = {
 exports.requires = ['location', 'externalLocation', 'congregationId', 'source'];
 exports.returns = 'congregationLocation';
 exports.handler = async function translateToCongregationLocation({ externalLocation, congregationId, location: { locationId }, source }) {
-  const tags = compact([
+  const attributes = compact([
     sourceKindTagMap[(externalLocation.Kind || '').toLowerCase()],
     sourceStatusTagMap[(externalLocation.Status || '').toLowerCase()],
   ]);
@@ -26,13 +26,13 @@ exports.handler = async function translateToCongregationLocation({ externalLocat
     locationId,
     source,
     language,
+    attributes,
     sourceData: externalLocation, // TODO remove this
     sourceLocationId: externalLocation.Address_ID,
     isPendingTerritoryMapping: 0,
     isDeleted: 0, // TODO what to do with this?
     isActive: 1, // TODO what to do with this?
     notes: externalLocation.Notes,
-    userDefined1: tags.join(','),
     userDefined2: externalLocation.Account, // TODO add a sourceCongregationId
   };
 
