@@ -20,12 +20,13 @@ exports.handler = async function translateToCongregationLocation({ externalLocat
     sourceStatusTagMap[(externalLocation.Status || '').toLowerCase()],
   ]);
 
+  const { language } = (await DAL.findLanguage(externalLocation.Language)) || { language: 'Unknown' };
   let translatedCongregationLocation = {
     congregationId,
     locationId,
     source,
+    language,
     sourceData: externalLocation, // TODO remove this
-    language: externalLocation.Language ? externalLocation.Language.toUpperCase() : 'N/A', // TODO create automanaged enumeration
     sourceLocationId: externalLocation.Address_ID,
     isPendingTerritoryMapping: 0,
     isDeleted: 0, // TODO what to do with this?

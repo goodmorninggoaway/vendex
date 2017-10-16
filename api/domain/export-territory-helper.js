@@ -110,8 +110,8 @@ const applyRules = (attributes) => {
   const { operation, otherCongregationLocations, congregationLocation } = attributes;
   const [albaCongregationLocation] = otherCongregationLocations.filter(x => x.source === 'ALBA');
   const isDoNotCall = albaCongregationLocation.userDefined1.includes(TAGS.DO_NOT_CALL);
-  const isForeignLanguageInSource = albaCongregationLocation.sourceData['Language'] && albaCongregationLocation.sourceData['Language'].toUpperCase() !== 'ENGLISH'; // TODO this should be congrgration.language
-  const isLocalLanguageInSource = albaCongregationLocation.sourceData['Language'] && albaCongregationLocation.sourceData['Language'].toUpperCase() === 'ENGLISH'; // TODO this should be congrgration.language
+  const isForeignLanguageInSource = albaCongregationLocation.language && albaCongregationLocation.language !== 'English'; // TODO this should be congrgration.language
+  const isLocalLanguageInSource = albaCongregationLocation.language && albaCongregationLocation.language === 'English'; // TODO this should be congrgration.language
   const sourceLocationType = congregationLocation ? congregationLocation.sourceData['Location Type'] : null;
   const isForeignLanguageInDestination = sourceLocationType === 'Language';
   const isTrackedByAlbaCongregation = albaCongregationLocation.userDefined1.includes(TAGS.FOREIGN_LANGUAGE) && albaCongregationLocation.userDefined1.includes(TAGS.PENDING);
