@@ -11,7 +11,7 @@ const { serializeTasks } = require('./util');
 module.exports = async ({ congregationId, fileStream }) => {
   const source = 'TERRITORY HELPER';
   const importLocation = async (locations, externalLocation) => {
-    // Ignore english DNCs
+    // Ignore local-language DNCs
     if (externalLocation.Status !== 'Language') {
       return;
     }

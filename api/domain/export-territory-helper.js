@@ -102,7 +102,7 @@ const createFile = async ({ inserts, updates, deletes }) => {
   return XLSX.write(workbook, { bookType: 'xlsx', type: 'buffer', compression: true });
 };
 
-const applyRules = (attributes) => {
+const applyRules = (attributes, congregation) => {
   if (!attributes) {
     return;
   }
@@ -110,8 +110,8 @@ const applyRules = (attributes) => {
   const { operation, otherCongregationLocations, congregationLocation } = attributes;
   const [albaCongregationLocation] = otherCongregationLocations.filter(x => x.source === 'ALBA');
   const isDoNotCall = albaCongregationLocation.userDefined1.includes(TAGS.DO_NOT_CALL);
-  const isForeignLanguageInSource = albaCongregationLocation.language && albaCongregationLocation.language !== 'English'; // TODO this should be congrgration.language
-  const isLocalLanguageInSource = albaCongregationLocation.language && albaCongregationLocation.language === 'English'; // TODO this should be congrgration.language
+  const isForeignLanguageInSource = albaCongregationLocation.language && albaCongregationLocation.language !== congregation.language;
+  const isLocalLanguageInSource = albaCongregationLocation.language && albaCongregationLocation.language === congregation.language;
   const sourceLocationType = congregationLocation ? congregationLocation.sourceData['Location Type'] : null;
   const isForeignLanguageInDestination = sourceLocationType === 'Language';
   const isTrackedByAlbaCongregation = albaCongregationLocation.userDefined1.includes(TAGS.FOREIGN_LANGUAGE) && albaCongregationLocation.userDefined1.includes(TAGS.PENDING);
@@ -137,7 +137,7 @@ const applyRules = (attributes) => {
         external: {
           'Location type': 'Home',
           'Location Status': 'Do not call',
-          'Language': 'English',
+          'Language': congregation.language,
         },
         message: 'Converting to a regular DNC for this congregation\'s language',
       }
@@ -199,7 +199,8 @@ const createExportFromActivity = async (activity, congregationId) => {
 
 const createExports = (activities, congregationId) => serializeTasks(activities.map(x => () => createExportFromActivity(x, congregationId)));
 
-const getRawDataToExport = async (startAt, congregationId) => {
+const getRawDataToExport = async (startAt, congregation) => {
+  const { congregationId } = congregation;
   const activities = await DAL.getCongregationLocationActivity({ congregationId, source: 'ALBA' }, startAt);
   let locations = await DAL.getLocationsForCongregation(congregationId);
 
@@ -220,8 +221,9 @@ const getRawDataToExport = async (startAt, congregationId) => {
 };
 
 module.exports = async ({ congregationId, wantsFile }) => {
+  const congregation = await DAL.findCongregration({ congregationId });
   const startAt = await getStartCongregationLocationActivityId(congregationId);
-  const exportActivities = await getRawDataToExport(startAt, congregationId);
+  const exportActivities = await getRawDataToExport(startAt, congregation);
   const output = {
     inserts: await createExports(exportActivities.I, congregationId),
     updates: await createExports(exportActivities.U, congregationId),
