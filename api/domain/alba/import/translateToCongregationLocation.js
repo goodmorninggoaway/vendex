@@ -1,7 +1,7 @@
 const compact = require('lodash/compact');
-const { DAL } = require('../../../dataAccess');
 const { diff } = require('deep-diff');
-const TAGS = require('../../../models/enums/tags');
+const { DAL } = require('../../dataAccess');
+const TAGS = require('../../models/enums/tags');
 
 const sourceKindTagMap = {
   'foreign-language': TAGS.FOREIGN_LANGUAGE,

@@ -1,4 +1,4 @@
-const importLocations = require('../domain/pipelines/alba/import');
+const importLocations = require('../domain/alba/import');
 
 module.exports = {
   async importLocations(options, done) {

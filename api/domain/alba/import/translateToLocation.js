@@ -1,7 +1,7 @@
-const { buildAddressString, getAddressParts } = require('../../../validateAddress');
 const hash = require('object-hash');
-const geocode = require('../../../geocode');
-const { DAL } = require('../../../dataAccess');
+const { buildAddressString, getAddressParts } = require('../../validateAddress');
+const geocode = require('../../geocode');
+const { DAL } = require('../../dataAccess');
 
 exports.requires = ['externalLocation'];
 exports.returns = 'location';

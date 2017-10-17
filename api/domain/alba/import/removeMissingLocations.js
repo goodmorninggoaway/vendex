@@ -1,6 +1,6 @@
 const differenceBy = require('lodash/differenceBy');
-const { DAL } = require('../../../dataAccess');
-const { serializeTasks } = require('../../../util');
+const { DAL } = require('../../dataAccess');
+const { serializeTasks } = require('../../util');
 
 exports.requires = ['importedLocations', 'existingLocations', 'congregationId', 'source'];
 exports.returns = 'deletedLocations';

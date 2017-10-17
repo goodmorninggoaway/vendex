@@ -1,4 +1,4 @@
-const { DAL } = require('../../../dataAccess');
+const { DAL } = require('../../dataAccess');
 
 exports.requires = ['congregationId', 'source'];
 exports.returns = 'existingLocations';

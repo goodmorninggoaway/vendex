@@ -1,4 +1,4 @@
-const { serializeTasks } = require('../../../util');
+const { serializeTasks } = require('../../util');
 const Pipeline = require('../../pipeline');
 const translateToLocation = require('./translateToLocation');
 const translateToCongregationLocation = require('./translateToCongregationLocation');
