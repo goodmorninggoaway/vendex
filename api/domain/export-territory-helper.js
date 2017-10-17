@@ -221,8 +221,8 @@ const getRawDataToExport = async (startAt, congregation) => {
 };
 
 module.exports = async ({ congregationId, wantsFile }) => {
-  const congregation = await DAL.findCongregation({ congregationId });
-  const startAt = await getStartCongregationLocationActivityId(congregationId);
+  // const congregation = await DAL.findCongregation({ congregationId });
+  // const startAt = await getStartCongregationLocationActivityId(congregationId);
   const exportActivities = await getRawDataToExport(startAt, congregation);
   const output = {
     inserts: await createExports(exportActivities.I, congregationId),

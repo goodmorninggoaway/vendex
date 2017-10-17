@@ -101,10 +101,11 @@ exports.getLocationsForCongregation = async (congregationId) => {
   return locations.map(location => ({ location, congregationLocations: indexedCL[location.locationId] }));
 };
 
-exports.getLastExportActivity = async (filter) => {
-  const result = await db.from('exportActivity').where(filter).orderBy('lastCongregationLocationActivityId', 'desc').limit(1);
-  return result.length ? result[0] : null;
-};
+exports.getLastExportActivity = ({ congregationId, destination }) => db.from('exportActivity')
+  .where({ congregationId })
+  .andWhereNot({ source: destination })
+  .orderBy('lastCongregationLocationActivityId', 'desc')
+  .first();
 
 exports.insertExportActivity = (values) => insert({ values, table: 'exportActivity', idColumn: 'exportActivityId' });
 
@@ -114,10 +115,11 @@ exports.addCongregationLocationActivity = (values) => insert({
   table: 'congregationLocationActivity',
 });
 
-exports.getCongregationLocationActivity = (filter, startAt) => db
+exports.getCongregationLocationActivity = ({ congregationId, destination, minCongregationLocationActivityId }) => db
   .from('congregationLocationActivity')
-  .where(filter)
-  .where('congregationLocationActivityId', '>=', startAt)
+  .where({ congregationId })
+  .where('congregationLocationActivityId', '>=', minCongregationLocationActivityId)
+  .whereNot({ source: destination })
   .orderBy('congregationLocationActivityId');
 
 exports.reset = (includeGeocode = false) => {

@@ -7,6 +7,7 @@ const addressUtils = require('./validateAddress');
 const DAL = require('./dataAccess').DAL;
 const convertExcelToJson = util.promisify(excelAsJson.processStream);
 const { serializeTasks } = require('./util');
+const TAGS = require('./models/enums/tags');
 
 module.exports = async ({ congregationId, fileStream }) => {
   const source = 'TERRITORY HELPER';
@@ -16,12 +17,22 @@ module.exports = async ({ congregationId, fileStream }) => {
       return;
     }
 
+    const attributes = [];
     const address = `${externalLocation.Address} ${externalLocation.City} ${externalLocation.State} ${externalLocation['Postal code']}`;
     const translatedLocation = addressUtils.getAddressParts(address);
+
+    if (externalLocation['Location Type'] === 'Language') {
+      attributes.push(TAGS.FOREIGN_LANGUAGE);
+    }
+
+    if (externalLocation.Status === 'Do not call') {
+      attributes.push(TAGS.DO_NOT_CALL);
+    }
 
     let translatedCongregationLocation = {
       congregationId,
       source,
+      attributes,
       sourceData: externalLocation,
       language: externalLocation.Language.toUpperCase(), // TODO create automanaged enumeration
       sourceLocationId: null,
@@ -29,7 +40,6 @@ module.exports = async ({ congregationId, fileStream }) => {
       isDeleted: 0,
       isActive: 1,
       notes: externalLocation.Notes,
-      userDefined1: externalLocation.Status,
     };
 
     const addressHash = hash.sha1(translatedLocation);
