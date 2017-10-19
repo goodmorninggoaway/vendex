@@ -4,12 +4,14 @@ const getCongregation = require('../../congregation/getCongregation');
 const getLatestActivities = require('../../congregationLocation/getLatestActivities');
 const getIndexedLocations = require('./getIndexedLocations');
 const convertActivitiesToExternalLocations = require('./reconcileActivities');
+const createExcelFile = require('./createExcelFile');
 
 module.exports = async ({ congregationId }) => {
   return await new Pipeline({ congregationId, destination: LOCATION_INTERFACES.TERRITORY_HELPER })
     .addHandler(getCongregation)
     .addHandler(getLatestActivities)
-    .addHandler(getIndexedLocations)
-    .addHandler(convertActivitiesToExternalLocations)
+    // .addHandler(getIndexedLocations)
+    // .addHandler(convertActivitiesToExternalLocations)
+    // .addHandler(createExcelFile)
     .execute();
 };

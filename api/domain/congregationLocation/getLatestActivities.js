@@ -45,6 +45,7 @@ exports.handler = async function getStartCongregationLocationActivity({ congrega
       const operation = determineExportOperation(range);
 
       return {
+        congregationLocationActivityId: range.terminalActivity.congregationLocationActivityId,
         operation,
         locationId: range.terminalActivity.locationId,
         sourceCongregationId: range.terminalActivity.congregationId,

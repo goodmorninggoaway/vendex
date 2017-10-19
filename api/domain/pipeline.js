@@ -2,6 +2,7 @@ class Pipeline {
   constructor(initialState) {
     this.values = Object.assign({}, initialState);
     this.handlers = [];
+    this.messages = [];
   }
 
   get(key) {
@@ -21,6 +22,14 @@ class Pipeline {
     return this;
   }
 
+  addMessage({ message, messageLevel }) {
+    this.message.push({ message, messageLevel });
+  }
+
+  getMessages() {
+    return this.messages;
+  }
+
   async execute() {
     for (let i = 0; i < this.handlers.length; i++) {
       const { requires = [], returns, handler } = this.handlers[i];
@@ -29,6 +38,11 @@ class Pipeline {
         .reduce((memo, arg) => {
           // Once false, always false
           if (!memo) {
+            return memo;
+          }
+
+          if (arg === '$messages') {
+            memo[arg] = this.getMessages();
             return memo;
           }
 
@@ -48,11 +62,21 @@ class Pipeline {
         continue;
       }
 
-      const result = await handler(args);
+      let result = await handler(args);
       if (returns && typeof returns === 'string') {
         this.set(returns, result);
       } else if (returns && Array.isArray(returns)) {
+        result = result || {};
         returns.forEach((x) => {
+          if (x === '$message') {
+            this.addMessage({ message: result.$message, messageLevel: result.$messageLevel });
+          }
+
+          // These keys are pipeline directives and should be handled before this
+          if (x.startsWith('$')) {
+            return;
+          }
+
           const aResult = result[x];
           if (aResult === undefined) {
             this.unset(x, aResult);

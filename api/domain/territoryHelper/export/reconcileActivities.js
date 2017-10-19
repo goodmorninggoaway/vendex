@@ -1,14 +1,39 @@
+const compact = require('lodash/compact');
+const map = require('lodash/map');
 const { serializeTasks } = require('../../util');
 const Pipeline = require('../../pipeline');
+const { DAL } = require('../../dataAccess');
 const getActivityAttributes = require('./getActivityAttributes');
+const applyRules = require('./applyRules');
+const findTerritory = require('./findTerritory');
+const convertToExternalLocation = require('./convertToExternalLocation');
 
 exports.requires = ['congregationId', 'congregation', 'destination', 'indexedLocations', 'activities'];
-exports.returns = '';
+exports.returns = 'externalLocations';
 exports.handler = async function reconcileActivities({ congregationId, destination, indexedLocations, activities, congregation }) {
-  return await serializeTasks(activities.map(({ operation, sourceCongregationId, locationId }) => () => (
-    new Pipeline({ congregationId, destination, operation, sourceCongregationId, locationId, indexedLocations, congregation })
+  const reconciled = await serializeTasks(activities.map(({ operation, sourceCongregationId, locationId, congregationLocationActivityId }) => () => (
+    new Pipeline({
+      congregationId,
+      destination,
+      operation,
+      sourceCongregationId,
+      indexedLocations,
+      congregation,
+      congregationLocationActivityId,
+      location: indexedLocations[locationId],
+    })
       .addHandler(getActivityAttributes)
-      .addHandler()
+      .addHandler(applyRules)
+      .addHandler(findTerritory)
+      .addHandler(convertToExternalLocation)
       .execute()))
   );
+
+  const ids = compact(reconciled.map(x => x.externalLocation && x.congregationLocationActivityId));
+  const lastCongregationLocationActivityId = Math.max(...ids);
+  if (lastCongregationLocationActivityId > 0) {
+    await DAL.insertExportActivity({ lastCongregationLocationActivityId, destination, congregationId });
+  }
+
+  return map(reconciled, 'externalLocation', 'operation');
 };
