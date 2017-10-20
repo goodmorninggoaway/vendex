@@ -77,8 +77,10 @@ module.exports = {
   },
 
   getLanguage: async function (req, res) {
-    const languages = await DAL.findLanguageById({ languageId: parseInt(req.param('languageId')) });
+    const language = await DAL.findLanguageById(req.param('languageId'));
     return res.view('language/edit', { language });
+
+    // TODO Stopped here ... problem wit this query
   },
 
   updateLanguage: async function (req, res) {

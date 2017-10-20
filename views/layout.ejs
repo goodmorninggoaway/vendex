@@ -33,30 +33,33 @@
   <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
 
-  <style>
-    textarea {
-      min-height: 200px;
-    }
-  </style>
   <!--STYLES-->
   <link rel="stylesheet" href="/styles/importer.css">
   <!--STYLES END-->
 </head>
 
 <body>
-<nav>
-  <div class="nav-wrapper">
-    <a href="/" class="brand-logo">VENDEX</a>
-    <ul id="nav-mobile" class="right">
-      <li><a href="/ui/alba/locations">Alba | Import Locations</a></li>
-      <li><a href="/ui/territoryhelper/territories">TH | Import Territories</a></li>
-      <li><a href="/ui/territoryhelper/locations">TH | Import Locations</a></li>
-      <li><a href="/ui/territoryhelper/export">TH | Export Locations</a></li>
-      <li><a href="/ui/reset">Reset</a></li>
-    </ul>
+<div class="row">
+  <ul id="slide-out" class="side-nav fixed">
+    <li><a class="subheader" href="/"><h3>VENDEX</h3></a></li>
+    <li><a class="subheader">Admin</a></li>
+    <li><a class="waves-effect" href="/ui/congregations">Congregations</a></li>
+    <li><a class="waves-effect" href="/ui/languages">Languages</a></li>
+    <li><a class="waves-effect" href="/ui/reset">Reset</a></li>
+    <li class="divider"></li>
+    <li><a class="subheader">Alba</a></li>
+    <li><a class="waves-effect" href="/ui/alba/locations">Import Locations</a></li>
+    <li class="divider"></li>
+    <li><a class="subheader">Territory Helper</a></li>
+    <li><a class="waves-effect" href="/ui/territoryhelper/territories">Import Territories</a></li>
+    <li><a class="waves-effect" href="/ui/territoryhelper/locations">Import Locations</a></li>
+    <li><a class="waves-effect" href="/ui/territoryhelper/export">Create Export</a></li>
+  </ul>
+  <div class=" col s3"></div>
+  <div class="col s9">
+    <%- body %>
   </div>
-</nav>
-<%- body %>
+</div>
 
 
 <!--
@@ -128,7 +131,7 @@
 <script src="/dependencies/sails.io.js"></script>
 <!--SCRIPTS END-->
 <script>
-  $(document).ready(function() {
+  $(document).ready(function () {
     $('select').material_select();
   });
 </script>

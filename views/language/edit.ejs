@@ -1,14 +1,23 @@
+<h4>Languages > <%= language.language %> > Edit</h4>
+
 <form action="/ui/languages/<%= language.languageId %>" method="post">
-  <label for="language">
-    Language
-    <input name="language" type="text" required placeholder="Language" value="<%= language.language %>"/>
-  </label>
-  <label for="synonyms">
-    <textarea name="synonyms" title="Synonyms">
-      <% language.synonyms.map((x) => { %>
+  <div class="row">
+    <div class="input-field">
+      <input id="language" name="language" type="text" required placeholder="Language" value="<%= language.language %>" class="validate"/>
+      <label for="language">Language</label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="input-field">
+    <textarea id="synonymns" name="synonyms" title="Synonyms" class="material-textarea validate" required>
+      <% language.synonyms.map((x) => { console.log(x); %>
       <%= x %><%= '\n' %>
       <% }) %>
     </textarea>
-  </label>
-  <input type="submit"/>
+      <label for="synonyms">Synonyms: Enter one per line.</label>
+    </div>
+  </div>
+  <div class="row">
+    <input type="submit"/>
+  </div>
 </form>
