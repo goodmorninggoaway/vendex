@@ -10,7 +10,7 @@ const convertToExternalLocation = require('./convertToExternalLocation');
 
 exports.requires = ['congregationId', 'congregation', 'destination', 'indexedLocations', 'activities'];
 exports.returns = 'externalLocations';
-exports.handler = async function reconcileActivities({ congregationId, destination, indexedLocations, activities, congregation }) {
+exports.handler = async function convertActivitiesToExternalLocations({ congregationId, destination, indexedLocations, activities, congregation }) {
   const reconciled = await serializeTasks(activities.map(({ operation, sourceCongregationId, locationId, congregationLocationActivityId }) => () => (
     new Pipeline({
       congregationId,

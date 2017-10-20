@@ -44,11 +44,13 @@ exports.handler = async function getStartCongregationLocationActivity({ congrega
       const range = getActivityRange(locationActivities);
       const operation = determineExportOperation(range);
 
-      return {
+      memo.push({
         congregationLocationActivityId: range.terminalActivity.congregationLocationActivityId,
         operation,
         locationId: range.terminalActivity.locationId,
         sourceCongregationId: range.terminalActivity.congregationId,
-      };
+      });
+
+      return memo;
     }, []);
 };

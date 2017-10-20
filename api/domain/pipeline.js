@@ -33,6 +33,7 @@ class Pipeline {
   async execute() {
     for (let i = 0; i < this.handlers.length; i++) {
       const { requires = [], returns, handler } = this.handlers[i];
+      console.log('Handler: ', handler.name);
       const args = []
         .concat(requires)
         .reduce((memo, arg) => {

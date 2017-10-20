@@ -11,11 +11,12 @@ exports.handler = async function createExcelFile({ externalLocations }) {
     [OPERATION.DELETE]: deletes,
   } = groupBy(externalLocations, 'operation');
 
+  console.log(externalLocations, inserts, updates, deletes);
   const workbook = {
     Sheets: {
-      'New': XLSX.utils.json_to_sheet(inserts),
-      'Updates': XLSX.utils.json_to_sheet(updates),
-      'Deletions': XLSX.utils.json_to_sheet(deletes)
+      'New': XLSX.utils.json_to_sheet(inserts || []),
+      'Updates': XLSX.utils.json_to_sheet(updates || []),
+      'Deletions': XLSX.utils.json_to_sheet(deletes || [])
     },
     SheetNames: ['New', 'Updates', 'Deletions'],
   };
