@@ -15,11 +15,12 @@
         <input name="language" type="text" required placeholder="Name">
       </td>
       <td>
-        <textarea name="synonyms" placeholder="Each on a new line">
-        </textarea>
+        <textarea name="synonyms" placeholder="Each on a new line"></textarea>
       </td>
       <td>
-        <input type="submit" value="Create"/>
+        <button title="Add language" class="btn-floating">
+          <i class="material-icons">add</i>
+        </button>
       </td>
     </tr>
     <% languages.map(({ synonyms, language, languageId }) => { %>
@@ -27,8 +28,12 @@
       <td><%= language %></td>
       <td><%= synonyms && synonyms.join(', ') %></td>
       <td>
-        <a href="/ui/languages/<%= languageId.toString() %>">Modify</a>
-        <a href="/ui/languages/<%= languageId.toString() %>/delete">Delete</a>
+        <a href="/ui/languages/<%= languageId.toString() %>/delete" title="Delete <%= language %>" class="btn-floating">
+          <i class="material-icons">delete</i>
+        </a>
+        <a href="/ui/languages/<%= languageId.toString() %>" title="Update <%= language %>" class="btn-floating">
+          <i class="material-icons">edit</i>
+        </a>
       </td>
     </tr>
     <% }); %>

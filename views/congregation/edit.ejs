@@ -1,16 +1,30 @@
-<h4>Congregations > <%= congregation.name %> > Edit</h4>
+<div class="nav-wrapper">
+  <h4>Congregations > <%= congregation.name %> > Edit</h4>
+</div>
 <form action="/ui/congregations/<%= congregation.congregationId %>" method="post">
-  <label for="name">
-    Name
-    <input name="name" type="text" required placeholder="Name" value="<%= congregation.name %>"/>
-  </label>
-  <label for="language">
-    <select name="language" title="language" value="<%= congregation.language %>">
-      <option>Select a value</option>
-      <% languages.map(({ language }) => { %>
-      <option><%= language %></option>
-      <% }) %>
-    </select>
-  </label>
-  <input type="submit"/>
+  <div class="row">
+    <div class="input-field">
+      <input id="name" name="name" type="text" required placeholder="Name" value="<%= congregation.name %>" class="validate"/>
+      <label for="language">Name</label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="input-field">
+      <select id="language" name="language" title="language" value="<%= congregation.language %>" required>
+        <option>Select a language</option>
+        <% languages.map(({ language }) => { %>
+        <option><%= language %></option>
+        <% }) %>
+      </select>
+    </div>
+  </div>
+  <div class="row">
+    <div class="input-field">
+      <textarea id="synonymns" name="synonyms" title="Synonyms" class="material-textarea validate"><%= congregation.synonyms && congregation.synonyms.join('\n') %></textarea>
+      <label for="synonyms">Synonyms: Enter one per line.</label>
+    </div>
+  </div>
+  <div class="row">
+    <input type="submit"/>
+  </div>
 </form>

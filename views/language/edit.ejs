@@ -9,11 +9,7 @@
   </div>
   <div class="row">
     <div class="input-field">
-    <textarea id="synonymns" name="synonyms" title="Synonyms" class="material-textarea validate" required>
-      <% language.synonyms.map((x) => { console.log(x); %>
-      <%= x %><%= '\n' %>
-      <% }) %>
-    </textarea>
+      <textarea id="synonymns" name="synonyms" title="Synonyms" class="material-textarea validate" required><%= language.synonyms.join('\n') %></textarea>
       <label for="synonyms">Synonyms: Enter one per line.</label>
     </div>
   </div>

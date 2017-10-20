@@ -32,6 +32,19 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
   <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+  <style>
+    header, main, footer {
+      margin-left: 300px;
+      padding: 0 20px;
+    }
+
+    @media only screen and (max-width: 992px) {
+      header, main, footer {
+        margin-left: 0;
+        padding: 0 20px;
+      }
+    }
+  </style>
 
   <!--STYLES-->
   <link rel="stylesheet" href="/styles/importer.css">
@@ -39,27 +52,24 @@
 </head>
 
 <body>
-<div class="row">
-  <ul id="slide-out" class="side-nav fixed">
-    <li><a class="subheader" href="/"><h3>VENDEX</h3></a></li>
-    <li><a class="subheader">Admin</a></li>
-    <li><a class="waves-effect" href="/ui/congregations">Congregations</a></li>
-    <li><a class="waves-effect" href="/ui/languages">Languages</a></li>
-    <li><a class="waves-effect" href="/ui/reset">Reset</a></li>
-    <li class="divider"></li>
-    <li><a class="subheader">Alba</a></li>
-    <li><a class="waves-effect" href="/ui/alba/locations">Import Locations</a></li>
-    <li class="divider"></li>
-    <li><a class="subheader">Territory Helper</a></li>
-    <li><a class="waves-effect" href="/ui/territoryhelper/territories">Import Territories</a></li>
-    <li><a class="waves-effect" href="/ui/territoryhelper/locations">Import Locations</a></li>
-    <li><a class="waves-effect" href="/ui/territoryhelper/export">Create Export</a></li>
-  </ul>
-  <div class=" col s3"></div>
-  <div class="col s9">
-    <%- body %>
-  </div>
-</div>
+<ul id="slide-out" class="side-nav fixed">
+  <li><a class="subheader" href="/"><h3>VENDEX</h3></a></li>
+  <li><a class="subheader">Admin</a></li>
+  <li><a class="waves-effect" href="/ui/congregations">Congregations</a></li>
+  <li><a class="waves-effect" href="/ui/languages">Languages</a></li>
+  <li><a class="waves-effect" href="/ui/reset">Reset</a></li>
+  <li class="divider"></li>
+  <li><a class="subheader">Alba</a></li>
+  <li><a class="waves-effect" href="/ui/alba/locations">Import Locations</a></li>
+  <li class="divider"></li>
+  <li><a class="subheader">Territory Helper</a></li>
+  <li><a class="waves-effect" href="/ui/territoryhelper/territories">Import Territories</a></li>
+  <li><a class="waves-effect" href="/ui/territoryhelper/locations">Import Locations</a></li>
+  <li><a class="waves-effect" href="/ui/territoryhelper/export">Create Export</a></li>
+</ul>
+<main>
+  <%- body %>
+</main>
 
 
 <!--
