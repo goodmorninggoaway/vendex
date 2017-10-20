@@ -37,6 +37,10 @@ exports.insertCongregation = (values) => insert({
   table: 'congregation',
   idColumn: 'congregationId'
 });
+exports.getCongregations = (filter = {}) => select({ filter, table: 'congregation' });
+exports.updateCongregation = (congregationId, value) => update({ update: value, filter: { congregationId }, table: 'congregation' });
+exports.deleteCongregation = (congregationId) => db('congregation').where({ congregationId }).del();
+
 exports.findLocation = (filter) => selectFirstOrDefault({ filter, table: 'location' });
 exports.insertLocation = (values) => insert({ values, table: 'location', idColumn: 'locationId' });
 exports.findCongregationLocation = (filter) => selectFirstOrDefault({
@@ -143,3 +147,4 @@ exports.insertLanguage = (values) => insert({ values, table: 'language', idColum
 exports.updateLanguage = (filter, updates) => update({ filter, update: updates, table: 'language' });
 exports.deleteLanguage = (languageId) => exports.updateLanguage({ languageId }, { deleted: 1 });
 exports.findLanguage = (synonym) => db.from('language').whereRaw('? = ANY (synonyms)', synonym).first();
+exports.getLanguages = (filter = {}) => select({ filter, table: 'language' });

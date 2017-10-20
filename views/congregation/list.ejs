@@ -1,0 +1,41 @@
+<form action="/ui/congregations" method="post">
+  <table>
+    <thead>
+    <tr>
+      <th>Name</th>
+      <th>Language</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td>
+        <input name="name" type="text" required placeholder="Name">
+      </td>
+      <td>
+        <select name="language" title="language">
+          <option value="">Select a value</option>
+          <% languages.map(({ language }) => { %>
+          <option><%= language %></option>
+          <% }) %>
+        </select>
+      </td>
+      <td>
+        <input type="submit" value="Create"/>
+      </td>
+    </tr>
+    <% congregations.map(({ name, language, congregationId }) => { %>
+    <tr>
+      <td><%= name %></td>
+      <td><%= language %></td>
+      <td>
+        <a href="/ui/congregations/<%= congregationId.toString() %>">Modify</a>
+        <a href="/ui/congregations/<%= congregationId.toString() %>/delete">Delete</a>
+      </td>
+    </tr>
+    <% }); %>
+    </tbody>
+  </table>
+</form>
+
+<script></script>

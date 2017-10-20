@@ -24,6 +24,14 @@ module.exports.routes = {
     view: 'homepage'
   },
 
+  'GET /ui/congregations/:congregationId': 'GeneralUIController.getCongregation',
+  'POST /ui/congregations/:congregationId': 'GeneralUIController.updateCongregation',
+  'GET /ui/congregations/:congregationId/delete': 'GeneralUIController.deleteCongregation',
+  'GET /ui/congregations': 'GeneralUIController.listCongregations',
+  'POST /ui/congregations': 'GeneralUIController.createCongregation',
+
+  'GET /ui/languages': { view: 'language/list' },
+
   'GET /ui/reset': 'GeneralUIController.resetDatabase',
   'GET /ui/alba/locations': 'AlbaUIController.importLocations',
   'GET /ui/territoryhelper/locations': 'TerritoryHelperUIController.importLocations',

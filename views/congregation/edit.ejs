@@ -1,0 +1,15 @@
+<form action="/ui/congregations/<%= congregation.congregationId %>" method="post">
+  <label for="name">
+    Name
+    <input name="name" type="text" required placeholder="Name" value="<%= congregation.name %>"/>
+  </label>
+  <label for="language">
+    <select name="language" title="language" value="<%= congregation.language %>">
+      <option>Select a value</option>
+      <% languages.map(({ language }) => { %>
+      <option><%= language %></option>
+      <% }) %>
+    </select>
+  </label>
+  <input type="submit"/>
+</form>
