@@ -1,0 +1,14 @@
+<form action="/ui/languages/<%= language.languageId %>" method="post">
+  <label for="language">
+    Language
+    <input name="language" type="text" required placeholder="Language" value="<%= language.language %>"/>
+  </label>
+  <label for="synonyms">
+    <textarea name="synonyms" title="Synonyms">
+      <% language.synonyms.map((x) => { %>
+      <%= x %><%= '\n' %>
+      <% }) %>
+    </textarea>
+  </label>
+  <input type="submit"/>
+</form>

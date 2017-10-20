@@ -1,0 +1,37 @@
+<form action="/ui/language" method="post">
+  <table>
+    <thead>
+    <tr>
+      <th>Language</th>
+      <th>Synonyms</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td>
+        <input name="language" type="text" required placeholder="Name">
+      </td>
+      <td>
+        <textarea name="synonyms" placeholder="Each on a new line">
+        </textarea>
+      </td>
+      <td>
+        <input type="submit" value="Create"/>
+      </td>
+    </tr>
+    <% languages.map(({ synonyms, language, languageId }) => { %>
+    <tr>
+      <td><%= language %></td>
+      <td><%= synonyms && synonyms.join(', ') %></td>
+      <td>
+        <a href="/ui/languages/<%= languageId.toString() %>">Modify</a>
+        <a href="/ui/languages/<%= languageId.toString() %>/delete">Delete</a>
+      </td>
+    </tr>
+    <% }); %>
+    </tbody>
+  </table>
+</form>
+
+<script></script>

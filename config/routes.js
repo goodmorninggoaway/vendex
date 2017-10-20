@@ -30,7 +30,11 @@ module.exports.routes = {
   'GET /ui/congregations': 'GeneralUIController.listCongregations',
   'POST /ui/congregations': 'GeneralUIController.createCongregation',
 
-  'GET /ui/languages': { view: 'language/list' },
+  'GET /ui/languages/:languageId': 'GeneralUIController.getlanguage',
+  'POST /ui/languages/:languageId': 'GeneralUIController.updatelanguage',
+  'GET /ui/languages/:languageId/delete': 'GeneralUIController.deletelanguage',
+  'GET /ui/languages': 'GeneralUIController.listlanguages',
+  'POST /ui/languages': 'GeneralUIController.createlanguage',
 
   'GET /ui/reset': 'GeneralUIController.resetDatabase',
   'GET /ui/alba/locations': 'AlbaUIController.importLocations',

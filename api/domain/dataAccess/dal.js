@@ -145,6 +145,7 @@ exports.reset = (includeGeocode = false) => {
 
 exports.insertLanguage = (values) => insert({ values, table: 'language', idColumn: 'languageId' });
 exports.updateLanguage = (filter, updates) => update({ filter, update: updates, table: 'language' });
-exports.deleteLanguage = (languageId) => exports.updateLanguage({ languageId }, { deleted: 1 });
+exports.deleteLanguage = (languageId) => exports.updateLanguage({ languageId });
 exports.findLanguage = (synonym) => db.from('language').whereRaw('? = ANY (synonyms)', synonym).first();
+exports.findLanguageById = (languageId) => db.from('language').where({ languageId }).first();
 exports.getLanguages = (filter = {}) => select({ filter, table: 'language' });

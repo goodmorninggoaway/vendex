@@ -55,5 +55,44 @@ module.exports = {
     const congregation = await DAL.deleteCongregation(req.param('congregationId'));
     res.redirect('/ui/congregations');
   },
+
+  listLanguages: async function (req, res) {
+    const languages = await DAL.getLanguages();
+    return res.view('language/list', {
+      languages: sortBy(languages, 'language'),
+    });
+  },
+
+  createLanguage: async function (req, res) {
+    await DAL.insertLanguage({
+      language: req.body.language,
+      synonyms: req.body.synonyms
+        .replace('\r\n', '\n')
+        .replace('\r', '\n')
+        .split('\n')
+        .map(x => x.trim()),
+    });
+
+    res.redirect('/ui/languages');
+  },
+
+  getLanguage: async function (req, res) {
+    const languages = await DAL.findLanguageById({ languageId: parseInt(req.param('languageId')) });
+    return res.view('language/edit', { language });
+  },
+
+  updateLanguage: async function (req, res) {
+    const language = await DAL.updateLanguage(req.param('languageId'), {
+      language: req.body.language,
+      synonyms: req.body.synonyms,
+    });
+
+    res.redirect('/ui/languages');
+  },
+
+  deleteLanguage: async function (req, res) {
+    await DAL.deleteLanguage(req.param('languageId'));
+    res.redirect('/ui/languages');
+  },
 };
 
