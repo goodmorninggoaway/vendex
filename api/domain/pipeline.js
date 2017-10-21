@@ -1,3 +1,5 @@
+const MESSAGE_LEVEL = require('./models/enums/exportMessageLevel');
+
 class Pipeline {
   constructor(initialState) {
     this.values = Object.assign({}, initialState);
@@ -23,7 +25,7 @@ class Pipeline {
   }
 
   addMessage({ message, messageLevel }) {
-    this.message.push({ message, messageLevel });
+    this.messages.push({ message, messageLevel });
   }
 
   getMessages() {
@@ -79,8 +81,8 @@ class Pipeline {
     } else if (returns && Array.isArray(returns)) {
       result = result || {};
       returns.forEach((x) => {
-        if (x === '$message') {
-          this.addMessage({ message: result.$message, messageLevel: result.$messageLevel });
+        if (x === '$message' && result.$message) {
+          this.addMessage({ message: result.$message, messageLevel: result.$messageLevel || MESSAGE_LEVEL.INFO });
         }
 
         // These keys are pipeline directives and should be handled before this

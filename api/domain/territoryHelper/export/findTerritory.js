@@ -4,7 +4,7 @@ const MESSAGE_LEVEL = require('../../models/enums/exportMessageLevel');
 
 exports.requires = ['congregationId', 'location', 'nextCongregationLocation'];
 exports.optional = ['destinationCongregationLocation'];
-exports.returns = ['territory', '$messageLevel', 'message'];
+exports.returns = ['territory', '$messageLevel', '$message'];
 exports.handler = async function findTerritory({ location, congregationId, destinationCongregationLocation }) {
   const containingTerritories = await DAL.findTerritoryContainingPoint(congregationId, location);
   const originalTerritoryId = destinationCongregationLocation ? destinationCongregationLocation.territoryId : null;

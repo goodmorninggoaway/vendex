@@ -6,7 +6,7 @@ const booleanOperation = operation => ({ isDelete: operation === 'D', isUpdate: 
 
 exports.requires = ['sourceCongregationLocation', 'congregation', 'operation'];
 exports.optional = ['destinationCongregationLocation'];
-exports.returns = ['nextCongregationLocation', 'operation', 'messageLevel', 'message'];
+exports.returns = ['nextCongregationLocation', 'operation', '$messageLevel', '$message'];
 exports.handler = async function applyRules({ destinationCongregationLocation, sourceCongregationLocation, congregation, operation }) {
   const isDoNotCall = sourceCongregationLocation.attributes.includes(TAGS.DO_NOT_CALL);
   const isForeignLanguageInSource = sourceCongregationLocation.language !== congregation.language;
@@ -26,8 +26,8 @@ exports.handler = async function applyRules({ destinationCongregationLocation, s
 
     return {
       operation,
-      messageLevel: MESSAGE_LEVEL.INFO,
-      message: 'Converted to a regular DNC for this congregation',
+      $messageLevel: MESSAGE_LEVEL.INFO,
+      $message: 'Converted to a regular DNC for this congregation',
       nextCongregationLocation: Object.assign({}, sourceCongregationLocation, { attributes: [TAGS.DO_NOT_CALL, TAGS.PLACE_TYPE_SINGLE_FAMILY] }),
     };
   }
@@ -35,8 +35,8 @@ exports.handler = async function applyRules({ destinationCongregationLocation, s
   if (!isDoNotCall && !isForeignLanguageInSource && !isForeignLanguageInDestination) {
     return {
       operation: OPERATIONS.DELETE,
-      messageLevel: MESSAGE_LEVEL.INFO,
-      message: 'This location no longer tracked by a foreign-language congregation.',
+      $messageLevel: MESSAGE_LEVEL.INFO,
+      $message: 'This location no longer tracked by a foreign-language congregation.',
       nextCongregationLocation: sourceCongregationLocation,
     };
   }
@@ -48,8 +48,8 @@ exports.handler = async function applyRules({ destinationCongregationLocation, s
 
     return {
       operation: OPERATIONS.DELETE,
-      messageLevel: MESSAGE_LEVEL.INFO,
-      message: 'This location has transitioned from foreign-language back to local-language.',
+      $messageLevel: MESSAGE_LEVEL.INFO,
+      $message: 'This location has transitioned from foreign-language back to local-language.',
       nextCongregationLocation: sourceCongregationLocation,
     };
   }
