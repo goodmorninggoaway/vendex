@@ -1,9 +1,10 @@
 const groupBy = require('lodash/groupBy');
+const map = require('lodash/map');
 const XLSX = require('xlsx');
 const OPERATION = require('../../models/enums/activityOperations');
 
 exports.requires = ['externalLocations'];
-exports.returns = 'excel';
+exports.returns = 'buffer';
 exports.handler = async function createExcelFile({ externalLocations }) {
   const {
     [OPERATION.INSERT]: inserts,
@@ -11,12 +12,11 @@ exports.handler = async function createExcelFile({ externalLocations }) {
     [OPERATION.DELETE]: deletes,
   } = groupBy(externalLocations, 'operation');
 
-  console.log(externalLocations, inserts, updates, deletes);
   const workbook = {
     Sheets: {
-      'New': XLSX.utils.json_to_sheet(inserts || []),
-      'Updates': XLSX.utils.json_to_sheet(updates || []),
-      'Deletions': XLSX.utils.json_to_sheet(deletes || [])
+      'New': XLSX.utils.json_to_sheet(map(inserts, 'externalLocation')),
+      'Updates': XLSX.utils.json_to_sheet(map(updates, 'externalLocation')),
+      'Deletions': XLSX.utils.json_to_sheet(map(deletes, 'externalLocation'))
     },
     SheetNames: ['New', 'Updates', 'Deletions'],
   };

@@ -147,9 +147,10 @@ exports.addCongregationLocationActivity = (values) => insert({
 
 exports.getCongregationLocationActivity = ({ congregationId, destination, minCongregationLocationActivityId }) => db
   .from('congregationLocationActivity')
-  .where({ congregationId })
+  .innerJoin('congregationIntegration', 'congregationLocationActivity.congregationId', 'congregationIntegration.sourceCongregationId')
   .where('congregationLocationActivityId', '>=', minCongregationLocationActivityId)
-  .whereNot({ source: destination })
+  .where('destinationCongregationId', congregationId)
+  .select('congregationLocationActivity.*')
   .orderBy('congregationLocationActivityId');
 
 exports.reset = (includeGeocode = false) => {

@@ -7,6 +7,7 @@ const getActivityAttributes = require('./getActivityAttributes');
 const applyRules = require('./applyRules');
 const findTerritory = require('./findTerritory');
 const convertToExternalLocation = require('./convertToExternalLocation');
+const isCongregationAuthorized = require('./isCongregationAuthorized');
 
 exports.requires = ['congregationId', 'congregation', 'destination', 'indexedLocations', 'activities'];
 exports.returns = 'externalLocations';
@@ -23,6 +24,7 @@ exports.handler = async function convertActivitiesToExternalLocations({ congrega
       location: indexedLocations[locationId],
     })
       .addHandler(getActivityAttributes)
+      .addHandler(isCongregationAuthorized)
       .addHandler(applyRules)
       .addHandler(findTerritory)
       .addHandler(convertToExternalLocation)
@@ -35,5 +37,5 @@ exports.handler = async function convertActivitiesToExternalLocations({ congrega
     await DAL.insertExportActivity({ lastCongregationLocationActivityId, destination, congregationId });
   }
 
-  return map(reconciled, 'externalLocation', 'operation');
+  return reconciled.map(({ externalLocation, operation }) => ({ externalLocation, operation }));
 };

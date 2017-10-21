@@ -4,13 +4,14 @@ const OPERATIONS = require('../../models/enums/activityOperations');
 
 const booleanOperation = operation => ({ isDelete: operation === 'D', isUpdate: operation === 'U', isInsert: operation === 'I' });
 
-exports.requires = ['destinationCongregationLocation', 'sourceCongregationLocation', 'congregation', 'operation'];
+exports.requires = ['sourceCongregationLocation', 'congregation', 'operation'];
+exports.optional = ['destinationCongregationLocation'];
 exports.returns = ['nextCongregationLocation', 'operation', 'messageLevel', 'message'];
 exports.handler = async function applyRules({ destinationCongregationLocation, sourceCongregationLocation, congregation, operation }) {
   const isDoNotCall = sourceCongregationLocation.attributes.includes(TAGS.DO_NOT_CALL);
   const isForeignLanguageInSource = sourceCongregationLocation.language !== congregation.language;
   const isLocalLanguageInSource = sourceCongregationLocation.language === congregation.language;
-  const isForeignLanguageInDestination = destinationCongregationLocation.attributes.includes(TAGS.FOREIGN_LANGUAGE);
+  const isForeignLanguageInDestination = destinationCongregationLocation && destinationCongregationLocation.attributes.includes(TAGS.FOREIGN_LANGUAGE);
   const isActiveInSource = sourceCongregationLocation.attributes.includes(TAGS.FOREIGN_LANGUAGE) && !sourceCongregationLocation.attributes.includes(TAGS.PENDING);
 
   const { isInsert } = booleanOperation(operation);

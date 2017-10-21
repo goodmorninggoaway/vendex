@@ -3,11 +3,11 @@ const Pipeline = require('../../pipeline');
 const translateToLocation = require('./translateToLocation');
 const translateToCongregationLocation = require('./translateToCongregationLocation');
 
-exports.requires = ['sourceData', 'congregationId', 'source'];
+exports.requires = ['sourceData', 'source', 'congregation'];
 exports.returns = 'importedLocations';
-exports.handler = async function importLocations({ sourceData, congregationId, source }) {
+exports.handler = async function importLocations({ sourceData, congregation, source }) {
   return await serializeTasks(sourceData.map(externalLocation => () => (
-    new Pipeline({ congregationId, source, externalLocation })
+    new Pipeline({ congregation, source, externalLocation })
       .addHandler(translateToLocation)
       .addHandler(translateToCongregationLocation)
       .execute()))

@@ -16,7 +16,8 @@ const locationType = {
   },
 };
 
-exports.requires = ['nextCongregationLocation', 'location', '$messages', 'territory'];
+exports.requires = ['nextCongregationLocation', 'location', '$messages'];
+exports.optional = ['territory'];
 exports.returns = 'externalLocation';
 exports.handler = async function convertToExternalLocation({ nextCongregationLocation: congregationLocation, location, $messages, territory }) {
   const notes = `${congregationLocation.notes}\n${$messages.map(({ message, messageLevel }) => `${messageLevel}: ${message}\n`)}`;

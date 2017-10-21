@@ -7,11 +7,12 @@ const convertActivitiesToExternalLocations = require('./convertActivitiesToExter
 const createExcelFile = require('./createExcelFile');
 
 module.exports = async ({ congregationId }) => {
-  return await new Pipeline({ congregationId, destination: LOCATION_INTERFACES.TERRITORY_HELPER })
+  const { buffer } = await new Pipeline({ congregationId, destination: LOCATION_INTERFACES.TERRITORY_HELPER })
     .addHandler(getCongregation)
     .addHandler(getLatestActivities)
     .addHandler(getIndexedLocations)
     .addHandler(convertActivitiesToExternalLocations)
     .addHandler(createExcelFile)
     .execute();
+  return buffer;
 };
