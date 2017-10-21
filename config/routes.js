@@ -30,6 +30,9 @@ module.exports.routes = {
   'GET /ui/congregations': 'GeneralUIController.listCongregations',
   'POST /ui/congregations': 'GeneralUIController.createCongregation',
 
+  'POST /ui/congregationintegrations': 'GeneralUIController.addCongregationIntegration',
+  'GET /ui/congregationintegrations/:sourceCongregationId/:destinationCongregationId/delete': 'GeneralUIController.deleteCongregationIntegration',
+
   'GET /ui/languages/:languageId': 'GeneralUIController.getlanguage',
   'POST /ui/languages/:languageId': 'GeneralUIController.updatelanguage',
   'GET /ui/languages/:languageId/delete': 'GeneralUIController.deletelanguage',

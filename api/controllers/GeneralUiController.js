@@ -35,9 +35,14 @@ module.exports = {
   },
 
   getCongregation: async function (req, res) {
-    const [congregation, languages] = await Promise.all([DAL.findCongregation({ congregationId: req.param('congregationId') }), DAL.getLanguages()]);
+    const [congregation, languages, congregations] = await Promise.all([
+      DAL.getCongregationWithIntegrations(req.param('congregationId')),
+      DAL.getLanguages(),
+      DAL.getCongregations(),
+    ]);
     return res.view('congregation/edit', {
       congregation,
+      congregations,
       languages: sortBy(languages, 'language'),
     });
   },
@@ -95,6 +100,22 @@ module.exports = {
   deleteLanguage: async function (req, res) {
     await DAL.deleteLanguage(req.param('languageId'));
     res.redirect('/ui/languages');
+  },
+
+  addCongregationIntegration: async function (req, res) {
+    const sourceCongregationId = req.param('sourceCongregationId') || req.body.sourceCongregationId;
+    const destinationCongregationId = req.param('destinationCongregationId') || req.body.destinationCongregationId;
+    const congregationId = req.param('congregationId') || req.body.destinationCongregationId;
+    await DAL.addCongregationIntegration(sourceCongregationId, destinationCongregationId);
+    res.redirect(`/ui/congregations/${congregationId}`);
+  },
+
+  deleteCongregationIntegration: async function (req, res) {
+    const sourceCongregationId = req.param('sourceCongregationId') || req.body.sourceCongregationId;
+    const destinationCongregationId = req.param('destinationCongregationId') || req.body.destinationCongregationId;
+    const congregationId = req.param('congregationId') || req.body.congregationId || req.query.congregationid;
+    await DAL.deleteCongregationIntegration(sourceCongregationId, destinationCongregationId);
+    res.redirect(`/ui/congregations/${congregationId}`);
   },
 };
 

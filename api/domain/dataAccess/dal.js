@@ -1,6 +1,7 @@
 const keyBy = require('lodash/keyBy');
 const groupBy = require('lodash/groupBy');
 const property = require('lodash/property');
+const map = require('lodash/map');
 const { serializeTasks } = require('../util');
 
 let db;
@@ -32,6 +33,23 @@ const update = async ({ filter, update, table }) => {
 };
 
 exports.findCongregation = (filter) => selectFirstOrDefault({ filter, table: 'congregation' });
+
+exports.getCongregationWithIntegrations = async (congregationId) => {
+  const congregation = await selectFirstOrDefault({ filter: { congregationId }, table: 'congregation' });
+  if (!congregation) {
+    return congregation;
+  }
+
+  const sources = await db('congregationIntegration')
+    .where('destinationCongregationId', congregationId)
+    .then(integrations => db('congregation').whereIn('congregationId', map(integrations, 'sourceCongregationId')));
+
+  const destinations = await db('congregationIntegration')
+    .where('sourceCongregationId', congregationId)
+    .then(integrations => db('congregation').whereIn('congregationId', map(integrations, 'destinationCongregationId')));
+
+  return Object.assign(congregation, { sources, destinations });
+};
 exports.insertCongregation = (values) => insert({
   values,
   table: 'congregation',
@@ -40,6 +58,14 @@ exports.insertCongregation = (values) => insert({
 exports.getCongregations = (filter = {}) => select({ filter, table: 'congregation' });
 exports.updateCongregation = (congregationId, value) => update({ update: value, filter: { congregationId }, table: 'congregation' });
 exports.deleteCongregation = (congregationId) => db('congregation').where({ congregationId }).del();
+exports.addCongregationIntegration = (sourceCongregationId, destinationCongregationId) => insert({
+  table: 'congregationIntegration',
+  values: { sourceCongregationId, destinationCongregationId },
+  idColumn: 'congregationIntegrationId'
+});
+exports.deleteCongregationIntegration = (sourceCongregationId, destinationCongregationId) => db('congregationIntegration')
+  .where({ sourceCongregationId, destinationCongregationId })
+  .del();
 
 exports.findLocation = (filter) => selectFirstOrDefault({ filter, table: 'location' });
 exports.insertLocation = (values) => insert({ values, table: 'location', idColumn: 'locationId' });
