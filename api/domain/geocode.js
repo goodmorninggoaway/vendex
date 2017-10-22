@@ -30,15 +30,12 @@ const mapGeocodedResult = (geocodeResults) => {
     return {
       latitude,
       longitude,
-      number,
-      street,
-      city,
-      zip,
-      state,
-      countryCode,
-      externalLocationId: place_id,
-      externalLocationLastRefreshedDateTime: new Date().toISOString(),
-      externalSource: 'GOOGLE',
+      // number,
+      // street,
+      // city,
+      // zip,
+      // state,
+      // countryCode,
     };
   }
 

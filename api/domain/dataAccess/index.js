@@ -6,6 +6,7 @@ let connection;
 if (process.env.DATABASE_URL) {
   connection = {
     connectionString: process.env.DATABASE_URL,
+    debug: true,
   };
 }
 

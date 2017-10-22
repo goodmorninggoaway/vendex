@@ -6,9 +6,10 @@
   "keywords": [],
   "dependencies": {
     "@google/maps": "^0.4.3",
-    "async": "2.0.1",
+    "async": "^2.0.1",
     "body-parser": "^1.18.2",
     "csvtojson": "^1.1.7",
+    "deep-diff": "^0.3.8",
     "dotenv": "^4.0.0",
     "excel": "^0.1.7",
     "forever": "^0.15.3",
@@ -27,11 +28,17 @@
     "xlsx": "^0.11.4"
   },
   "devDependencies": {
-    "eslint": "3.5.0"
+    "chai": "^4.1.2",
+    "dirty-chai": "^2.0.1",
+    "eslint": "3.5.0",
+    "mocha": "^4.0.1",
+    "proxyquire": "^1.8.0",
+    "sinon": "^4.0.1",
+    "sinon-chai": "^2.14.0"
   },
   "scripts": {
     "start": "NODE_ENV=production node app.js",
-    "test": "npm run lint && npm run custom-tests && echo 'Done.'",
+    "test:domain": "mocha --require ./scripts/test-setup --watch ./api/domain/**/*.spec.js",
     "lint": "node ./node_modules/eslint/bin/eslint . --max-warnings=0 && echo '✔  Your code looks good.'",
     "custom-tests": "echo \"(No other custom tests yet.)\" && echo",
     "debug": "node debug app.js"

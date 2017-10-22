@@ -1,0 +1,19 @@
+<h4>Languages > <%= language.language %> > Edit</h4>
+
+<form action="/ui/languages/<%= language.languageId %>" method="post">
+  <div class="row">
+    <div class="input-field">
+      <input id="language" name="language" type="text" required placeholder="Language" value="<%= language.language %>" class="validate"/>
+      <label for="language">Language</label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="input-field">
+      <textarea id="synonymns" name="synonyms" title="Synonyms" class="material-textarea validate" required><%= language.synonyms.join('\n') %></textarea>
+      <label for="synonyms">Synonyms: Enter one per line.</label>
+    </div>
+  </div>
+  <div class="row">
+    <input type="submit"/>
+  </div>
+</form>

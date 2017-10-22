@@ -1,17 +1,16 @@
 const keyBy = require('lodash/keyBy');
 const groupBy = require('lodash/groupBy');
 const property = require('lodash/property');
-const { serializeTasks } = require('../util');
+const map = require('lodash/map');
+const { executeSerially } = require('../util');
 
 let db;
 
-module.exports.initialize = (_db) => {
+exports.initialize = (_db) => {
   db = _db;
 };
 
-const select = async ({ filter, columns, table }) => {
-  return await db.from(table).where(filter).select(columns);
-};
+const select = ({ filter, columns, table }) => db.from(table).where(filter).select(columns);
 
 const selectFirstOrDefault = async (...args) => {
   const result = await select(...args);
@@ -31,49 +30,78 @@ const update = async ({ filter, update, table }) => {
   return await db(table).where(filter).update(update);
 };
 
-module.exports.findCongregation = (filter) => selectFirstOrDefault({ filter, table: 'congregation' });
-module.exports.insertCongregation = (values) => insert({
+exports.findCongregation = (filter) => selectFirstOrDefault({ filter, table: 'congregation' });
+
+exports.getCongregationWithIntegrations = async (congregationId) => {
+  const congregation = await selectFirstOrDefault({ filter: { congregationId }, table: 'congregation' });
+  if (!congregation) {
+    return congregation;
+  }
+
+  const sources = await db('congregationIntegration')
+    .where('destinationCongregationId', congregationId)
+    .then(integrations => db('congregation').whereIn('congregationId', map(integrations, 'sourceCongregationId')));
+
+  const destinations = await db('congregationIntegration')
+    .where('sourceCongregationId', congregationId)
+    .then(integrations => db('congregation').whereIn('congregationId', map(integrations, 'destinationCongregationId')));
+
+  return Object.assign(congregation, { sources, destinations });
+};
+exports.insertCongregation = (values) => insert({
   values,
   table: 'congregation',
   idColumn: 'congregationId'
 });
-module.exports.findLocation = (filter) => selectFirstOrDefault({ filter, table: 'location' });
-module.exports.insertLocation = (values) => insert({ values, table: 'location', idColumn: 'locationId' });
-module.exports.findCongregationLocation = (filter) => selectFirstOrDefault({
+exports.getCongregations = (filter = {}) => select({ filter, table: 'congregation' }).orderBy('name');
+exports.updateCongregation = (congregationId, value) => update({ update: value, filter: { congregationId }, table: 'congregation' });
+exports.deleteCongregation = (congregationId) => db('congregation').where({ congregationId }).del();
+exports.addCongregationIntegration = (sourceCongregationId, destinationCongregationId) => insert({
+  table: 'congregationIntegration',
+  values: { sourceCongregationId, destinationCongregationId },
+  idColumn: 'congregationIntegrationId'
+});
+exports.deleteCongregationIntegration = (sourceCongregationId, destinationCongregationId) => db('congregationIntegration')
+  .where({ sourceCongregationId, destinationCongregationId })
+  .del();
+
+exports.findLocation = (filter) => selectFirstOrDefault({ filter, table: 'location' });
+exports.insertLocation = (values) => insert({ values, table: 'location', idColumn: 'locationId' });
+exports.findCongregationLocation = (filter) => selectFirstOrDefault({
   filter,
   table: 'congregationLocation'
 });
-module.exports.updateCongregationLocation = (congregationId, locationId, value) => update({
+exports.updateCongregationLocation = (congregationId, locationId, value) => update({
   filter: { congregationId, locationId },
   update: value,
   table: 'congregationLocation'
 });
 
-module.exports.insertCongregationLocation = (values) => insert({
+exports.insertCongregationLocation = (values) => insert({
   values,
   table: 'congregationLocation',
 });
 
-module.exports.deleteCongregationLocation = (filter) => db('congregationLocation').where(filter).del();
+exports.deleteCongregationLocation = (filter) => db('congregationLocation').where(filter).del();
 
-module.exports.findGeocodeResponse = (filter) => selectFirstOrDefault({ filter, table: 'geocodeResponse' });
-module.exports.insertGeocodeResponse = (values) => insert({
+exports.findGeocodeResponse = (filter) => selectFirstOrDefault({ filter, table: 'geocodeResponse' });
+exports.insertGeocodeResponse = (values) => insert({
   values,
   table: 'geocodeResponse',
   idColumn: 'geocodeResponseId'
 });
 
-module.exports.findTerritory = (filter) => selectFirstOrDefault({ filter: Object.assign({}, filter, { deleted: 0 }), table: 'territory' });
-module.exports.getTerritories = (filter) => select({ filter: Object.assign({}, filter, { deleted: 0 }), table: 'territory' });
-module.exports.findTerritoryContainingPoint = (congregationId, { longitude, latitude }) => (
+exports.findTerritory = (filter) => selectFirstOrDefault({ filter: Object.assign({}, filter, { deleted: 0 }), table: 'territory' });
+exports.getTerritories = (filter) => select({ filter: Object.assign({}, filter, { deleted: 0 }), table: 'territory' });
+exports.findTerritoryContainingPoint = (congregationId, { longitude, latitude }) => (
   db('territory').where({ deleted: 0 }).whereRaw('"congregationId" = ? and "boundary" @> point (?, ?)', [congregationId, longitude, latitude])
 );
 
-module.exports.insertTerritory = (values) => insert({ values, table: 'territory', idColumn: 'territoryId' });
-module.exports.updateTerritory = (filter, updates) => update({ filter, update: updates, table: 'territory' });
-module.exports.deleteTerritory = (territoryId) => module.exports.updateTerritory({ territoryId }, { deleted: 1 });
+exports.insertTerritory = (values) => insert({ values, table: 'territory', idColumn: 'territoryId' });
+exports.updateTerritory = (filter, updates) => update({ filter, update: updates, table: 'territory' });
+exports.deleteTerritory = (territoryId) => exports.updateTerritory({ territoryId }, { deleted: 1 });
 
-module.exports.getLocationsForCongregationFromSource = async (congregationId, source) => {
+exports.getLocationsForCongregationFromSource = async (congregationId, source) => {
   const locationsPromise = db.from('location')
     .innerJoin('congregationLocation', 'location.locationId', 'congregationLocation.locationId')
     .where({ congregationId, externalSource: source })
@@ -87,7 +115,7 @@ module.exports.getLocationsForCongregationFromSource = async (congregationId, so
   return locations.map(location => ({ location, congregationLocation: indexedCL[location.locationId] }));
 };
 
-module.exports.getLocationsForCongregation = async (congregationId) => {
+exports.getLocationsForCongregation = async (congregationId) => {
   const locationsPromise = db.from('location')
     .innerJoin('congregationLocation', 'location.locationId', 'congregationLocation.locationId')
     .where({ congregationId })
@@ -101,26 +129,24 @@ module.exports.getLocationsForCongregation = async (congregationId) => {
   return locations.map(location => ({ location, congregationLocations: indexedCL[location.locationId] }));
 };
 
-module.exports.getLastExportActivity = async (filter) => {
-  const result = await db.from('exportActivity').where(filter).orderBy('lastCongregationLocationActivityId', 'desc').limit(1);
-  return result.length ? result[0] : null;
-};
+exports.getLastExportActivity = (filter) => db.from('exportActivity').where(filter).orderBy('lastCongregationLocationActivityId', 'desc').first();
+exports.insertExportActivity = (values) => insert({ values, table: 'exportActivity', idColumn: 'exportActivityId' });
 
-module.exports.insertExportActivity = (values) => insert({ values, table: 'exportActivity', idColumn: 'exportActivityId' });
-
-module.exports.addCongregationLocationActivity = (values) => insert({
+exports.addCongregationLocationActivity = (values) => insert({
   values,
   idColumn: 'congregationLocationActivityId',
   table: 'congregationLocationActivity',
 });
 
-module.exports.getCongregationLocationActivity = (filter, startAt) => db
+exports.getCongregationLocationActivity = ({ congregationId, destination, minCongregationLocationActivityId }) => db
   .from('congregationLocationActivity')
-  .where(filter)
-  .where('congregationLocationActivityId', '>=', startAt)
+  .innerJoin('congregationIntegration', 'congregationLocationActivity.congregationId', 'congregationIntegration.sourceCongregationId')
+  .where('congregationLocationActivityId', '>=', minCongregationLocationActivityId)
+  .where('destinationCongregationId', congregationId)
+  .select('congregationLocationActivity.*')
   .orderBy('congregationLocationActivityId');
 
-module.exports.reset = (includeGeocode = false) => {
+exports.reset = () => {
   const tables = [
     'exportActivity',
     'congregationLocationActivity',
@@ -129,9 +155,12 @@ module.exports.reset = (includeGeocode = false) => {
     'territory',
   ];
 
-  if (includeGeocode) {
-    tables.push('geocodeResponse');
-  }
-
-  return serializeTasks(tables.map(x => () => db(x).del()));
+  return executeSerially(tables, table => db(table).del());
 };
+
+exports.insertLanguage = (values) => insert({ values, table: 'language', idColumn: 'languageId' });
+exports.updateLanguage = (filter, updates) => update({ filter, update: updates, table: 'language' });
+exports.deleteLanguage = (languageId) => exports.updateLanguage({ languageId });
+exports.findLanguage = (synonym) => db.from('language').whereRaw('? = ANY (synonyms)', synonym).first();
+exports.findLanguageById = (languageId) => db.from('language').where({ languageId }).first();
+exports.getLanguages = (filter = {}) => db.from('language').where('languageId', '>', 0).where(filter).orderBy('language');

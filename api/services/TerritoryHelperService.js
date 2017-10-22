@@ -1,6 +1,6 @@
 const fs = require('fs');
 const importLocations = require('../domain/import-territory-helper');
-const exportLocations = require('../domain/export-territory-helper');
+const exportLocations = require('../domain/territoryHelper/export');
 const importTerritories = require('../domain/import-territory-helper-territories');
 
 module.exports = {

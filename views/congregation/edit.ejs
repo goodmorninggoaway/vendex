@@ -1,0 +1,128 @@
+<h4>Congregations > <%= congregation.name %> > Edit</h4>
+
+<form action="/ui/congregations/<%= congregation.congregationId %>" method="post">
+  <div class="row">
+    <div class="input-field">
+      <input id="name" name="name" type="text" required placeholder="Name" value="<%= congregation.name %>" class="validate"/>
+      <label for="language">Name</label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="input-field">
+      <select id="language" name="language" title="language" value="<%= congregation.language %>" required>
+        <option>Select a language</option>
+        <% languages.map(({ language }) => { %>
+        <option><%= language %></option>
+        <% }) %>
+      </select>
+    </div>
+  </div>
+  <div class="row">
+    <div class="input-field">
+      <textarea id="synonymns" name="synonyms" title="Synonyms"
+                class="material-textarea validate"><%= congregation.synonyms && congregation.synonyms.join('\n') %></textarea>
+      <label for="synonyms">Synonyms: Enter one per line.</label>
+    </div>
+  </div>
+  <div class="row">
+    <input type="submit"/>
+  </div>
+</form>
+
+<form action="/ui/congregationintegrations" method="post">
+  <h5>Source Congregations</h5>
+  <div class="collection">
+    <div class="collection-item">You can only import/export data from <em>Source</em> congregations</div>
+  </div>
+  <table>
+    <thead>
+    <tr>
+      <th>Source</th>
+      <th>Language</th>
+      <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td>
+        <input name="congregationId" value="<%= congregation.congregationId %>" style="display: none"/>
+        <input name="destinationCongregationId" value="<%= congregation.congregationId %>" style="display: none"/>
+        <select name="sourceCongregationId" required>
+          <option value="-1">Select congregation</option>
+          <% congregations.map(({ congregationId, name }) => { %>
+          <option value="<%= congregationId %>"><%= name %></option>
+          <% }); %>
+        </select>
+      </td>
+      <td></td>
+      <td>
+        <button title="Add congregation" class="btn-floating">
+          <i class="material-icons">add</i>
+        </button>
+      </td>
+    </tr>
+    <% congregation.sources.map(({ congregationId, name, language }) => { %>
+    <tr>
+      <td><%= name %></td>
+      <td><%= language %></td>
+      <td>
+        <a href="/ui/congregationintegrations/<%= congregationId %>/<%= congregation.congregationId %>/delete?congregationid=<%= congregation.congregationId %>"
+           title="Delete <%= name %>"
+           class="btn-floating">
+          <i class="material-icons">delete</i>
+        </a>
+      </td>
+    </tr>
+    <% }); %>
+    </tbody>
+  </table>
+</form>
+
+<form action="/ui/congregationintegrations" method="post">
+  <h5>Destination Congregations</h5>
+  <div class="collection">
+    <div class="collection-item">Only these congregations can export this congregation's data</div>
+  </div>
+  <table>
+    <thead>
+    <tr>
+      <th>Destination</th>
+      <th>Language</th>
+      <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td>
+        <input name="congregationId" value="<%= congregation.congregationId %>" style="display: none"/>
+        <input name="sourceCongregationId" value="<%= congregation.congregationId %>" style="display: none"/>
+        <select name="destinationCongregationId" required>
+          <option value="-1">Select congregation</option>
+          <% congregations.map(({ congregationId, name }) => { %>
+          <option value="<%= congregationId %>"><%= name %></option>
+          <% }); %>
+        </select>
+      </td>
+      <td></td>
+      <td>
+        <button title="Add congregation" class="btn-floating">
+          <i class="material-icons">add</i>
+        </button>
+      </td>
+    </tr>
+    <% congregation.destinations.map(({ congregationId, name, language }) => { %>
+    <tr>
+      <td><%= name %></td>
+      <td><%= language %></td>
+      <td>
+        <a href="/ui/congregationintegrations/<%= congregation.congregationId %>/<%= congregationId %>/delete?congregationid=<%= congregation.congregationId %>"
+           title="Delete <%= name %>"
+           class="btn-floating">
+          <i class="material-icons">delete</i>
+        </a>
+      </td>
+    </tr>
+    <% }); %>
+    </tbody>
+  </table>
+</form>
