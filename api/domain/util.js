@@ -12,3 +12,12 @@ exports.serializeTasks = (taskFactories) => {
     );
   }, Promise.resolve([]));
 };
+
+exports.taskIterator = function* iterateTasks(source, makeTask) {
+  let i = 0;
+  while (i < source.length) {
+    console.log(`${i + 1} of ${source.length}`);
+    yield makeTask(source[i]);
+    i++;
+  }
+};
