@@ -10,9 +10,7 @@ exports.initialize = (_db) => {
   db = _db;
 };
 
-const select = async ({ filter, columns, table }) => {
-  return await db.from(table).where(filter).select(columns);
-};
+const select = ({ filter, columns, table }) => db.from(table).where(filter).select(columns);
 
 const selectFirstOrDefault = async (...args) => {
   const result = await select(...args);
@@ -55,7 +53,7 @@ exports.insertCongregation = (values) => insert({
   table: 'congregation',
   idColumn: 'congregationId'
 });
-exports.getCongregations = (filter = {}) => select({ filter, table: 'congregation' });
+exports.getCongregations = (filter = {}) => select({ filter, table: 'congregation' }).orderBy('name');
 exports.updateCongregation = (congregationId, value) => update({ update: value, filter: { congregationId }, table: 'congregation' });
 exports.deleteCongregation = (congregationId) => db('congregation').where({ congregationId }).del();
 exports.addCongregationIntegration = (sourceCongregationId, destinationCongregationId) => insert({
@@ -160,10 +158,9 @@ exports.reset = () => {
   return executeSerially(tables, table => db(table).del());
 };
 
-
 exports.insertLanguage = (values) => insert({ values, table: 'language', idColumn: 'languageId' });
 exports.updateLanguage = (filter, updates) => update({ filter, update: updates, table: 'language' });
 exports.deleteLanguage = (languageId) => exports.updateLanguage({ languageId });
 exports.findLanguage = (synonym) => db.from('language').whereRaw('? = ANY (synonyms)', synonym).first();
 exports.findLanguageById = (languageId) => db.from('language').where({ languageId }).first();
-exports.getLanguages = (filter = {}) => select({ filter, table: 'language' });
+exports.getLanguages = (filter = {}) => db.from('language').where('languageId', '>', 0).where(filter).orderBy('language');
