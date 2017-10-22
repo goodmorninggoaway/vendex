@@ -1,3 +1,5 @@
+const pkg = require('../package.json');
+
 /**
  * Global Variable Configuration
  * (sails.config.globals)
@@ -50,4 +52,5 @@ module.exports.globals = {
   sails: true,
 
   Logger: require('../api/domain/logger'),
+  version: pkg.version,
 };
