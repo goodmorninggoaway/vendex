@@ -131,12 +131,7 @@ exports.getLocationsForCongregation = async (congregationId) => {
   return locations.map(location => ({ location, congregationLocations: indexedCL[location.locationId] }));
 };
 
-exports.getLastExportActivity = ({ congregationId, destination }) => db.from('exportActivity')
-  .where({ congregationId })
-  .andWhereNot({ source: destination })
-  .orderBy('lastCongregationLocationActivityId', 'desc')
-  .first();
-
+exports.getLastExportActivity = (filter) => db.from('exportActivity').where(filter).orderBy('lastCongregationLocationActivityId', 'desc').first();
 exports.insertExportActivity = (values) => insert({ values, table: 'exportActivity', idColumn: 'exportActivityId' });
 
 exports.addCongregationLocationActivity = (values) => insert({
