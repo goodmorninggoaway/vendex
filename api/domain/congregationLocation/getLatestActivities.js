@@ -32,10 +32,10 @@ exports.handler = async function getStartCongregationLocationActivity({ congrega
   const lastExport = await DAL.getLastExportActivity({ congregationId, destination });
   let minCongregationLocationActivityId = 0;
   if (lastExport) {
-    // TODO Why am I getting a string for a BIGINT lastCongregationLocationActivityId?
     minCongregationLocationActivityId = parseInt(lastExport.lastCongregationLocationActivityId);
   }
 
+  // TODO This will eventually overflow and error since it's a 64-bit integer
   minCongregationLocationActivityId++;
   const activities = await DAL.getCongregationLocationActivity({ congregationId, destination, minCongregationLocationActivityId });
 
@@ -45,7 +45,7 @@ exports.handler = async function getStartCongregationLocationActivity({ congrega
       const operation = determineExportOperation(range);
 
       memo.push({
-        congregationLocationActivityId: range.terminalActivity.congregationLocationActivityId,
+        congregationLocationActivityId: parseInt(range.terminalActivity.congregationLocationActivityId),
         operation,
         locationId: range.terminalActivity.locationId,
         sourceCongregationId: range.terminalActivity.congregationId,
