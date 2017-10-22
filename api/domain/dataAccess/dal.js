@@ -2,7 +2,7 @@ const keyBy = require('lodash/keyBy');
 const groupBy = require('lodash/groupBy');
 const property = require('lodash/property');
 const map = require('lodash/map');
-const { serializeTasks } = require('../util');
+const { executeSerially } = require('../util');
 
 let db;
 
@@ -153,7 +153,7 @@ exports.getCongregationLocationActivity = ({ congregationId, destination, minCon
   .select('congregationLocationActivity.*')
   .orderBy('congregationLocationActivityId');
 
-exports.reset = (includeGeocode = false) => {
+exports.reset = () => {
   const tables = [
     'exportActivity',
     'congregationLocationActivity',
@@ -162,11 +162,7 @@ exports.reset = (includeGeocode = false) => {
     'territory',
   ];
 
-  if (includeGeocode) {
-    tables.push('geocodeResponse');
-  }
-
-  return serializeTasks(tables.map(x => () => db(x).del()));
+  return executeSerially(tables, table => db(table).del());
 };
 
 
