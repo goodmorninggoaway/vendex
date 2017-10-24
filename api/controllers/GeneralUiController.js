@@ -106,7 +106,13 @@ module.exports = {
     const sourceCongregationId = req.param('sourceCongregationId') || req.body.sourceCongregationId;
     const destinationCongregationId = req.param('destinationCongregationId') || req.body.destinationCongregationId;
     const congregationId = req.param('congregationId') || req.body.destinationCongregationId;
-    await DAL.addCongregationIntegration(sourceCongregationId, destinationCongregationId);
+
+    let language = req.param('language') || req.body.language;
+    if (!language || language === '') {
+      language = null;
+    }
+
+    await DAL.addCongregationIntegration({ sourceCongregationId, destinationCongregationId, language });
     res.redirect(`/ui/congregations/${congregationId}`);
   },
 
@@ -114,7 +120,11 @@ module.exports = {
     const sourceCongregationId = req.param('sourceCongregationId') || req.body.sourceCongregationId;
     const destinationCongregationId = req.param('destinationCongregationId') || req.body.destinationCongregationId;
     const congregationId = req.param('congregationId') || req.body.congregationId || req.query.congregationid;
-    await DAL.deleteCongregationIntegration(sourceCongregationId, destinationCongregationId);
+    let language = req.query.language;
+    if (!language || language === '') {
+      language = null;
+    }
+    await DAL.deleteCongregationIntegration({ sourceCongregationId, destinationCongregationId, language });
     res.redirect(`/ui/congregations/${congregationId}`);
   },
 };

@@ -40,13 +40,12 @@ exports.getCongregationWithIntegrations = async (congregationId) => {
 
   const sources = await db('congregationIntegration')
     .where('destinationCongregationId', congregationId)
-    .then(integrations => db('congregation').whereIn('congregationId', map(integrations, 'sourceCongregationId')));
+    .then(async (integrations) => {
+      const congregations = await db('congregation').whereIn('congregationId', map(integrations, 'sourceCongregationId'));
+      return integrations.map(x => Object.assign({}, congregations.find(y => y.congregationId === x.sourceCongregationId), x));
+    });
 
-  const destinations = await db('congregationIntegration')
-    .where('sourceCongregationId', congregationId)
-    .then(integrations => db('congregation').whereIn('congregationId', map(integrations, 'destinationCongregationId')));
-
-  return Object.assign(congregation, { sources, destinations });
+  return Object.assign(congregation, { sources });
 };
 exports.insertCongregation = (values) => insert({
   values,
@@ -56,14 +55,12 @@ exports.insertCongregation = (values) => insert({
 exports.getCongregations = (filter = {}) => select({ filter, table: 'congregation' }).orderBy('name');
 exports.updateCongregation = (congregationId, value) => update({ update: value, filter: { congregationId }, table: 'congregation' });
 exports.deleteCongregation = (congregationId) => db('congregation').where({ congregationId }).del();
-exports.addCongregationIntegration = (sourceCongregationId, destinationCongregationId) => insert({
+exports.addCongregationIntegration = values => insert({
+  values,
   table: 'congregationIntegration',
-  values: { sourceCongregationId, destinationCongregationId },
   idColumn: 'congregationIntegrationId'
 });
-exports.deleteCongregationIntegration = (sourceCongregationId, destinationCongregationId) => db('congregationIntegration')
-  .where({ sourceCongregationId, destinationCongregationId })
-  .del();
+exports.deleteCongregationIntegration = (filter) => db('congregationIntegration').where(filter).del();
 
 exports.findLocation = (filter) => selectFirstOrDefault({ filter, table: 'location' });
 exports.insertLocation = (values) => insert({ values, table: 'location', idColumn: 'locationId' });
