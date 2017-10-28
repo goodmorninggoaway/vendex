@@ -9,7 +9,7 @@
 </div>
 <form id="alba-location-import">
   <label for="alba-export-tsv">
-    Paste ALBA location export from <a href="https://www.mcmxiv.com/alba/addresses">Alba</a>:
+    Paste ALBA location export from <a target="_blank" href="https://www.mcmxiv.com/alba/addresses">Alba</a>:
     <textarea id="alba-export-tsv"></textarea>
   </label>
 
@@ -21,6 +21,12 @@
 
   <div id="error-message"></div>
 </form>
+
+<h5>Known Issues</h5>
+<ol>
+  <li>If an address exists more than once in the import data, the last one wins.</li>
+</ol>
+
 <script>
   const submitEl = document.getElementById('alba-submit');
 
