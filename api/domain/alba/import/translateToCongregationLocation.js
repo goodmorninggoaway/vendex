@@ -41,11 +41,13 @@ exports.handler = async function translateToCongregationLocation({ externalLocat
     sourceCongregationId,
     sourceData: externalLocation, // TODO remove this
     sourceLocationId: externalLocation.Address_ID,
-    isPendingTerritoryMapping: 0,
-    isDeleted: 0, // TODO what to do with this?
-    isActive: 1, // TODO what to do with this?
+    isPendingTerritoryMapping: false,
+    isDeleted: false, // TODO what to do with this?
+    isActive: true, // TODO what to do with this?
     notes: externalLocation.Notes,
-    // userDefined2: externalLocation.Account, // TODO add a sourceCongregationId
+    userDefined1: null,
+    userDefined2: null,
+    territoryId: null,
   };
 
   let congregationLocation = await DAL.findCongregationLocation({ congregationId, locationId, source });
@@ -57,7 +59,7 @@ exports.handler = async function translateToCongregationLocation({ externalLocat
   } else {
     // Update only when there is a change
     const diffs = diff(congregationLocation, translatedCongregationLocation);
-    if (diffs.length) {
+    if (diffs && diffs.length) {
       congregationLocation = await DAL.updateCongregationLocation(congregationId, locationId, translatedCongregationLocation);
       await DAL.addCongregationLocationActivity({ congregationId: sourceCongregationId, locationId, operation: 'U', source });
     }
