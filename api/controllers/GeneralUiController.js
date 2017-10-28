@@ -1,4 +1,5 @@
 const sortBy = require('lodash/sortBy');
+const compact = require('lodash/compact');
 const { DAL } = require('../domain/dataAccess');
 
 /**
@@ -89,9 +90,14 @@ module.exports = {
   },
 
   updateLanguage: async function (req, res) {
-    const language = await DAL.updateLanguage(req.param('languageId'), {
+    const synonyms = (req.body.synonyms || '')
+      .replace('\r\n', '\n')
+      .replace('\r', '\n')
+      .split('\n')
+      .filter(x => x && x.length);
+    await DAL.updateLanguage({ languageId: req.param('languageId') }, {
+      synonyms,
       language: req.body.language,
-      synonyms: req.body.synonyms,
     });
 
     res.redirect('/ui/languages');
