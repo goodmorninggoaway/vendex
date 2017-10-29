@@ -39,7 +39,7 @@ module.exports = {
    */
   importTerritories: async function (req, res) {
     const { congregationid } = req.headers;
-    await TerritoryHelperService.importTerritories({ congregationId: congregationid, inputData: req.body }, (err, data) => {
+    await TerritoryHelperService.importTerritories({ congregationId: Number(congregationid), inputData: req.body }, (err, data) => {
       if (err) {
         sails.log.error(err);
         return res.serverError(err);

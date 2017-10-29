@@ -4,8 +4,6 @@ const keyBy = require('lodash/keyBy');
 exports.requires = ['congregationId'];
 exports.returns = 'indexedLocations';
 exports.handler = async function getIndexedLocations({ congregationId }) {
-  let locations = await DAL.getLocationsForCongregation(congregationId);
-  locations = locations.map(({ location, congregationLocations }) => Object.assign({}, location, { congregationLocations }));
-  locations = keyBy(locations, 'locationId');
-  return locations;
+  const locations = await DAL.getLocationsForCongregation(congregationId);
+  return keyBy(locations, 'locationId');
 };

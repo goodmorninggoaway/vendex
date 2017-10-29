@@ -88,7 +88,7 @@ module.exports = async ({ congregationId, fileStream }) => {
       }, {});
 
       if (hasDiff) {
-        await DAL.updateCongregationLocation(congregationId, locationId, diff);
+        await DAL.updateCongregationLocation({ congregationId, locationId }, diff);
         Logger.log(`Updated "congregationLocation": locationId=${locationId}, congregationId=${congregationId}`);
 
         await DAL.addCongregationLocationActivity({ congregationId, locationId, operation: 'U', source });

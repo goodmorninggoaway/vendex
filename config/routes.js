@@ -24,28 +24,28 @@ module.exports.routes = {
     view: 'homepage'
   },
 
-  'GET /ui/congregations/:congregationId': 'GeneralUIController.getCongregation',
-  'POST /ui/congregations/:congregationId': 'GeneralUIController.updateCongregation',
-  'GET /ui/congregations/:congregationId/delete': 'GeneralUIController.deleteCongregation',
-  'GET /ui/congregations': 'GeneralUIController.listCongregations',
-  'POST /ui/congregations': 'GeneralUIController.createCongregation',
+  'GET /ui/congregations/:congregationId': 'UI.getCongregation',
+  'POST /ui/congregations/:congregationId': 'UI.updateCongregation',
+  'GET /ui/congregations/:congregationId/delete': 'UI.deleteCongregation',
+  'GET /ui/congregations': 'UI.listCongregations',
+  'POST /ui/congregations': 'UI.createCongregation',
 
-  'POST /ui/congregationintegrations': 'GeneralUIController.addCongregationIntegration',
-  'GET /ui/congregationintegrations/:sourceCongregationId/:destinationCongregationId/delete': 'GeneralUIController.deleteCongregationIntegration',
+  'POST /ui/congregationintegrations': 'UI.addCongregationIntegration',
+  'GET /ui/congregationintegrations/:sourceCongregationId/:destinationCongregationId/delete': 'UI.deleteCongregationIntegration',
 
-  'GET /ui/languages/:languageId': 'GeneralUIController.getlanguage',
-  'POST /ui/languages/:languageId': 'GeneralUIController.updatelanguage',
-  'GET /ui/languages/:languageId/delete': 'GeneralUIController.deletelanguage',
-  'GET /ui/languages': 'GeneralUIController.listlanguages',
-  'POST /ui/languages': 'GeneralUIController.createlanguage',
+  'GET /ui/languages/:languageId': 'UI.getlanguage',
+  'POST /ui/languages/:languageId': 'UI.updatelanguage',
+  'GET /ui/languages/:languageId/delete': 'UI.deletelanguage',
+  'GET /ui/languages': 'UI.listlanguages',
+  'POST /ui/languages': 'UI.createlanguage',
 
-  'GET /ui/reset': 'GeneralUIController.resetDatabase',
-  'GET /ui/alba/locations': 'AlbaUIController.importLocations',
-  'GET /ui/territoryhelper/locations': 'TerritoryHelperUIController.importLocations',
-  'GET /ui/territoryhelper/territories': 'TerritoryHelperUIController.importTerritories',
-  'GET /ui/territoryhelper/export': 'TerritoryHelperUIController.exportLocations',
+  'GET /ui/reset': { view: 'general/reset' },
+  'GET /ui/alba/locations': { view: 'alba/importLocations' },
+  'GET /ui/territoryhelper/locations': { view: 'territoryHelper/importLocations' },
+  'GET /ui/territoryhelper/territories': { view: 'territoryHelper/importTerritories' },
+  'GET /ui/territoryhelper/export': { view: 'territoryHelper/exportLocations' },
 
-  'DELETE /reset': 'GeneralController.resetDatabase',
+  'DELETE /reset': 'UIController.resetDatabase',
 
   'POST /alba/locations': 'AlbaController.importLocations',
 

@@ -1,0 +1,9 @@
+exports.Congregation = require('./Congregation');
+exports.CongregationIntegration = require('./CongregationIntegration');
+exports.CongregationLocation = require('./CongregationLocation');
+exports.CongregationLocationActivity = require('./CongregationLocationActivity');
+exports.ExportActivity = require('./ExportActivity');
+exports.Language = require('./Language');
+exports.Location = require('./Location');
+exports.Territory = require('./Territory');
+exports.GeocodeResponse = require('./GeocodeResponse');

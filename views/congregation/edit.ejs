@@ -68,7 +68,7 @@
         </button>
       </td>
     </tr>
-    <% congregation.sources.map(({ congregationId, name, language }) => { %>
+    <% congregation.integrationSources.map(({ sourceCongregation: { congregationId, name }, language }) => { %>
     <tr>
       <td><%= name %></td>
       <td><%= language || 'Any' %></td>

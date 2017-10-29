@@ -11,13 +11,6 @@ const { DAL } = require('../domain/dataAccess');
 
 module.exports = {
 
-  /**
-   * `AlbaUIController.importLocations()`
-   */
-  resetDatabase: function (req, res) {
-    return res.view('general/reset');
-  },
-
   listCongregations: async function (req, res) {
     const [congregations, languages] = await Promise.all([DAL.getCongregations(), DAL.getLanguages()]);
     return res.view('congregation/list', {
@@ -49,7 +42,7 @@ module.exports = {
   },
 
   updateCongregation: async function (req, res) {
-    const congregation = await DAL.updateCongregation(req.param('congregationId'), {
+    await DAL.updateCongregation(req.param('congregationId'), {
       name: req.body.name,
       language: req.body.language,
     });
@@ -109,8 +102,8 @@ module.exports = {
   },
 
   addCongregationIntegration: async function (req, res) {
-    const sourceCongregationId = req.param('sourceCongregationId') || req.body.sourceCongregationId;
-    const destinationCongregationId = req.param('destinationCongregationId') || req.body.destinationCongregationId;
+    const sourceCongregationId = Number(req.param('sourceCongregationId') || req.body.sourceCongregationId);
+    const destinationCongregationId = Number(req.param('destinationCongregationId') || req.body.destinationCongregationId);
     const congregationId = req.param('congregationId') || req.body.destinationCongregationId;
 
     let language = req.param('language') || req.body.language;
@@ -133,5 +126,11 @@ module.exports = {
     await DAL.deleteCongregationIntegration({ sourceCongregationId, destinationCongregationId, language });
     res.redirect(`/ui/congregations/${congregationId}`);
   },
+
+  resetDatabase: function (req, res) {
+    DAL.reset()
+      .then(() => res.ok())
+      .catch((err) => res.serverError(err));
+  }
 };
 

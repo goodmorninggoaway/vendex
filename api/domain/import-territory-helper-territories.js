@@ -5,7 +5,7 @@ const { serializeTasks } = require('./util');
 
 module.exports = async ({ congregationId, inputData }) => {
   const importTerritory = async (externalTerritory) => {
-    let vertices = externalTerritory.geometry.coordinates.reduce(
+    const vertices = externalTerritory.geometry.coordinates.reduce(
       (memo, x) => [].concat(x.map(([longitude, latitude]) => `( ${longitude}, ${latitude} )`)), []);
     const boundary = `( ${vertices.join(', ')} )`;
 
@@ -13,11 +13,9 @@ module.exports = async ({ congregationId, inputData }) => {
       congregationId,
       boundary,
       name: externalTerritory.properties.name,
-      userDefined1: externalTerritory.properties.description,
-      userDefined2: externalTerritory.properties.TerritoryNotes,
       externalTerritoryId: externalTerritory.properties.TerritoryNumber,
       externalTerritorySource: 'TERRITORY HELPER',
-      deleted: 0,
+      deleted: false,
     };
 
     const existingTerritory = await DAL.findTerritory({
@@ -27,7 +25,7 @@ module.exports = async ({ congregationId, inputData }) => {
     });
 
     if (!existingTerritory) {
-      territory = await DAL.insertTerritory(territory, vertices);
+      territory = await DAL.insertTerritory(territory);
       Logger.log(`Created "territory": ${territory.territoryId}`);
 
     } else {
