@@ -15,16 +15,23 @@ exports.serializeTasks = (taskFactories) => {
   }, Promise.resolve([]));
 };
 
-exports.executeConcurrently = (source, taskWorker, workerCount = (process.env.MAX_CONCURRENCY || 4)) => new Promise((resolve) => {
+exports.executeConcurrently = (source, taskWorker, workerCount = (process.env.MAX_CONCURRENCY || 4)) => new Promise((resolve, reject) => {
   const results = [];
   const worker = async (task, done) => {
-    results.push(await taskWorker(task));
-    done();
+    try {
+      results.push(await taskWorker(task));
+      done();
+    } catch (e) {
+      done(e);
+    }
   };
 
   const q = queue(worker, workerCount);
   q.drain = () => resolve(results);
-  q.error = console.error;
+  q.error = (e) => {
+    q.kill();
+    reject(e)
+  };
   q.push(source);
 });
 

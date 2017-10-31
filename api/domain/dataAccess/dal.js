@@ -22,10 +22,10 @@ exports.deleteCongregationIntegration = filter => models.CongregationIntegration
 exports.findLocation = filter => models.Location.query().skipUndefined().where(filter).first();
 exports.insertLocation = values => models.Location.query().insert(values);
 
-exports.findCongregationLocation = filter => models.CongregationLocation.query().skipUndefined().where(filter);
+exports.findCongregationLocation = filter => models.CongregationLocation.query().skipUndefined().where(filter).first();
 exports.updateCongregationLocation = (filter, value) => models.CongregationLocation.query().skipUndefined().where(filter).patch(value);
 exports.insertCongregationLocation = values => models.CongregationLocation.query().insert(values);
-exports.deleteCongregationLocation = filter => models.CongregationLocation.query().where(filter).del();
+exports.deleteCongregationLocation = filter => models.CongregationLocation.query().skipUndefined().where(filter).del();
 
 exports.findGeocodeResponse = filter => models.GeocodeResponse.query().where(filter).first();
 exports.insertGeocodeResponse = values => models.GeocodeResponse.query().insert(values);

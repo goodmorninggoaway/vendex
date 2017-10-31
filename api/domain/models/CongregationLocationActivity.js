@@ -15,7 +15,7 @@ class CongregationLocationActivity extends Model {
       required: ['congregationId', 'locationId', 'operation', 'source'],
       properties: {
         congregationId: { type: 'integer' },
-        locationId: { type: 'integer' },
+        locationId: { type: ['integer', 'string'] }, // bigint
         operation: { type: 'string', length: 1, enum: ['D', 'I', 'U'] },
         source: { type: 'string', minLength: 3, maxLength: 32 },
       },

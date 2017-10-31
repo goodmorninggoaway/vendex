@@ -13,7 +13,7 @@ class Location extends Model {
     return {
       type: 'object',
       properties: {
-        locationId: { type: 'integer' },
+        locationId: { type: ['integer', 'string'] }, // bigint
         latitude: { type: 'number' },
         longitude: { type: 'number' },
         number: { type: 'string', maxLength: 255 },

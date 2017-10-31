@@ -1,3 +1,4 @@
+const { executeSerially } = require('./util');
 const MESSAGE_LEVEL = require('./models/enums/exportMessageLevel');
 
 class Pipeline {
@@ -104,9 +105,7 @@ class Pipeline {
   }
 
   async execute() {
-    return this.handlers
-      .reduce((promise, handler) => promise.then(() => this.executeHandler(handler)), Promise.resolve())
-      .then(() => this.values);
+    return executeSerially(this.handlers, this.executeHandler.bind(this));
   }
 }
 

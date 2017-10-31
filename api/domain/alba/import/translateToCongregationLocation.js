@@ -26,7 +26,7 @@ exports.handler = async function translateToCongregationLocation({ externalLocat
     (sourceCongregation.name.toLowerCase().replace(' ', '') === externalLocation.Account.toLowerCase().replace(' ', '')) &&
     (sourceCongregation.language === language)
   ));
-  const sourceCongregationId = sourceCongregation && sourceCongregation.congregationId;
+  const sourceCongregationId = sourceCongregation && sourceCongregation.sourceCongregationId;
 
   if (!sourceCongregationId) {
     return null;
@@ -39,7 +39,7 @@ exports.handler = async function translateToCongregationLocation({ externalLocat
     language,
     attributes,
     sourceCongregationId,
-    sourceData: externalLocation, // TODO remove this
+    sourceData: null, // TODO remove this
     sourceLocationId: externalLocation.Address_ID,
     isPendingTerritoryMapping: false,
     isDeleted: false, // TODO what to do with this?
@@ -60,7 +60,7 @@ exports.handler = async function translateToCongregationLocation({ externalLocat
     // Update only when there is a change
     const diffs = diff(congregationLocation, translatedCongregationLocation);
     if (diffs && diffs.length) {
-      congregationLocation = await DAL.updateCongregationLocation(congregationId, locationId, translatedCongregationLocation);
+      congregationLocation = await DAL.updateCongregationLocation({ congregationId, locationId }, translatedCongregationLocation);
       await DAL.addCongregationLocationActivity({ congregationId: sourceCongregationId, locationId, operation: 'U', source });
     }
   }
