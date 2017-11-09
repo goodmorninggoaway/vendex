@@ -24,7 +24,7 @@ exports.handler = async function translateToCongregationLocation({ externalLocat
   const { language } = (await DAL.findLanguage(externalLocation.Language)) || { language: 'Unknown' };
   const sourceCongregation = congregation.integrationSources.find(({ sourceCongregation }) => (
     (sourceCongregation.name.toLowerCase().replace(' ', '') === externalLocation.Account.toLowerCase().replace(' ', '')) &&
-    (sourceCongregation.language === language)
+    (!sourceCongregation.language || sourceCongregation.language === language || sourceCongregation.language.toLowerCase() === 'any')
   ));
   const sourceCongregationId = sourceCongregation && sourceCongregation.sourceCongregationId;
 
