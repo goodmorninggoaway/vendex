@@ -41,7 +41,7 @@ module.exports.http = {
       'favicon',
     ],
 
-    bodyTextParser: require('body-parser').text({ type: 'text/plain' }),
+    bodyTextParser: require('body-parser').text({ type: 'text/plain', limit: '5mb' }),
 
     /***************************************************************************
      *                                                                          *
