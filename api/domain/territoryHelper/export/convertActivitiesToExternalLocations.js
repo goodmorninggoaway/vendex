@@ -38,7 +38,7 @@ exports.handler = async function convertActivitiesToExternalLocations({ congrega
   // Get the last one so we know where to start next time
   const lastCongregationLocationActivityId = Math.max(...ids);
   if (lastCongregationLocationActivityId > 0) {
-    await DAL.insertExportActivity({ lastCongregationLocationActivityId, destination, congregationId });
+    await DAL.insertExportActivity({ lastCongregationLocationActivityId, destination, congregationId: Number(congregationId) });
   }
 
   return reconciled.map(({ externalLocation, operation }) => ({ externalLocation, operation }));
