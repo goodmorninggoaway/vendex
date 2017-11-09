@@ -25,7 +25,7 @@ exports.handler = async function convertToExternalLocation({ nextCongregationLoc
     'Territory type': 'Homes', // TODO This should be a tag on the territory
     'Territory number': (territory && territory.externalTerritoryId) || '',
     'Location type': locationType.find(congregationLocation.attributes),
-    'Location Status': locationStatus.find(congregationLocation.attributes),
+    'Status': locationStatus.find(congregationLocation.attributes),
     'Language': congregationLocation.language,
     'Latitude': location.latitude,
     'Longitude': location.longitude,
