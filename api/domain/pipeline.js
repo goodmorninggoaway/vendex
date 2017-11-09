@@ -105,7 +105,7 @@ class Pipeline {
   }
 
   async execute() {
-    return executeSerially(this.handlers, this.executeHandler.bind(this));
+    return executeSerially(this.handlers, this.executeHandler.bind(this)).then(() => this.values);
   }
 }
 
