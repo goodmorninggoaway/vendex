@@ -1,5 +1,28 @@
-<h4>Territory Helper > Create Export</h4>
+<h4>Territory Helper > Exports</h4>
 
 <a href="/territoryhelper/locations?format=xlsx&congregationid=1" download class="waves-effect waves-light btn">
-  Download Export (Excel) <i class="material-icons right">file_download</i>
+  <i class="material-icons right">file_download</i> Download a new export
 </a>
+<blockquote>Refresh the page after downloading the file to see it in this list</blockquote>
+<blockquote>Empty exports are excluded from this list</blockquote>
+
+<table style="white-space: nowrap;" class="bordered highlight responsive-table">
+  <thead>
+  <tr>
+    <th>Timestamp</th>
+    <th>New</th>
+    <th>Updated</th>
+    <th>Deleted</th>
+  </tr>
+  </thead>
+  <tbody>
+  <% console.log(exports); exports.map(({ exportActivityId, timestamp, payload: { inserts, updates, deletes } }) => { %>
+  <tr>
+    <td><a href="/ui/territoryhelper/exports/<%= exportActivityId %>"><%= moment(timestamp).format('L LTS') %></a></td>
+    <td><%= inserts ? inserts.length : 0 %></td>
+    <td><%= updates ? updates.length : 0 %></td>
+    <td><%= deletes ? deletes.length : 0 %></td>
+  </tr>
+  <% }) %>
+  </tbody>
+</table>

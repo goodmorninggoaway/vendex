@@ -38,4 +38,8 @@ module.exports.views = {
 
   // layout: 'layout'
 
+
+  locals: {
+    moment: require('moment'),
+  },
 };

@@ -43,7 +43,8 @@ module.exports.routes = {
   'GET /ui/alba/locations': { view: 'alba/importLocations' },
   'GET /ui/territoryhelper/locations': { view: 'territoryHelper/importLocations' },
   'GET /ui/territoryhelper/territories': { view: 'territoryHelper/importTerritories' },
-  'GET /ui/territoryhelper/export': { view: 'territoryHelper/exportLocations' },
+  'GET /ui/territoryhelper/exports': 'UI.getTerritoryHelperExportHistory',
+  'GET /ui/territoryhelper/exports/:exportId': 'UI.getTerritoryHelperExport',
 
   'DELETE /reset': 'UIController.resetDatabase',
 

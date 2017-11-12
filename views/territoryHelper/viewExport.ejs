@@ -1,0 +1,60 @@
+<h4>Territory Helper > <a href="/ui/territoryhelper/exports?congregationid=1">Exports</a> > <%= moment(timestamp).format('L LTS')%></h4>
+
+<%
+const { inserts, updates, deletes } = payload;
+const byType = [
+  { header: 'New', values: inserts || [] },
+  { header: 'Updated', values: updates || [] },
+  { header: 'Deleted', values: deletes || [] }
+];
+%>
+<ul class="tabs">
+  <% byType.map(({ header, values }) => { %>
+  <li class="tab col s3 <%= !values.length && 'disabled' %>"><a href="#<%= header %>"><%= header %> (<%= values.length %>)</a></li>
+  <% }); %>
+</ul>
+
+<% byType.map(({ header, values }) => { %>
+<table style="white-space: nowrap;" class="bordered highlight responsive-table" id="<%= header %>">
+  <thead>
+  <tr>
+    <th>Territory type</th>
+    <th>Territory number</th>
+    <th>Location type</th>
+    <th>Status</th>
+    <th>Language</th>
+    <th>Latitude</th>
+    <th>Longitude</th>
+    <th>Address</th>
+    <th>Number</th>
+    <th>Street</th>
+    <th>City</th>
+    <th>Postal code</th>
+    <th>State</th>
+    <th>Country code</th>
+    <th>Notes</th>
+  </tr>
+  </thead>
+  <tbody>
+  <% values.map(({ externalLocation: value }) => { console.log(value); %>
+  <tr>
+    <td><%= value['Territory type'] %></td>
+    <td><%= value['Territory number'] %></td>
+    <td><%= value['Location type'] %></td>
+    <td><%= value['Status'] %></td>
+    <td><%= value['Language'] %></td>
+    <td><%= value['Latitude'] %></td>
+    <td><%= value['Longitude'] %></td>
+    <td><%= value['Address'] %></td>
+    <td><%= value['Number'] %></td>
+    <td><%= value['Street'] %></td>
+    <td><%= value['City'] %></td>
+    <td><%= value['Postal code'] %></td>
+    <td><%= value['State'] %></td>
+    <td><%= value['Country code'] %></td>
+    <td><%= value['Notes'] %></td>
+  </tr>
+  <% }) %>
+  </tbody>
+</table>
+<% }) %>

@@ -1,10 +1,3 @@
-/**
- * TerritoryHelperController
- *
- * @description :: Server-side actions for handling incoming requests.
- * @help        :: See https://sailsjs.com/docs/concepts/actions
- */
-
 module.exports = {
 
   /**
@@ -68,7 +61,8 @@ module.exports = {
       }
 
       if (!wantsFile) {
-        return res.json(data);
+        const { exportActivityId, externalLocations: { inserts, updates, deletes } } = data;
+        return res.json({ inserts, updates, deletes, exportActivityId });
       } else {
         res.set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.set('content-disposition', `attachment; filename=territory_helper_${Date.now().valueOf()}.xlsx`);

@@ -1,5 +1,5 @@
 const sortBy = require('lodash/sortBy');
-const compact = require('lodash/compact');
+const moment = require('moment');
 const { DAL } = require('../domain/dataAccess');
 
 /**
@@ -131,6 +131,27 @@ module.exports = {
     DAL.reset()
       .then(() => res.ok())
       .catch((err) => res.serverError(err));
+  },
+
+  getTerritoryHelperExport: async function (req, res) {
+    const { exportId: exportActivityId } = req.params;
+    const exportActivity = await DAL.getLastExportActivity({ exportActivityId });
+    return res.view('territoryHelper/viewExport', exportActivity);
+  },
+
+  getTerritoryHelperExportHistory: async function (req, res) {
+    const { congregationid: congregationId } = req.query;
+    const exports = (await DAL.getExportActivity({ congregationId }))
+      .filter((e) => {
+        if (!e.payload) {
+          return false;
+        }
+
+        const { inserts, updates, deletes } = e.payload;
+        return (inserts && inserts.length) || (updates && updates.length) || (deletes && deletes.length);
+      });
+
+    return res.view('territoryHelper/exportLocations', { exports });
   }
 };
 

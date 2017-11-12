@@ -16,6 +16,7 @@
     "grunt": "1.0.1",
     "knex": "^0.13.0",
     "lodash": "^4.17.4",
+    "moment": "^2.19.2",
     "npm-run-all": "^4.1.1",
     "object-hash": "^1.1.8",
     "objection": "^0.8.9",

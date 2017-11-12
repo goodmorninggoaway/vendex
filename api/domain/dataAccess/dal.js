@@ -44,6 +44,7 @@ exports.getLocationsForCongregation = congregationId => models.Location.query()
 
 exports.getLocationsForCongregationFromSource = (congregationId, source) => exports.getLocationsForCongregation(congregationId).where('externalSource', source);
 
+exports.getExportActivity = filter => models.ExportActivity.query().where(filter).orderBy('timestamp', 'desc');
 exports.getLastExportActivity = filter => models.ExportActivity.query().where(filter).orderBy('lastCongregationLocationActivityId', 'desc').first();
 exports.insertExportActivity = values => models.ExportActivity.query().insert(values);
 
