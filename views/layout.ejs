@@ -54,6 +54,7 @@
 <body>
 <ul id="slide-out" class="side-nav fixed">
   <li><a class="subheader" href="/"><h3>VENDEX</h3></a></li>
+  <li><a class="red-text" data-modal-congregation href="/ui/congregations">Set congregation</a></li>
   <li><a class="subheader">Admin</a></li>
   <li><a class="waves-effect" href="/ui/congregations">Congregations</a></li>
   <li><a class="waves-effect" href="/ui/languages">Languages</a></li>
@@ -65,7 +66,7 @@
   <li><a class="subheader">Territory Helper</a></li>
   <li><a class="waves-effect" href="/ui/territoryhelper/territories">Import Territories</a></li>
   <li><a class="waves-effect" href="/ui/territoryhelper/locations">Import Locations</a></li>
-  <li><a class="waves-effect" href="/ui/territoryhelper/exports?congregationid=1">Exports <small>(Create Export)</small></a></li>
+  <li><a class="waves-effect" data-set-href="/ui/territoryhelper/exports?congregationid=$congregationid">Exports</a></li>
   <li class="divider"></li>
   <li class="subheader"></li>
   <li><a>version <%= sails.config.globals.version %></a></li>
@@ -147,6 +148,30 @@
   $(document).ready(function () {
     $('select').material_select();
   });
+</script>
+<script>
+  (() => {
+    const congregationName = window.localStorage.getItem('congregationName');
+    const node = document.querySelector('[data-modal-congregation]');
+
+    if (congregationName) {
+      node.innerHTML = congregationName;
+      node.classList.remove('red-text');
+    }
+  })();
+</script>
+<script>
+  /* Update any URLs in the page with the current values such as congregationId*/
+  (() => {
+    const congregationId = window.localStorage.getItem('congregationId');
+
+    const nodeList = document.querySelectorAll('[data-set-href]');
+
+    Array.prototype.forEach.call(nodeList, (node) => {
+      const { setHref } = node.dataset;
+      node.setAttribute('href', setHref.replace(/\$congregationid/g, congregationId));
+    })
+  })();
 </script>
 </body>
 </html>

@@ -30,7 +30,7 @@
       body,
       method: 'POST',
       headers: new Headers({
-        'congregationid': 1,
+        'congregationid': window.localStorage.getItem('congregationId'),
       }),
     })
       .then((response) => {

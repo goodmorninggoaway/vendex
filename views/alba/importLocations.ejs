@@ -1,12 +1,15 @@
 <h4>Alba > Import Locations</h4>
-<div class="collection">
-  <div class="collection-item">
-    <span class="new badge"></span>
-    Setup relationships with other congregations by
-    <a href="/ui/congregations">adding</a> the congregation, then <a href="/ui/congregations/1">edit this one</a> to link them.
-    You can only import locations for congregations with whom you've setup an agreement.
-  </div>
-</div>
+<blockquote>
+  Setup relationships with other congregations by
+  <a href="/ui/congregations">adding</a> the congregation, then <a data-set-href="/ui/congregations/$congregationid">edit this one</a> to link them.
+  You should only import locations for congregations with whom you've agreed to share locations.
+</blockquote>
+<blockquote>
+  Importing locations from Alba can take a long time to complete the initial import. Estimate about 1-2 seconds per location.
+</blockquote>
+<blockquote>
+  If an address exists more than once in the import data, the last one wins.
+</blockquote>
 <form id="alba-location-import">
   <label for="alba-export-tsv">
     Paste ALBA location export from <a target="_blank" href="https://www.mcmxiv.com/alba/addresses">Alba</a>:
@@ -22,10 +25,6 @@
   <div id="error-message"></div>
 </form>
 
-<h5>Known Issues</h5>
-<ol>
-  <li>If an address exists more than once in the import data, the last one wins.</li>
-</ol>
 
 <script>
   const submitEl = document.getElementById('alba-submit');
@@ -44,7 +43,7 @@
       body,
       method: 'POST',
       headers: new Headers({
-        'congregationid': 1,
+        'congregationid': window.localStorage.getItem('congregationId'),
         'content-type': 'text/plain',
         'content-length': body.length,
       }),

@@ -1,5 +1,4 @@
 const sortBy = require('lodash/sortBy');
-const moment = require('moment');
 const { DAL } = require('../domain/dataAccess');
 
 /**
