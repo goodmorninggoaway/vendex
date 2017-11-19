@@ -41,5 +41,6 @@ module.exports.views = {
 
   locals: {
     moment: require('moment'),
+    env: process.env.APP_ENV || 'PROD',
   },
 };
