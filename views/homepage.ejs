@@ -1,3 +1,14 @@
 <div class="valign-wrapper">
-  <a class="btn btn-large" href="/ui/alba/locations">Begin</a>
+  <span id="prompt-nav" class="hide">Use the tabs on the left to get started. You probably want to start with an Alba import.</span>
+  <span id="prompt-cong-selection" class="hide">Please click the red link on the left to get started by setting a congregation.</span>
 </div>
+<script>
+  const message = id => document.getElementById(id).classList.remove('hide');
+  const congregationId = window.localStorage.getItem('congregationId');
+
+  if (!congregationId) {
+    message('prompt-cong-selection');
+  } else {
+    message('prompt-nav');
+  }
+</script>
