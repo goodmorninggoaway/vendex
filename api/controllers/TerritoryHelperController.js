@@ -66,8 +66,10 @@ module.exports = {
         const { exportActivityId, externalLocations: { inserts, updates, deletes } } = data;
         return res.json({ inserts, updates, deletes, exportActivityId });
       } else {
-        res.set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        res.set('content-disposition', `attachment; filename=territory_helper_${Date.now().valueOf()}.xlsx`);
+        sails.log('got this far');
+        res.attachment(`territory_helper_${Date.now().valueOf()}.xlsx`);
+        // res.set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        // res.set('content-disposition', `attachment; filename=territory_helper_${Date.now().valueOf()}.xlsx`);
         res.send(data);
       }
     });
