@@ -46,6 +46,8 @@ module.exports = {
    * `TerritoryHelperController.export()`
    */
   exportLocations: async function (req, res) {
+    req.setTimeout(120000);
+
     const { accept } = req.headers;
     const wantsFile = !accept
       || accept.includes('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
