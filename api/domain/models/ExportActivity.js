@@ -20,6 +20,8 @@ class ExportActivity extends Model {
         timestamp: { required: true },
         source: { type: 'string', minLength: 3, maxLength: 32 }, // TODO remove this
         destination: { type: 'string', minLength: 3, maxLength: 32 },
+        payload: {},
+        summary: {},
       },
     };
   }

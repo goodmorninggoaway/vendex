@@ -25,7 +25,7 @@ exports.insertLocation = values => models.Location.query().insert(values);
 exports.findCongregationLocation = filter => models.CongregationLocation.query().skipUndefined().where(filter).first();
 exports.updateCongregationLocation = (filter, value) => models.CongregationLocation.query().skipUndefined().where(filter).patch(value);
 exports.insertCongregationLocation = values => models.CongregationLocation.query().insert(values);
-exports.deleteCongregationLocation = filter => models.CongregationLocation.query().skipUndefined().where(filter).del();
+exports.deleteCongregationLocation = filter => exports.updateCongregationLocation(filter, { deleted: true });
 
 exports.findGeocodeResponse = filter => models.GeocodeResponse.query().where(filter).first();
 exports.insertGeocodeResponse = values => models.GeocodeResponse.query().insert(values);
@@ -44,8 +44,14 @@ exports.getLocationsForCongregation = congregationId => models.Location.query()
 
 exports.getLocationsForCongregationFromSource = (congregationId, source) => exports.getLocationsForCongregation(congregationId).where('externalSource', source);
 
-exports.getExportActivity = filter => models.ExportActivity.query().where(filter).orderBy('timestamp', 'desc');
-exports.getLastExportActivity = filter => models.ExportActivity.query().where(filter).orderBy('lastCongregationLocationActivityId', 'desc').first();
+exports.getExportActivities = filter => models.ExportActivity.query()
+  .column('exportActivityId', 'timestamp', 'summary')
+  .where(filter)
+  .orderBy('timestamp', 'desc');
+exports.getLastExportActivity = filter => models.ExportActivity.query()
+  .where(filter)
+  .orderBy('lastCongregationLocationActivityId', 'desc')
+  .first();
 exports.insertExportActivity = values => models.ExportActivity.query().insert(values);
 
 exports.addCongregationLocationActivity = values => models.CongregationLocationActivity.query().insert(values);

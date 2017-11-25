@@ -1,4 +1,4 @@
-<h4>Territory Helper > <a data-set-href="/ui/territoryhelper/exports?congregationid=$congregationid">Exports</a> > <%= moment(timestamp).format('L LTS')%></h4>
+<h4>Territory Helper > <a data-set-href="/ui/territoryhelper/exports?congregationid=$congregationid">Exports</a> > <%= moment(timestamp).format('L LTS') %></h4>
 
 <%
 const { inserts, updates, deletes } = payload;
@@ -36,7 +36,7 @@ const byType = [
   </tr>
   </thead>
   <tbody>
-  <% values.map(({ externalLocation: value }) => { console.log(value); %>
+  <% values.map(({ externalLocation: value }) => { %>
   <tr>
     <td><%= value['Territory type'] %></td>
     <td><%= value['Territory number'] %></td>

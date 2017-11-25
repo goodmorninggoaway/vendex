@@ -140,14 +140,15 @@ module.exports = {
 
   getTerritoryHelperExportHistory: async function (req, res) {
     const { congregationid: congregationId } = req.query;
-    const exports = (await DAL.getExportActivity({ congregationId }))
+    const exports = (await DAL.getExportActivities({ congregationId }))
       .filter((e) => {
-        if (!e.payload) {
-          return false;
+        // the summary was added later
+        if (!e.summary) {
+          return true;
         }
 
-        const { inserts, updates, deletes } = e.payload;
-        return (inserts && inserts.length) || (updates && updates.length) || (deletes && deletes.length);
+        const { inserts, updates, deletes } = e.summary;
+        return inserts || deletes || updates;
       });
 
     return res.view('territoryHelper/exportLocations', { exports });

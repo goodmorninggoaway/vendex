@@ -41,7 +41,11 @@ exports.handler = async function convertActivitiesToExternalLocations({ congrega
   } = groupBy(reconciled, 'operation');
 
   const payload = { inserts, updates, deletes };
-
+  const summary = {
+    inserts: inserts ? inserts.length : 0,
+    updates: updates ? updates.length : 0,
+    deletes: deletes ? deletes.length : 0,
+  };
   // Get congregationLocationActivityId on exported activities
   const ids = compact(reconciled.map(x => x.externalLocation && x.congregationLocationActivityId));
 
@@ -50,6 +54,7 @@ exports.handler = async function convertActivitiesToExternalLocations({ congrega
   const activity = await DAL.insertExportActivity({
     destination,
     payload,
+    summary,
     lastCongregationLocationActivityId,
     congregationId: Number(congregationId),
     timestamp: new Date(),

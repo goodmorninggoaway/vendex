@@ -18,12 +18,12 @@
   </tr>
   </thead>
   <tbody>
-  <% console.log(exports); exports.map(({ exportActivityId, timestamp, payload: { inserts, updates, deletes } }) => { %>
+  <% exports.map(({ exportActivityId, timestamp, summary }) => { %>
   <tr>
     <td><a href="/ui/territoryhelper/exports/<%= exportActivityId %>"><%= moment(timestamp).format('L LTS') %></a></td>
-    <td><%= inserts ? inserts.length : 0 %></td>
-    <td><%= updates ? updates.length : 0 %></td>
-    <td><%= deletes ? deletes.length : 0 %></td>
+    <td><%= summary ? summary.inserts : 'N/A' %></td>
+    <td><%= summary ? summary.updates : 'N/A' %></td>
+    <td><%= summary ? summary.deletes : 'N/A' %></td>
   </tr>
   <% }) %>
   </tbody>
