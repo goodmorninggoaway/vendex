@@ -44,6 +44,8 @@ module.exports.routes = {
   'GET /ui/territoryhelper/locations': { view: 'territoryHelper/importLocations' },
   'GET /ui/territoryhelper/territories': { view: 'territoryHelper/importTerritories' },
   'GET /ui/territoryhelper/exports': 'UI.getTerritoryHelperExportHistory',
+  'GET /ui/territoryhelper/exports/download': 'UI.downloadTerritoryHelperExport',
+  'GET /ui/territoryhelper/exports/:exportId/download': 'UI.downloadTerritoryHelperExport',
   'GET /ui/territoryhelper/exports/:exportId': 'UI.getTerritoryHelperExport',
 
   'DELETE /reset': 'UIController.resetDatabase',

@@ -48,7 +48,7 @@ exports.getExportActivities = filter => models.ExportActivity.query()
   .column('exportActivityId', 'timestamp', 'summary')
   .where(filter)
   .orderBy('timestamp', 'desc');
-exports.getLastExportActivity = filter => models.ExportActivity.query()
+exports.getLastExportActivity = filter => models.ExportActivity.query().skipUndefined()
   .where(filter)
   .orderBy('lastCongregationLocationActivityId', 'desc')
   .first();

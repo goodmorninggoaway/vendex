@@ -6,8 +6,8 @@ const getIndexedLocations = require('./getIndexedLocations');
 const convertActivitiesToExternalLocations = require('./convertActivitiesToExternalLocations');
 const createExcelFile = require('./createExcelFile');
 
-module.exports = async ({ congregationId, exportType = 'excel' }) => {
-  const pipeline = new Pipeline({ congregationId, destination: LOCATION_INTERFACES.TERRITORY_HELPER })
+module.exports = async ({ congregationId, exportType, tracer }) => {
+  const pipeline = new Pipeline({ congregationId, destination: LOCATION_INTERFACES.TERRITORY_HELPER, exportTracer: tracer })
     .addHandler(getCongregation)
     .addHandler(getLatestActivities)
     .addHandler(getIndexedLocations)

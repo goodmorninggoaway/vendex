@@ -152,6 +152,28 @@ module.exports = {
       });
 
     return res.view('territoryHelper/exportLocations', { exports });
+  },
+
+  downloadTerritoryHelperExport: async function (req, res) {
+    const exportActivityId = req.params.exportId;
+    const key = req.query.tracer;
+
+    const exportActivity = await DAL.getLastExportActivity({ exportActivityId, key });
+    if (!exportActivity || !exportActivity.payload) {
+      res.status(204);
+      res.send();
+    }
+
+    const createExcelFile = require('../domain/territoryHelper/export/createExcelFile').handler;
+    const file = await createExcelFile({ externalLocations: exportActivity.payload });
+    if (!file) {
+      return res.serverError('Error generating excel file');
+    }
+
+    const filename = `territoryhelper_${exportActivity.key}.xlsx`;
+    res.attachment(filename);
+    res.set('x-vendex-filename', filename);
+    res.send(file);
   }
 };
 

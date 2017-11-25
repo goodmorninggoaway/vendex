@@ -10,9 +10,9 @@ const findTerritory = require('./findTerritory');
 const convertToExternalLocation = require('./convertToExternalLocation');
 const isCongregationAuthorized = require('./isCongregationAuthorized');
 
-exports.requires = ['congregationId', 'congregation', 'destination', 'indexedLocations', 'activities'];
+exports.requires = ['congregationId', 'congregation', 'destination', 'indexedLocations', 'activities', 'exportTracer'];
 exports.returns = ['externalLocations', 'exportActivityId'];
-exports.handler = async function convertActivitiesToExternalLocations({ congregationId, destination, indexedLocations, activities, congregation }) {
+exports.handler = async function convertActivitiesToExternalLocations({ congregationId, destination, indexedLocations, activities, congregation, exportTracer }) {
   const worker = ({ operation, sourceCongregationId, locationId, congregationLocationActivityId }) => (
     new Pipeline({
       congregationId,
@@ -58,6 +58,7 @@ exports.handler = async function convertActivitiesToExternalLocations({ congrega
     lastCongregationLocationActivityId,
     congregationId: Number(congregationId),
     timestamp: new Date(),
+    key: exportTracer,
   });
 
   return { externalLocations: payload, exportActivityId: activity.exportActivityId };

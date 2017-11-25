@@ -46,8 +46,6 @@ module.exports = {
    * `TerritoryHelperController.export()`
    */
   exportLocations: async function (req, res) {
-    req.setTimeout(120000);
-
     const { accept } = req.headers;
     const wantsFile = !accept
       || accept.includes('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
@@ -56,23 +54,16 @@ module.exports = {
       || req.query.format === 'xlsx';
 
     const congregationId = req.headers.congregationid || req.query.congregationid;
-    await TerritoryHelperService.exportLocations({ congregationId, wantsFile }, (err, data) => {
+    const tracer = require('uuid/v4')();
+
+    TerritoryHelperService.exportLocations({ congregationId, tracer }, (err) => {
       if (err) {
         sails.log.error(err);
-        return res.serverError(err);
-      }
-
-      if (!wantsFile) {
-        const { exportActivityId, externalLocations: { inserts, updates, deletes } } = data;
-        return res.json({ inserts, updates, deletes, exportActivityId });
-      } else {
-        sails.log('got this far');
-        res.attachment(`territory_helper_${Date.now().valueOf()}.xlsx`);
-        // res.set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        // res.set('content-disposition', `attachment; filename=territory_helper_${Date.now().valueOf()}.xlsx`);
-        res.send(data);
       }
     });
+
+    res.location(`/ui/territoryhelper/exports/download?tracer=${tracer}`);
+    res.ok();
   },
 
 };

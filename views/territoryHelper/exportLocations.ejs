@@ -5,7 +5,6 @@
 >
   <i class="material-icons right">file_download</i> Download a new export
 </a>
-<blockquote>Refresh the page after downloading the file to see it in this list</blockquote>
 <blockquote>Empty exports are excluded from this list</blockquote>
 
 <table style="white-space: nowrap;" class="bordered highlight responsive-table">
@@ -15,16 +14,57 @@
     <th>New</th>
     <th>Updated</th>
     <th>Deleted</th>
+    <th></th>
   </tr>
   </thead>
-  <tbody>
+  <tbody id="exports-list">
   <% exports.map(({ exportActivityId, timestamp, summary }) => { %>
   <tr>
     <td><a href="/ui/territoryhelper/exports/<%= exportActivityId %>"><%= moment(timestamp).format('L LTS') %></a></td>
     <td><%= summary ? summary.inserts : 'N/A' %></td>
     <td><%= summary ? summary.updates : 'N/A' %></td>
     <td><%= summary ? summary.deletes : 'N/A' %></td>
+    <td><a href="/ui/territoryhelper/exports/<%= exportActivityId %>/download">Download</a></td>
   </tr>
   <% }) %>
   </tbody>
 </table>
+
+<script>
+  const el = document.getElementById('create-export');
+
+  el.addEventListener('click', async (e) => {
+    e.preventDefault();
+    const congregationId = window.localStorage.getItem('congregationId');
+    const response = await fetch(`/territoryhelper/locations?format=xlsx&congregationid=${congregationId}`);
+    if (!response.ok) {
+      Materialize.toast('Error creating export.', 5000);
+      return;
+    }
+
+    const downloadUrl = response.headers.get('location');
+    const pingDownload = () => {
+      fetch(downloadUrl)
+        .then(async (result) => {
+          if (result.status === 204) {
+            window.setTimeout(pingDownload, 2500);
+          } else if (result.ok) {
+            const a = document.createElement('a');
+            a.href = window.URL.createObjectURL(await result.blob());
+            a.download = result.headers.get('x-vendex-filename');
+            a.click();
+
+            window.location.reload();
+          } else {
+            Materialize.toast('Error downloading export.', 5000);
+          }
+        })
+        .catch(err => {
+          Materialize.toast('Error downloading export.', 5000);
+          console.error(err);
+        });
+    };
+
+    pingDownload();
+  });
+</script>
