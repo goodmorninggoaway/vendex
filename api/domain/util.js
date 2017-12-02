@@ -18,18 +18,18 @@ exports.serializeTasks = (taskFactories) => {
 exports.executeConcurrently = (source, taskWorker, workerCount = (process.env.MAX_CONCURRENCY || 4)) => new Promise((resolve, reject) => {
   const results = [];
   const worker = async (task) => {
-    console.log('starting a task');
+    // console.log('starting a task');
     results.push(await taskWorker(task));
-    console.log('finished a task', `remaining: ${q.length()}, running: ${q.running()}, idle: ${q.idle()}, paused: ${q.paused}`);
+    // console.log('finished a task', `remaining: ${q.length()}, running: ${q.running()}, idle: ${q.idle()}, paused: ${q.paused}`);
   };
 
   const q = queue(worker, workerCount);
   q.drain = () => {
-    console.log('emptied the queue');
+    // console.log('emptied the queue');
     return resolve(results);
   };
   q.error = (e) => {
-    console.error('had an error', e && e.message);
+    // console.error('had an error', e && e.message);
     q.kill();
     reject(e)
   };
