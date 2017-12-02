@@ -45,7 +45,7 @@ module.exports = {
   /**
    * `TerritoryHelperController.export()`
    */
-  exportLocations: function (req, res) {
+  exportLocations: async function (req, res) {
     const { accept } = req.headers;
     const wantsFile = !accept
       || accept.includes('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
@@ -56,7 +56,7 @@ module.exports = {
     const congregationId = req.headers.congregationid || req.query.congregationid;
     const tracer = require('uuid/v4')();
 
-    TerritoryHelperService.exportLocations({ congregationId, tracer }, (err) => {
+    await TerritoryHelperService.exportLocations({ congregationId, tracer }, (err) => {
       if (err) {
         sails.log.error(err);
       }
