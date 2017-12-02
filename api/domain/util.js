@@ -17,13 +17,8 @@ exports.serializeTasks = (taskFactories) => {
 
 exports.executeConcurrently = (source, taskWorker, workerCount = (process.env.MAX_CONCURRENCY || 4)) => new Promise((resolve, reject) => {
   const results = [];
-  const worker = async (task, done) => {
-    try {
-      results.push(await taskWorker(task));
-      done();
-    } catch (e) {
-      done(e);
-    }
+  const worker = async (task) => {
+    results.push(await taskWorker(task));
   };
 
   const q = queue(worker, workerCount);
