@@ -24,6 +24,7 @@ exports.executeConcurrently = (source, taskWorker, workerCount = (process.env.MA
   const q = queue(worker, workerCount);
   q.drain = () => resolve(results);
   q.error = (e) => {
+    console.error('had an error', e && e.message);
     q.kill();
     reject(e)
   };
