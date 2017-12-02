@@ -13,7 +13,7 @@ module.exports = {
   importLocations: async function (req, res) {
     const { congregationid } = req.headers;
 
-    AlbaService.importLocations({ congregationId: congregationid, inputData: req.body }, (err, data) => {
+    AlbaService.importLocations({ congregationId: +congregationid, inputData: req.body }, (err, data) => {
       if (err) {
         sails.log.error(err);
         return res.serverError(err);
