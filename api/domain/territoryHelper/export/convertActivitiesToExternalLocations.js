@@ -40,7 +40,12 @@ exports.handler = async function convertActivitiesToExternalLocations({ congrega
     [OPERATION.DELETE]: deletes,
   } = groupBy(reconciled, 'operation');
 
-  const payload = { inserts, updates, deletes };
+  const payload = {
+    inserts: inserts ? inserts.map(x => x.externalLocation) : undefined,
+    updates: updates ? updates.map(x => x.externalLocation) : undefined,
+    deletes: deletes ? deletes.map(x => x.externalLocation) : undefined,
+  };
+
   const summary = {
     inserts: inserts ? inserts.length : 0,
     updates: updates ? updates.length : 0,
