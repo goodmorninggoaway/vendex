@@ -1,10 +1,17 @@
 <h4>Territory Helper > Exports</h4>
 
-<a id="create-export" class="waves-effect waves-light btn"
-   data-set-href="/territoryhelper/locations?format=xlsx&congregationid=$congregationid"
->
-  <i class="material-icons right">file_download</i> Download a new export
-</a>
+<div>
+  <button id="create-export" class="waves-effect waves-light btn"
+          data-set-href="/territoryhelper/locations?format=xlsx&congregationid=$congregationid"
+  >
+    <i class="material-icons right">file_download</i> Download a new export
+  </button>
+  <div class="progress hide" id="spinner">
+    <div class="indeterminate"></div>
+  </div>
+</div>
+
+
 <blockquote>Empty exports are excluded from this list</blockquote>
 
 <table style="white-space: nowrap;" class="bordered highlight responsive-table">
@@ -32,10 +39,15 @@
 
 <script>
   const el = document.getElementById('create-export');
+  const spinner = document.getElementById('spinner');
 
   el.addEventListener('click', async (e) => {
     e.preventDefault();
+    spinner.classList.remove('hide');
+    el.setAttribute('disabled', 'disabled');
+
     const congregationId = window.localStorage.getItem('congregationId');
+
     const response = await fetch(`/territoryhelper/locations?format=xlsx&congregationid=${congregationId}`);
     if (!response.ok) {
       Materialize.toast('Error creating export.', 5000);
@@ -57,11 +69,15 @@
             window.location.reload();
           } else {
             Materialize.toast('Error downloading export.', 5000);
+            spinner.classList.add('hide');
+            el.removeAttribute('disabled');
           }
         })
         .catch(err => {
           Materialize.toast('Error downloading export.', 5000);
           console.error(err);
+          spinner.classList.add('hide');
+          el.removeAttribute('disabled');
         });
     };
 
