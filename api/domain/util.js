@@ -18,11 +18,16 @@ exports.serializeTasks = (taskFactories) => {
 exports.executeConcurrently = (source, taskWorker, workerCount = (process.env.MAX_CONCURRENCY || 4)) => new Promise((resolve, reject) => {
   const results = [];
   const worker = async (task) => {
+    console.log('starting a task');
     results.push(await taskWorker(task));
+    console.log('finished a task');
   };
 
   const q = queue(worker, workerCount);
-  q.drain = () => resolve(results);
+  q.drain = () => {
+    console.log('emptied the queue');
+    return resolve(results);
+  };
   q.error = (e) => {
     console.error('had an error', e && e.message);
     q.kill();
