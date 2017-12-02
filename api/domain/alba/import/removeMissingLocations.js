@@ -6,7 +6,7 @@ exports.requires = ['importedLocations', 'existingLocations', 'congregationId', 
 exports.returns = 'deletedLocations';
 exports.handler = async function removeMissingLocations({ congregationId, importedLocations, existingLocations, source }) {
   const deletedLocations = differenceBy(existingLocations, importedLocations, 'location.locationId');
-  const worker = async ({ location: { locationId } }) => {
+  const worker = async ({ locationId }) => {
     await DAL.deleteCongregationLocation({ congregationId, locationId });
     console.log(`Deleted "congregationLocation": locationId=${locationId}, congregationId=${congregationId}`);
     await DAL.addCongregationLocationActivity({ congregationId, locationId, operation: 'D', source });
