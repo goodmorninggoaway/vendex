@@ -161,7 +161,7 @@ module.exports = {
     const exportActivity = await DAL.getLastExportActivity({ exportActivityId, key });
     if (!exportActivity || !exportActivity.payload) {
       res.status(204);
-      res.send();
+      return res.send(null);
     }
 
     const createExcelFile = require('../domain/territoryHelper/export/createExcelFile').handler;
