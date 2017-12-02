@@ -1,3 +1,5 @@
+const exportLocations = require('../domain/territoryHelper/export');
+
 module.exports = {
 
   /**
@@ -56,11 +58,7 @@ module.exports = {
     const congregationId = req.headers.congregationid || req.query.congregationid;
     const tracer = require('uuid/v4')();
 
-    TerritoryHelperService.exportLocations({ congregationId, tracer }, (err) => {
-      if (err) {
-        sails.log.error(err);
-      }
-    });
+    exportLocations({ congregationId, tracer });
 
     res.location(`/ui/territoryhelper/exports/download?tracer=${tracer}`);
     res.ok();
