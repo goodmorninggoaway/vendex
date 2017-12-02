@@ -20,7 +20,7 @@ exports.executeConcurrently = (source, taskWorker, workerCount = (process.env.MA
   const worker = async (task) => {
     console.log('starting a task');
     results.push(await taskWorker(task));
-    console.log('finished a task');
+    console.log('finished a task', `remaining: ${q.length()}, running: ${q.running()}, idle: ${q.idle()}, paused: ${q.paused}`);
   };
 
   const q = queue(worker, workerCount);
