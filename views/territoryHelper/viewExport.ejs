@@ -36,7 +36,9 @@ const byType = [
   </tr>
   </thead>
   <tbody>
-  <% values.map(({ externalLocation: value }) => { %>
+  <% values.map((row) => {
+    const value = row.externalLocation || row;
+  %>
   <tr>
     <td><%= value['Territory type'] %></td>
     <td><%= value['Territory number'] %></td>

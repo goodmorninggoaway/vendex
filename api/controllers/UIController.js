@@ -163,8 +163,16 @@ module.exports = {
       return res.sendStatus(204);
     }
 
+    // Older version was nested and much fatter
+    const { inserts, deletes, updates } = exportActivity.payload;
+    const payload = {
+      inserts: inserts ? inserts.map(x => x.externalLocation || x) : undefined,
+      updates: updates ? updates.map(x => x.externalLocation || x) : undefined,
+      deletes: deletes ? deletes.map(x => x.externalLocation || x) : undefined,
+    };
+
     const createExcelFile = require('../domain/territoryHelper/export/createExcelFile').handler;
-    const file = await createExcelFile({ externalLocations: exportActivity.payload });
+    const file = await createExcelFile(payload);
     if (!file) {
       return res.serverError('Error generating excel file');
     }
