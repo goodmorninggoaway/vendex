@@ -20,9 +20,7 @@ module.exports.routes = {
    *                                                                          *
    ***************************************************************************/
 
-  '/': {
-    view: 'homepage'
-  },
+  '/': 'UI.homepage',
 
   'GET /ui/congregations/:congregationId': 'UI.getCongregation',
   'POST /ui/congregations/:congregationId': 'UI.updateCongregation',

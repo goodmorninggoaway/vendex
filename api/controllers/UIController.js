@@ -10,6 +10,11 @@ const { DAL } = require('../domain/dataAccess');
 
 module.exports = {
 
+  homepage: async function (req, res) {
+    const congregations = await DAL.getCongregations();
+    return res.view('homepage', { congregations });
+  },
+
   listCongregations: async function (req, res) {
     const [congregations, languages] = await Promise.all([DAL.getCongregations(), DAL.getLanguages()]);
     return res.view('congregation/list', {

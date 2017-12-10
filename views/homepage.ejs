@@ -1,14 +1,40 @@
-<div class="valign-wrapper">
-  <span id="prompt-nav" class="hide">Use the tabs on the left to get started. You probably want to start with an Alba import.</span>
-  <span id="prompt-cong-selection" class="hide">Please click the red link on the left to get started by setting a congregation.</span>
-</div>
-<script>
-  const message = id => document.getElementById(id).classList.remove('hide');
-  const congregationId = window.localStorage.getItem('congregationId');
+<blockquote>Start by selecting a congregation below. Unless you clear your browser's cache, you won't need to do this again any time soon.</blockquote>
+<blockquote>If your congregation is not in this list, add it <a href="/ui/congregations">here</a>.</blockquote>
 
-  if (!congregationId) {
-    message('prompt-cong-selection');
-  } else {
-    message('prompt-nav');
-  }
+<ul class="collection">
+  <% congregations.map(({ congregationId, name }) => { %>
+  <a
+    href="#!"
+    class="collection-item"
+    data-congregation-id="<%= congregationId %>"
+    data-name="<%= name %>"
+    data-set-session
+  >
+    <%= name %>
+  </a>
+  <% }); %>
+</ul>
+<div class="valign-wrapper">
+  Then use the tabs on the left to get started. You should start with an Alba import, then go down the list.
+</div>
+
+<script>
+  (function () {
+    function onToggleCongregation(e) {
+      const { target: { dataset: { congregationId, name: congregationName } } } = e;
+      e.preventDefault();
+      window.localStorage.setItem('congregationId', congregationId);
+      window.localStorage.setItem('congregationName', congregationName);
+      window.location.reload(true);
+    }
+
+    document.querySelectorAll('[data-set-session]').forEach((el) => {
+      el.addEventListener('click', onToggleCongregation);
+    });
+
+    const existing = document.querySelector(`[data-congregation-id="${window.localStorage.getItem('congregationId')}"]`);
+    if (existing) {
+      existing.classList.add('active');
+    }
+  }())
 </script>
