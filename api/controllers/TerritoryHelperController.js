@@ -34,13 +34,25 @@ module.exports = {
    */
   importTerritories: async function (req, res) {
     const { congregationid } = req.headers;
-    await TerritoryHelperService.importTerritories({ congregationId: Number(congregationid), inputData: req.body }, (err, data) => {
+
+    req.file('file').upload({ maxBytes: process.env.FILE_UPLOAD_MAX_BYTES }, (err, files) => {
       if (err) {
         sails.log.error(err);
         return res.serverError(err);
       }
 
-      return res.json(data);
+      if (!files.length) {
+        return res.badRequest('Missing required "file" parameter; must be a file upload.');
+      }
+
+      TerritoryHelperService.importTerritories({ congregationId: Number(congregationid), file: files[0].fd }, (err, data) => {
+        if (err) {
+          sails.log.error(err);
+          return res.serverError(err);
+        }
+
+        return res.json(data);
+      });
     });
   },
 

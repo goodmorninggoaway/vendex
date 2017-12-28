@@ -1,12 +1,15 @@
 <h4>Territory Helper > Import Territories</h4>
 <form id="th-territory-import">
-  <label for="th-territory-file">
-    Choose a <a target="_blank" href="https://territoryhelper.com/en/ImportExport">Territory Helper</a> territory export file to upload
-    <input type="file" name="file" id="th-territory-file">
-  </label>
-  <textarea disabled="disabled" id="th-territory-json" name="th-territory-json"></textarea>
+  <div class="row">
+    <label for="th-territory-file">
+      <p>Choose a <a target="_blank" href="https://territoryhelper.com/en/ImportExport">Territory Helper</a> territory export file to upload</p>
+      <input type="file" name="file" id="th-territory-file">
+    </label>
+  </div>
 
-  <button id="th-submit">Submit</button>
+  <div class="row">
+    <button id="th-submit">Import</button>
+  </div>
 
   <div class="progress hide">
     <div class="indeterminate"></div>
@@ -16,9 +19,6 @@
 </form>
 <script>
   const submitEl = document.getElementById('th-submit');
-  const fileEl = document.getElementById('th-territory-file');
-  const jsonEl = document.getElementById('th-territory-json');
-
 
   submitEl.addEventListener('click', (e) => {
     e.preventDefault();
@@ -28,13 +28,11 @@
     const errorMessageEl = document.getElementById('error-message');
     progressEl.classList.remove('hide');
 
-    const body = jsonEl.value;
     fetch('/territoryhelper/territories', {
-      body,
+      body: new FormData(document.getElementById('th-territory-import')),
       method: 'POST',
       headers: new Headers({
         'congregationid': window.localStorage.getItem('congregationId'),
-        'content-type': 'application/json',
       }),
     })
       .then((response) => {
@@ -55,38 +53,4 @@
         Materialize.toast(err, 5000);
       });
   });
-
-  fileEl.addEventListener('change', (e) => {
-    const { files } = e.target;
-    if (files.length) {
-      Materialize.toast('Loading file', 5000);
-
-      loadFile(e.target)
-        .then(json => {
-          jsonEl.innerText = JSON.stringify(JSON.parse(json), null, 2);
-        })
-        .catch((err) => {
-          Materialize.toast(`Error reading file: ${err}`, 5000);
-        });
-    } else {
-      jsonEl.innerText = '';
-    }
-  });
-
-</script>
-<script type="text/javascript">
-  function loadFile(input) {
-    return new Promise((resolve, reject) => {
-      if (!input.files[0]) {
-        return reject('Select a file');
-      }
-
-      const fr = new FileReader();
-      fr.onload = e => resolve(e.target.result);
-      fr.onerror = reject;
-
-      const file = input.files[0];
-      fr.readAsText(file)
-    });
-  }
 </script>

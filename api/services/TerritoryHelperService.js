@@ -1,7 +1,7 @@
 const fs = require('fs');
 const importLocations = require('../domain/import-territory-helper');
 const exportLocations = require('../domain/territoryHelper/export');
-const importTerritories = require('../domain/import-territory-helper-territories');
+const importTerritories = require('../domain/territoryHelper/territories');
 
 module.exports = {
   async importLocations(options, done) {
@@ -16,9 +16,18 @@ module.exports = {
     }
   },
 
-  async importTerritories(options, done) {
+  async importTerritories({ file, ...options }, done) {
     try {
-      return done(null, await importTerritories(options));
+      fs.readFile(file, 'utf8', async (err, data) => {
+        if (err) {
+          return done(err);
+        }
+
+        const result = await importTerritories(Object.assign({ inputData: JSON.parse(data) }, options));
+        fs.unlink(options.file, () => {
+          return done(null, result);
+        });
+      });
     } catch (ex) {
       return done(ex);
     }

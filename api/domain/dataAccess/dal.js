@@ -30,12 +30,12 @@ exports.deleteCongregationLocation = filter => exports.updateCongregationLocatio
 exports.findGeocodeResponse = filter => models.GeocodeResponse.query().where(filter).first();
 exports.insertGeocodeResponse = values => models.GeocodeResponse.query().insert(values);
 
-exports.getTerritories = filter => models.Territory.query().skipUndefined().where(filter).where({ deleted: false });
+exports.getTerritories = filter => models.Territory.query().skipUndefined().where({ deleted: false }).where(filter);
 exports.findTerritory = filter => exports.getTerritories(filter).first();
 exports.findTerritoryContainingPoint = (congregationId, { longitude, latitude }) => exports.getTerritories({ congregationId })
   .whereRaw('"boundary" @> point (?, ?)', [longitude, latitude]);
-exports.insertTerritory = values => models.Territory.query().insert(values);
-exports.updateTerritory = (filter, updates) => models.Territory.query().skipUndefined().where(filter).patch(updates);
+// exports.insertTerritory = values => models.Territory.query().insert(values);
+// exports.updateTerritory = (filter, updates) => models.Territory.query().skipUndefined().where(filter).patch(updates);
 exports.deleteTerritory = (territoryId) => models.Territory.query().skipUndefined().where({ territoryId }).del();
 
 exports.getLocationsForCongregation = congregationId => models.Location.query()
