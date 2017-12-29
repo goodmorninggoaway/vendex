@@ -1,5 +1,5 @@
 const sortBy = require('lodash/sortBy');
-const { DAL } = require('../domain/dataAccess');
+const { DAL } = require('../../domain/dataAccess');
 
 /**
  * GeneralUiController

@@ -1,4 +1,4 @@
-const exportLocations = require('../domain/territoryHelper/export');
+const exportLocations = require('../../domain/territoryHelper/export');
 
 module.exports = {
 
