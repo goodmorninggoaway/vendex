@@ -21,6 +21,7 @@ module.exports.routes = {
    ***************************************************************************/
 
   '/': 'UI.homepage',
+  '/ui': 'UI.homepage',
 
   'GET /ui/congregations/:congregationId': 'UI.getCongregation',
   'POST /ui/congregations/:congregationId': 'UI.updateCongregation',

@@ -1,3 +1,4 @@
+require('dotenv').config();
 const Glue = require('glue');
 const serverConfig = require('./config/manifest');
 

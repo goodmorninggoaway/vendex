@@ -48,7 +48,7 @@
   <li><a class="waves-effect" href="/ui/reset">Reset</a></li>
   <% } %>
   <li class="divider"></li>
-  <li data-session-required="false"><a>version <%= sails.config.globals.version %></a></li>
+  <li data-session-required="false"><a>version <%= version %></a></li>
 </ul>
 <main>
   <%- body %>
@@ -115,7 +115,7 @@
       return;
     }
 
-    window.location.href = '/';
+    window.location.href = '/ui';
   }())
 </script>
 </body>

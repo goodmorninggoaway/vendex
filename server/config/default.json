@@ -1,6 +1,6 @@
 {
-  "appName": "Hapi Boilerplate",
-  "port": 3009,
+  "appName": "Vendex",
+  "port": 1338,
   "debug": {
     "request": [
       "error",
