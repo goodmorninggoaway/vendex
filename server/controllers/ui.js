@@ -1,6 +1,6 @@
 const Boom = require('boom');
 const sortBy = require('lodash/sortBy');
-const DAL = require('../../../domain/dataAccess').DAL;
+const DAL = require('../../domain/dataAccess').DAL;
 
 const handlers = {
   homepage: async function (req, res) {
@@ -169,7 +169,7 @@ const handlers = {
       deletes: deletes ? deletes.map(x => x.externalLocation || x) : undefined,
     };
 
-    const createExcelFile = require('../../../domain/territoryHelper/export/createExcelFile').handler;
+    const createExcelFile = require('../../domain/territoryHelper/export/createExcelFile').handler;
     const file = await createExcelFile(payload);
     if (!file) {
       return Boom.badData('Error generating excel file');

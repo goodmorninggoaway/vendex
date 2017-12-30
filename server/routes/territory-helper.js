@@ -7,6 +7,6 @@ exports.plugin = {
       { method: 'POST', path: '/territories', options: Controller.importTerritories },
     ]);
   },
-  version: require('../../../package.json').version,
+  version: require('../../package.json').version,
   name: 'territory-helper-route'
 };

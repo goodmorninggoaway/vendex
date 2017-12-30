@@ -6,7 +6,7 @@ module.exports = {
       const ws = wb.Sheets[wb.SheetNames[0]];
       const inputData = XLSX.utils.sheet_to_json(ws, { header: 1 });
 
-      const importLocations = require('../../../domain/import-territory-helper');
+      const importLocations = require('../../domain/import-territory-helper');
       importLocations({ congregationId: +req.headers.congregationid, fileStream: req.payload.file, sourceData: inputData });
       return null;
     },
@@ -18,7 +18,7 @@ module.exports = {
 
   importTerritories: {
     handler: async function (req, res) {
-      const importTerritories = require('../../../domain/territoryHelper/territories');
+      const importTerritories = require('../../domain/territoryHelper/territories');
       await importTerritories({ congregationId: +req.headers.congregationid, inputData: req.payload.file });
       return null;
     },
@@ -33,7 +33,7 @@ module.exports = {
     handler: async function (req, res) {
       const congregationId = req.headers.congregationid || req.query.congregationid;
       const tracer = require('uuid/v4')();
-      const exportLocations = require('../../../domain/territoryHelper/export');
+      const exportLocations = require('../../domain/territoryHelper/export');
       exportLocations({ congregationId, tracer });
 
       return res.response()

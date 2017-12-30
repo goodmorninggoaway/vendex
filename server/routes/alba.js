@@ -5,6 +5,6 @@ exports.plugin = {
       { method: 'POST', path: '/locations', options: Controller.importLocations },
     ]);
   },
-  version: require('../../../package.json').version,
+  version: require('../../package.json').version,
   name: 'alba-route'
 };

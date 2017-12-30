@@ -2,14 +2,11 @@ require('dotenv').config();
 process.env.APP_ENV = process.env.APP_ENV || 'PROD';
 
 const Glue = require('glue');
-const serverConfig = require('./config/manifest');
-
-// this is the line we mention in manifest.js
-// relativeTo parameter should be defined here
-const options = {...serverConfig.options, relativeTo: __dirname};
+const serverConfig = require('./manifest');
 
 const startServer = async function () {
   try {
+    const options = { ...serverConfig.options, relativeTo: __dirname };
     const server = await Glue.compose(serverConfig.manifest, options);
     await server.start();
     console.log('server started');

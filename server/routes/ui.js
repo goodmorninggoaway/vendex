@@ -30,6 +30,6 @@ exports.plugin = {
       { method: 'GET', path: '/territoryhelper/territories', options: { handler: { view: { template: 'territoryHelper/importTerritories.ejs' } } } },
     ]);
   },
-  version: require('../../../package.json').version,
+  version: require('../../package.json').version,
   name: 'ui-route'
 };
