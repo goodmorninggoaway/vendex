@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-ROOT=~/code/thalba-sync
-FILES_ROOT=$ROOT/.files
-TOOLS_ROOT=$ROOT/tools
-DB_PATH=$FILES_ROOT
-DB_FILENAME=$DB_PATH/_db.db
-MIGRATIONS_PATH=$ROOT/lib/dataAccess/migrations
-INITIAL_MIGRATION_FILENAME=$MIGRATIONS_PATH/0001_Init.sql
