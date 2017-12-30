@@ -42,7 +42,7 @@
     "sinon-chai": "^2.14.0"
   },
   "scripts": {
-    "start": "NODE_ENV=production node app.js",
+    "start": "node server/server.js",
     "test:domain": "mocha --require ./scripts/test-setup --watch ./api/domain/**/*.spec.js",
     "lint": "node ./node_modules/eslint/bin/eslint . --max-warnings=0 && echo '✔  Your code looks good.'",
     "custom-tests": "echo \"(No other custom tests yet.)\" && echo",

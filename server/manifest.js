@@ -22,19 +22,19 @@ exports.manifest = {
   register: {
     plugins: [
       {
-        plugin: './app/routes/ui',
+        plugin: './routes/ui',
         routes: {
           prefix: '/ui',
         },
       },
       {
-        plugin: './app/routes/alba',
+        plugin: './routes/alba',
         routes: {
           prefix: '/alba',
         },
       },
       {
-        plugin: './app/routes/territory-helper',
+        plugin: './routes/territory-helper',
         routes: {
           prefix: '/territoryhelper',
         },
