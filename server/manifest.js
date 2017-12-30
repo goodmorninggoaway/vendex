@@ -1,3 +1,49 @@
+const plugins = [
+  {
+    plugin: './routes/root',
+  },
+  {
+    plugin: './routes/ui',
+    routes: {
+      prefix: '/ui',
+    },
+  },
+  {
+    plugin: './routes/alba',
+    routes: {
+      prefix: '/alba',
+    },
+  },
+  {
+    plugin: './routes/territory-helper',
+    routes: {
+      prefix: '/territoryhelper',
+    },
+  },
+];
+
+if (process.env.APP_ENV === 'DEV') {
+  plugins.push({
+    plugin: require('good'),
+    options: {
+      ops: {
+        interval: 1000
+      },
+      reporters: {
+        console: [
+          {
+            module: 'good-squeeze',
+            name: 'Squeeze',
+            args: [{ log: '*', response: '*' }]
+          },
+          { module: 'good-console' },
+          'stdout'
+        ]
+      },
+    },
+  });
+}
+
 exports.manifest = {
   server: {
     router: {
@@ -20,48 +66,7 @@ exports.manifest = {
     port: +process.env.PORT || 1338,
   },
   register: {
-    plugins: [
-      // {
-      //   plugin: require('good'),
-      //   options: {
-      //     ops: {
-      //       interval: 1000
-      //     },
-      //     reporters: {
-      //       console: [
-      //         {
-      //           module: 'good-squeeze',
-      //           name: 'Squeeze',
-      //           args: [{ log: '*', response: '*' }]
-      //         },
-      //         { module: 'good-console' },
-      //         'stdout'
-      //       ]
-      //     },
-      //   },
-      // },
-      {
-        plugin: './routes/root',
-      },
-      {
-        plugin: './routes/ui',
-        routes: {
-          prefix: '/ui',
-        },
-      },
-      {
-        plugin: './routes/alba',
-        routes: {
-          prefix: '/alba',
-        },
-      },
-      {
-        plugin: './routes/territory-helper',
-        routes: {
-          prefix: '/territoryhelper',
-        },
-      },
-    ],
+    plugins,
   },
 };
 
