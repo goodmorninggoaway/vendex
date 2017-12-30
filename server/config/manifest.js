@@ -30,6 +30,12 @@ const plugins = [
       prefix: '/alba',
     },
   },
+  {
+    plugin: './app/routes/territory-helper',
+    routes: {
+      prefix: '/territoryhelper',
+    },
+  },
   // {
   //     plugin: './app/routes/user',
   //     routes: {

@@ -41,7 +41,7 @@
     "uuid": "^3.1.0",
     "vision": "^5.3.0",
     "winston": "^2.4.0",
-    "xlsx": "^0.11.4",
+    "xlsx": "^0.11.15",
     "yar": "^9.0.1"
   },
   "devDependencies": {

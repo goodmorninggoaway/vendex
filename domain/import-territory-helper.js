@@ -1,4 +1,3 @@
-const Logger = global.Logger;
 const util = require('util');
 const differenceBy = require('lodash/differenceBy');
 const hash = require('object-hash');
@@ -9,7 +8,7 @@ const convertExcelToJson = util.promisify(excelAsJson.processStream);
 const { serializeTasks } = require('./util');
 const TAGS = require('./models/enums/tags');
 
-module.exports = async ({ congregationId, fileStream }) => {
+module.exports = async ({ congregationId, fileStream, sourceData }) => {
   const source = 'TERRITORY HELPER';
   const importLocation = async (locations, externalLocation) => {
     // Ignore local-language DNCs
@@ -99,17 +98,17 @@ module.exports = async ({ congregationId, fileStream }) => {
     return { location, congregationLocation };
   };
 
-  const sourceData = await convertExcelToJson(fileStream, null, {});
+  sourceData = sourceData || await convertExcelToJson(fileStream, null, {});
   const existingLocations = await DAL.getLocationsForCongregationFromSource(congregationId, source);
   const updatedLocations = await serializeTasks(sourceData.map((x, index) => () => {
-    Logger.log(`Processing Territory Helper Location Import ${index + 1}/${sourceData.length}`);
+    console.log(`Processing Territory Helper Location Import ${index + 1}/${sourceData.length}`);
     return importLocation(existingLocations, x);
   }));
 
   const deletedLocations = differenceBy(existingLocations, updatedLocations, 'location.locationId');
   await serializeTasks(deletedLocations.map(({ location: { locationId } }, index) => async () => {
     await DAL.deleteCongregationLocation({ congregationId, locationId });
-    Logger.log(`Deleted "congregationLocation": locationId=${locationId}, congregationId=${congregationId}`);
+    console.log(`Deleted "congregationLocation": locationId=${locationId}, congregationId=${congregationId}`);
 
     await DAL.addCongregationLocationActivity({ congregationId, locationId, operation: 'D', source });
   }));
