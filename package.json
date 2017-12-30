@@ -32,7 +32,10 @@
     "chai": "^4.1.2",
     "dirty-chai": "^2.0.1",
     "eslint": "3.5.0",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-plugin-prettier": "^2.4.0",
     "mocha": "^4.0.1",
+    "prettier": "1.9.2",
     "proxyquire": "^1.8.0",
     "sinon": "^4.0.1",
     "sinon-chai": "^2.14.0"
@@ -40,7 +43,8 @@
   "scripts": {
     "start": "node server/server.js",
     "test:domain": "mocha --require ./scripts/test-setup --watch ./api/domain/**/*.spec.js",
-    "find-unused-packages": "npx depcheck --ignores=eslint,good,good-squeeze,good-console,pg"
+    "find-unused-packages": "npx depcheck --ignores=eslint,good,good-squeeze,good-console,pg",
+    "lint": "eslint -c .eslintrc --fix ./"
   },
   "main": "server/server.js",
   "repository": {
