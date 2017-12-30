@@ -1,6 +1,6 @@
 {
   "name": "vendex",
-  "version": "0.9.1-2",
+  "version": "0.10.0",
   "description": "",
   "private": true,
   "dependencies": {
