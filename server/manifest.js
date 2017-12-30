@@ -41,6 +41,9 @@ exports.manifest = {
       //   },
       // },
       {
+        plugin: './routes/root',
+      },
+      {
         plugin: './routes/ui',
         routes: {
           prefix: '/ui',
