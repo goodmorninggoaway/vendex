@@ -1,4 +1,6 @@
 require('dotenv').config();
+process.env.APP_ENV = process.env.APP_ENV || 'PROD';
+
 const Glue = require('glue');
 const serverConfig = require('./config/manifest');
 
