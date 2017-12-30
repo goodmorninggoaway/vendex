@@ -21,8 +21,14 @@ const plugins = [
   {
     plugin: './app/routes/ui',
     routes: {
-      prefix: '/ui'
-    }
+      prefix: '/ui',
+    },
+  },
+  {
+    plugin: './app/routes/alba',
+    routes: {
+      prefix: '/alba',
+    },
   },
   // {
   //     plugin: './app/routes/user',
