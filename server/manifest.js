@@ -21,6 +21,25 @@ exports.manifest = {
   },
   register: {
     plugins: [
+      // {
+      //   plugin: require('good'),
+      //   options: {
+      //     ops: {
+      //       interval: 1000
+      //     },
+      //     reporters: {
+      //       console: [
+      //         {
+      //           module: 'good-squeeze',
+      //           name: 'Squeeze',
+      //           args: [{ log: '*', response: '*' }]
+      //         },
+      //         { module: 'good-console' },
+      //         'stdout'
+      //       ]
+      //     },
+      //   },
+      // },
       {
         plugin: './routes/ui',
         routes: {
@@ -54,7 +73,7 @@ exports.options = {
         ejs: require('ejs'),
       },
       relativeTo: __dirname,
-      path: '../../views',
+      path: '../views',
       defaultExtension: 'ejs',
       layout: true,
       isCached: false,
