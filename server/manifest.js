@@ -32,11 +32,11 @@ if (process.env.APP_ENV === 'DEV') {
       reporters: {
         console: [
           {
-            module: 'good-squeeze',
+            module: require('good-squeeze'),
             name: 'Squeeze',
             args: [{ log: '*', response: '*' }]
           },
-          { module: 'good-console' },
+          { module: require('good-console') },
           'stdout'
         ]
       },

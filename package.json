@@ -39,7 +39,8 @@
   },
   "scripts": {
     "start": "node server/server.js",
-    "test:domain": "mocha --require ./scripts/test-setup --watch ./api/domain/**/*.spec.js"
+    "test:domain": "mocha --require ./scripts/test-setup --watch ./api/domain/**/*.spec.js",
+    "find-unused-packages": "npx depcheck --ignores=pg,eslint"
   },
   "main": "server/server.js",
   "repository": {
