@@ -25,10 +25,13 @@ class Location extends Model {
         state: { type: 'string', maxLength: 255 },
         countryCode: { type: 'string', maxLength: 255 },
         externalLocationId: { type: 'string', maxLength: 512 },
-        externalLocationLastRefreshedDateTime: { type: 'string', maxLength: 32 }, // TODO not used
+        externalLocationLastRefreshedDateTime: {
+          type: 'string',
+          maxLength: 32,
+        }, // TODO not used
         externalSource: { type: 'string', maxLength: 32 }, // TODO Redundant name
-      }
-    }
+      },
+    };
   }
 
   static get relationMappings() {

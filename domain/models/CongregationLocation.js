@@ -12,7 +12,14 @@ class CongregationLocation extends Model {
   static get jsonSchema() {
     return {
       type: 'object',
-      required: ['congregationId', 'locationId', 'isPendingTerritoryMapping', 'isDeleted', 'isActive', 'source'],
+      required: [
+        'congregationId',
+        'locationId',
+        'isPendingTerritoryMapping',
+        'isDeleted',
+        'isActive',
+        'source',
+      ],
       properties: {
         congregationId: { type: 'integer' },
         locationId: { type: ['integer', 'string'] }, // bigint
@@ -26,11 +33,11 @@ class CongregationLocation extends Model {
         isDeleted: { type: 'boolean' }, // TODO get rid of this
         isActive: { type: 'boolean' }, // TODO get rid of this until it does something
         notes: { type: 'string' },
-        userDefined1: { type: ['string', 'null'] },// TODO get rid of this? until it is supported?
-        userDefined2: { type: ['string', 'null'] },// TODO get rid of this? until it is supported?
-        attributes: { items: { type: 'string' } } // TODO make this required
-      }
-    }
+        userDefined1: { type: ['string', 'null'] }, // TODO get rid of this? until it is supported?
+        userDefined2: { type: ['string', 'null'] }, // TODO get rid of this? until it is supported?
+        attributes: { items: { type: 'string' } }, // TODO make this required
+      },
+    };
   }
 
   static get relationMappings() {

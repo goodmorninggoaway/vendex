@@ -14,19 +14,31 @@ const sourceStatusTagMap = {
 
 exports.requires = ['location', 'externalLocation', 'congregation', 'source'];
 exports.returns = 'congregationLocation';
-exports.handler = async function translateToCongregationLocation({ externalLocation, congregation, location: { locationId }, source }) {
+exports.handler = async function translateToCongregationLocation({
+  externalLocation,
+  congregation,
+  location: { locationId },
+  source,
+}) {
   const { congregationId } = congregation;
   const attributes = compact([
     sourceKindTagMap[(externalLocation.Kind || '').toLowerCase()],
     sourceStatusTagMap[(externalLocation.Status || '').toLowerCase()],
   ]);
 
-  const { language } = (await DAL.findLanguage(externalLocation.Language)) || { language: 'Unknown' };
-  const sourceCongregation = congregation.integrationSources.find(({ language: integrationLanguage, sourceCongregation }) => (
-    (sourceCongregation.name.toLowerCase().replace(' ', '') === externalLocation.Account.toLowerCase().replace(' ', '')) &&
-    (!integrationLanguage || integrationLanguage === language || integrationLanguage.toLowerCase() === 'any')
-  ));
-  const sourceCongregationId = sourceCongregation && sourceCongregation.sourceCongregationId;
+  const { language } = (await DAL.findLanguage(externalLocation.Language)) || {
+    language: 'Unknown',
+  };
+  const sourceCongregation = congregation.integrationSources.find(
+    ({ language: integrationLanguage, sourceCongregation }) =>
+      sourceCongregation.name.toLowerCase().replace(' ', '') ===
+        externalLocation.Account.toLowerCase().replace(' ', '') &&
+      (!integrationLanguage ||
+        integrationLanguage === language ||
+        integrationLanguage.toLowerCase() === 'any'),
+  );
+  const sourceCongregationId =
+    sourceCongregation && sourceCongregation.sourceCongregationId;
 
   let translatedCongregationLocation = {
     congregationId,
@@ -46,12 +58,21 @@ exports.handler = async function translateToCongregationLocation({ externalLocat
     territoryId: null,
   };
 
-  let congregationLocation = await DAL.findCongregationLocation({ congregationId, locationId, source });
+  let congregationLocation = await DAL.findCongregationLocation({
+    congregationId,
+    locationId,
+    source,
+  });
 
   // This congregationLocation was imported at one time, but the congregation integration is no longer active.
   // This can happen when the language is changed to another foreign language or the destination congregation's language.
   if (congregationLocation && !sourceCongregationId) {
-    await DAL.addCongregationLocationActivity({ congregationId: congregationLocation.sourceCongregationId, locationId, operation: 'D', source });
+    await DAL.addCongregationLocationActivity({
+      congregationId: congregationLocation.sourceCongregationId,
+      locationId,
+      operation: 'D',
+      source,
+    });
     return null;
   } else if (!congregationLocation) {
     if (!sourceCongregationId) {
@@ -59,14 +80,29 @@ exports.handler = async function translateToCongregationLocation({ externalLocat
     }
 
     // New congregationLocation
-    congregationLocation = await DAL.insertCongregationLocation(translatedCongregationLocation);
-    await DAL.addCongregationLocationActivity({ congregationId: sourceCongregationId, locationId, operation: 'I', source });
+    congregationLocation = await DAL.insertCongregationLocation(
+      translatedCongregationLocation,
+    );
+    await DAL.addCongregationLocationActivity({
+      congregationId: sourceCongregationId,
+      locationId,
+      operation: 'I',
+      source,
+    });
   } else {
     // Update only when there is a change
     const diffs = diff(congregationLocation, translatedCongregationLocation);
     if (diffs && diffs.length) {
-      congregationLocation = await DAL.updateCongregationLocation({ congregationId, locationId }, translatedCongregationLocation);
-      await DAL.addCongregationLocationActivity({ congregationId: sourceCongregationId, locationId, operation: 'U', source });
+      congregationLocation = await DAL.updateCongregationLocation(
+        { congregationId, locationId },
+        translatedCongregationLocation,
+      );
+      await DAL.addCongregationLocationActivity({
+        congregationId: sourceCongregationId,
+        locationId,
+        operation: 'U',
+        source,
+      });
     }
   }
 

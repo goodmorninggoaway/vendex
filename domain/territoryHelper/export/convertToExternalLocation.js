@@ -19,24 +19,30 @@ const locationType = {
 exports.requires = ['nextCongregationLocation', 'location', '$messages'];
 exports.optional = ['territory'];
 exports.returns = 'externalLocation';
-exports.handler = async function convertToExternalLocation({ nextCongregationLocation: congregationLocation, location, $messages, territory }) {
-  const notes = `${congregationLocation.notes}\n${$messages.map(({ message, messageLevel }) => `${messageLevel}: ${message}\n`)}`;
+exports.handler = async function convertToExternalLocation({
+  nextCongregationLocation: congregationLocation,
+  location,
+  $messages,
+  territory,
+}) {
+  const notes = `${congregationLocation.notes}\n${$messages.map(
+    ({ message, messageLevel }) => `${messageLevel}: ${message}\n`,
+  )}`;
   return {
     'Territory type': 'Homes', // TODO This should be a tag on the territory
     'Territory number': (territory && territory.externalTerritoryId) || '',
     'Location type': locationType.find(congregationLocation.attributes),
-    'Status': locationStatus.find(congregationLocation.attributes),
-    'Language': congregationLocation.language,
-    'Latitude': location.latitude,
-    'Longitude': location.longitude,
-    'Address': `${location.number} ${location.street}`,
-    'Number': location.number,
-    'Street': location.street,
-    'City': location.city,
+    Status: locationStatus.find(congregationLocation.attributes),
+    Language: congregationLocation.language,
+    Latitude: location.latitude,
+    Longitude: location.longitude,
+    Address: `${location.number} ${location.street}`,
+    Number: location.number,
+    Street: location.street,
+    City: location.city,
     'Postal code': location.zip,
-    'State': location.state,
+    State: location.state,
     'Country code': '',
-    'Notes': notes,
+    Notes: notes,
   };
 };
-

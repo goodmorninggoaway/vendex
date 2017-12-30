@@ -4,9 +4,17 @@ const importTerritory = require('./importTerritory');
 
 exports.requires = ['externalTerritories', 'congregationId', 'source'];
 exports.returns = 'updatedTerritories';
-exports.handler = async function importTerritories({ externalTerritories, congregationId, source }) {
-  const worker = async (externalTerritory) => {
-    const { territory } = await new Pipeline({ externalTerritory, congregationId, source })
+exports.handler = async function importTerritories({
+  externalTerritories,
+  congregationId,
+  source,
+}) {
+  const worker = async externalTerritory => {
+    const { territory } = await new Pipeline({
+      externalTerritory,
+      congregationId,
+      source,
+    })
       .addHandler(importTerritory)
       .execute();
 

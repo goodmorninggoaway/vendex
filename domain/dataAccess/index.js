@@ -11,7 +11,11 @@ if (process.env.DATABASE_URL) {
   };
 }
 
-const knex = require('knex')({ connection, client: 'pg', debug: process.env.DATABASE_DEBUG });
+const knex = require('knex')({
+  connection,
+  client: 'pg',
+  debug: process.env.DATABASE_DEBUG,
+});
 
 DAL.initialize(knex);
 Model.knex(knex);

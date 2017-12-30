@@ -10,10 +10,29 @@ const findTerritory = require('./findTerritory');
 const convertToExternalLocation = require('./convertToExternalLocation');
 const isCongregationAuthorized = require('./isCongregationAuthorized');
 
-exports.requires = ['congregationId', 'congregation', 'destination', 'indexedLocations', 'activities', 'exportTracer'];
+exports.requires = [
+  'congregationId',
+  'congregation',
+  'destination',
+  'indexedLocations',
+  'activities',
+  'exportTracer',
+];
 exports.returns = ['externalLocations', 'exportActivityId'];
-exports.handler = async function convertActivitiesToExternalLocations({ congregationId, destination, indexedLocations, activities, congregation, exportTracer }) {
-  const worker = ({ operation, sourceCongregationId, locationId, congregationLocationActivityId }) => (
+exports.handler = async function convertActivitiesToExternalLocations({
+  congregationId,
+  destination,
+  indexedLocations,
+  activities,
+  congregation,
+  exportTracer,
+}) {
+  const worker = ({
+    operation,
+    sourceCongregationId,
+    locationId,
+    congregationLocationActivityId,
+  }) =>
     new Pipeline({
       congregationId,
       destination,
@@ -29,8 +48,7 @@ exports.handler = async function convertActivitiesToExternalLocations({ congrega
       .addHandler(applyRules)
       .addHandler(findTerritory)
       .addHandler(convertToExternalLocation)
-      .execute()
-  );
+      .execute();
 
   const reconciled = await executeConcurrently(activities, worker);
 
@@ -52,7 +70,9 @@ exports.handler = async function convertActivitiesToExternalLocations({ congrega
     deletes: deletes ? deletes.length : 0,
   };
   // Get congregationLocationActivityId on exported activities
-  const ids = compact(reconciled.map(x => x.externalLocation && x.congregationLocationActivityId));
+  const ids = compact(
+    reconciled.map(x => x.externalLocation && x.congregationLocationActivityId),
+  );
 
   // Get the last one so we know where to start next time
   const lastCongregationLocationActivityId = Math.max(...ids, 0);
@@ -66,5 +86,8 @@ exports.handler = async function convertActivitiesToExternalLocations({ congrega
     key: exportTracer,
   });
 
-  return { externalLocations: payload, exportActivityId: activity.exportActivityId };
+  return {
+    externalLocations: payload,
+    exportActivityId: activity.exportActivityId,
+  };
 };

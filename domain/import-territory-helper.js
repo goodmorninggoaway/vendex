@@ -17,7 +17,9 @@ module.exports = async ({ congregationId, fileStream, sourceData }) => {
     }
 
     const attributes = [];
-    const address = `${externalLocation.Address} ${externalLocation.City} ${externalLocation.State} ${externalLocation['Postal code']}`;
+    const address = `${externalLocation.Address} ${externalLocation.City} ${
+      externalLocation.State
+    } ${externalLocation['Postal code']}`;
     const translatedLocation = addressUtils.getAddressParts(address);
 
     if (externalLocation['Location Type'] === 'Language') {
@@ -42,7 +44,8 @@ module.exports = async ({ congregationId, fileStream, sourceData }) => {
     };
 
     const addressHash = hash.sha1(translatedLocation);
-    let { location, congregationLocation } = locations.find(x => x.location.externalLocationId === addressHash) || {};
+    let { location, congregationLocation } =
+      locations.find(x => x.location.externalLocationId === addressHash) || {};
     // TODO mark the address as "encountered" so we can handle the negative space
 
     if (!location) {
@@ -70,27 +73,48 @@ module.exports = async ({ congregationId, fileStream, sourceData }) => {
     }
 
     if (!congregationLocation) {
-      congregationLocation = await DAL.insertCongregationLocation(translatedCongregationLocation);
-      Logger.log(`Created "congregationLocation": locationId=${locationId}, congregationId=${congregationId}`);
+      congregationLocation = await DAL.insertCongregationLocation(
+        translatedCongregationLocation,
+      );
+      Logger.log(
+        `Created "congregationLocation": locationId=${locationId}, congregationId=${congregationId}`,
+      );
 
-      await DAL.addCongregationLocationActivity({ congregationId, locationId, operation: 'I', source });
-
+      await DAL.addCongregationLocationActivity({
+        congregationId,
+        locationId,
+        operation: 'I',
+        source,
+      });
     } else {
       let hasDiff = false;
-      const diff = Object.entries(translatedCongregationLocation).reduce((memo, [key, value]) => {
-        if (congregationLocation[key] !== value) {
-          memo[key] = value;
-          hasDiff = true;
-        }
+      const diff = Object.entries(translatedCongregationLocation).reduce(
+        (memo, [key, value]) => {
+          if (congregationLocation[key] !== value) {
+            memo[key] = value;
+            hasDiff = true;
+          }
 
-        return memo;
-      }, {});
+          return memo;
+        },
+        {},
+      );
 
       if (hasDiff) {
-        await DAL.updateCongregationLocation({ congregationId, locationId }, diff);
-        Logger.log(`Updated "congregationLocation": locationId=${locationId}, congregationId=${congregationId}`);
+        await DAL.updateCongregationLocation(
+          { congregationId, locationId },
+          diff,
+        );
+        Logger.log(
+          `Updated "congregationLocation": locationId=${locationId}, congregationId=${congregationId}`,
+        );
 
-        await DAL.addCongregationLocationActivity({ congregationId, locationId, operation: 'U', source });
+        await DAL.addCongregationLocationActivity({
+          congregationId,
+          locationId,
+          operation: 'U',
+          source,
+        });
         congregationLocation = Object.assign({}, congregationLocation, diff);
       }
     }
@@ -98,18 +122,40 @@ module.exports = async ({ congregationId, fileStream, sourceData }) => {
     return { location, congregationLocation };
   };
 
-  sourceData = sourceData || await convertExcelToJson(fileStream, null, {});
-  const existingLocations = await DAL.getLocationsForCongregationFromSource(congregationId, source);
-  const updatedLocations = await serializeTasks(sourceData.map((x, index) => () => {
-    console.log(`Processing Territory Helper Location Import ${index + 1}/${sourceData.length}`);
-    return importLocation(existingLocations, x);
-  }));
+  sourceData = sourceData || (await convertExcelToJson(fileStream, null, {}));
+  const existingLocations = await DAL.getLocationsForCongregationFromSource(
+    congregationId,
+    source,
+  );
+  const updatedLocations = await serializeTasks(
+    sourceData.map((x, index) => () => {
+      console.log(
+        `Processing Territory Helper Location Import ${index + 1}/${
+          sourceData.length
+        }`,
+      );
+      return importLocation(existingLocations, x);
+    }),
+  );
 
-  const deletedLocations = differenceBy(existingLocations, updatedLocations, 'location.locationId');
-  await serializeTasks(deletedLocations.map(({ location: { locationId } }, index) => async () => {
-    await DAL.deleteCongregationLocation({ congregationId, locationId });
-    console.log(`Deleted "congregationLocation": locationId=${locationId}, congregationId=${congregationId}`);
+  const deletedLocations = differenceBy(
+    existingLocations,
+    updatedLocations,
+    'location.locationId',
+  );
+  await serializeTasks(
+    deletedLocations.map(({ location: { locationId } }, index) => async () => {
+      await DAL.deleteCongregationLocation({ congregationId, locationId });
+      console.log(
+        `Deleted "congregationLocation": locationId=${locationId}, congregationId=${congregationId}`,
+      );
 
-    await DAL.addCongregationLocationActivity({ congregationId, locationId, operation: 'D', source });
-  }));
+      await DAL.addCongregationLocationActivity({
+        congregationId,
+        locationId,
+        operation: 'D',
+        source,
+      });
+    }),
+  );
 };

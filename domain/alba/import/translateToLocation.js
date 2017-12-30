@@ -1,5 +1,8 @@
 const hash = require('object-hash');
-const { buildAddressString, getAddressParts } = require('../../validateAddress');
+const {
+  buildAddressString,
+  getAddressParts,
+} = require('../../validateAddress');
 const geocode = require('../../geocode');
 const { DAL } = require('../../dataAccess');
 
@@ -11,7 +14,7 @@ exports.handler = async function translateToLocation({ externalLocation }) {
     externalLocation.Address,
     externalLocation.City,
     externalLocation.Province,
-    externalLocation['Postal_code']
+    externalLocation['Postal_code'],
   );
 
   const translatedLocation = getAddressParts(address);
@@ -21,15 +24,10 @@ exports.handler = async function translateToLocation({ externalLocation }) {
   // TODO mark the address as "encountered" so we can handle the negative space
 
   if (!location) {
-    location = Object.assign(
-      {},
-      translatedLocation,
-      await geocode(address),
-      {
-        externalLocationId: addressHash,
-        externalSource: 'ALBA',
-      }
-    );
+    location = Object.assign({}, translatedLocation, await geocode(address), {
+      externalLocationId: addressHash,
+      externalSource: 'ALBA',
+    });
 
     location = await DAL.insertLocation(location);
   }

@@ -8,10 +8,10 @@ exports.handler = async function convertCsvToJson({ tsv }) {
 
     csv({ delimiter: '\t' })
       .fromString(tsv)
-      .on('json', (jsonObj) => {
+      .on('json', jsonObj => {
         rows.push(jsonObj);
       })
-      .on('done', (error) => {
+      .on('done', error => {
         if (error) {
           return reject(error);
         }

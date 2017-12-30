@@ -6,9 +6,17 @@ const removeDeleted = require('./removeDeleted');
 const source = 'TERRITORY HELPER';
 
 module.exports = async ({ congregationId, inputData }) => {
-  const existingTerritories = await DAL.getTerritories({ congregationId, externalTerritorySource: source }).select('territoryId');
+  const existingTerritories = await DAL.getTerritories({
+    congregationId,
+    externalTerritorySource: source,
+  }).select('territoryId');
 
-  const pipeline = new Pipeline({ source, congregationId, existingTerritories, externalTerritories: inputData.features })
+  const pipeline = new Pipeline({
+    source,
+    congregationId,
+    existingTerritories,
+    externalTerritories: inputData.features,
+  })
     .addHandler(importTerritories)
     .addHandler(removeDeleted);
 

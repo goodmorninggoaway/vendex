@@ -1,4 +1,4 @@
-exports.up = function (knex, Promise) {
+exports.up = function(knex, Promise) {
   return Promise.all([
     knex.schema.raw(`
 create table "congregation" (
@@ -8,8 +8,12 @@ create table "congregation" (
 );
   `),
 
-    knex.schema.raw(`insert into "congregation" values (1, 'Test Local Language', 'English');`),
-    knex.schema.raw(`insert into "congregation" values (2, 'Test Foreign Language', 'Hindi');`),
+    knex.schema.raw(
+      `insert into "congregation" values (1, 'Test Local Language', 'English');`,
+    ),
+    knex.schema.raw(
+      `insert into "congregation" values (2, 'Test Foreign Language', 'Hindi');`,
+    ),
 
     knex.schema.raw(`
 create table "territory" (
@@ -100,7 +104,7 @@ create table "exportActivity" (
   ]);
 };
 
-exports.down = function (knex, Promise) {
+exports.down = function(knex, Promise) {
   return Promise.all([
     knex.schema.dropTable('exportActivity'),
     knex.schema.dropTable('congregationLocationActivity'),

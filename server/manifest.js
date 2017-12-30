@@ -27,18 +27,18 @@ if (process.env.APP_ENV === 'DEV') {
     plugin: 'good',
     options: {
       ops: {
-        interval: 1000
+        interval: 1000,
       },
       reporters: {
         console: [
           {
             module: 'good-squeeze',
             name: 'Squeeze',
-            args: [{ log: '*', response: '*' }]
+            args: [{ log: '*', response: '*' }],
           },
           { module: 'good-console' },
-          'stdout'
-        ]
+          'stdout',
+        ],
       },
     },
   });
@@ -48,7 +48,7 @@ exports.manifest = {
   server: {
     router: {
       stripTrailingSlash: true,
-      isCaseSensitive: false
+      isCaseSensitive: false,
     },
     routes: {
       security: {
@@ -56,11 +56,11 @@ exports.manifest = {
         xss: true,
         noOpen: true,
         noSniff: true,
-        xframe: false
+        xframe: false,
       },
       cors: true,
       jsonp: 'callback', // <3 Hapi,
-      auth: false
+      auth: false,
     },
     debug: !!process.env.DEBUG || false,
     port: +process.env.PORT || 1338,
@@ -74,7 +74,7 @@ exports.options = {
   // somehow vision only works if you register your vision plugin at this point
   // otherwise it gives you an error => Cannot render view without a views manager configured
   // Not a perfect solution but it works OK
-  preRegister: async (server) => {
+  preRegister: async server => {
     await server.register(require('vision'));
     server.views({
       engines: {
@@ -92,5 +92,5 @@ exports.options = {
         version: require('../package.json').version,
       },
     });
-  }
+  },
 };

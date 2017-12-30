@@ -18,8 +18,8 @@ class CongregationIntegration extends Model {
         destinationCongregationId: { type: 'integer' },
         sourceCongregationId: { type: 'integer' },
         language: { type: 'string', minLength: 3, maxLength: 64 },
-      }
-    }
+      },
+    };
   }
 
   static get relationMappings() {

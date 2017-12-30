@@ -81,9 +81,12 @@ class Pipeline {
       this.set(returns, result);
     } else if (returns && Array.isArray(returns)) {
       result = result || {};
-      returns.forEach((x) => {
+      returns.forEach(x => {
         if (x === '$message' && result.$message) {
-          this.addMessage({ message: result.$message, messageLevel: result.$messageLevel || MESSAGE_LEVEL.INFO });
+          this.addMessage({
+            message: result.$message,
+            messageLevel: result.$messageLevel || MESSAGE_LEVEL.INFO,
+          });
         }
 
         // These keys are pipeline directives and should be handled before this
@@ -105,7 +108,9 @@ class Pipeline {
   }
 
   async execute() {
-    return executeSerially(this.handlers, this.executeHandler.bind(this)).then(() => this.values);
+    return executeSerially(this.handlers, this.executeHandler.bind(this)).then(
+      () => this.values,
+    );
   }
 }
 

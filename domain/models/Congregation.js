@@ -17,8 +17,8 @@ class Congregation extends Model {
         congregationId: { type: 'integer' },
         name: { type: 'string', minLength: 3, maxLength: 255 },
         language: { type: 'string', minLength: 3, maxLength: 64 },
-      }
-    }
+      },
+    };
   }
 
   static get relationMappings() {
