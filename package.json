@@ -1,34 +1,32 @@
 {
   "name": "vendex",
-  "version": "0.8.0",
+  "version": "0.9.1-2",
   "description": "",
   "private": true,
-  "keywords": [],
   "dependencies": {
     "@google/maps": "^0.4.3",
     "async": "^2.0.1",
-    "body-parser": "^1.18.2",
+    "boom": "^7.1.1",
     "csvtojson": "^1.1.7",
     "deep-diff": "^0.3.8",
     "dotenv": "^4.0.0",
+    "ejs": "^2.5.7",
     "excel": "^0.1.7",
-    "forever": "^0.15.3",
-    "grunt": "1.0.1",
+    "glue": "^5.0.0",
+    "good": "github:hapijs/good",
+    "good-console": "^6.4.1",
+    "good-squeeze": "^5.0.2",
+    "hapi": "^17.2.0",
     "knex": "^0.13.0",
     "lodash": "^4.17.4",
     "moment": "^2.19.2",
-    "npm-run-all": "^4.1.1",
     "object-hash": "^1.1.8",
     "objection": "^0.8.9",
     "parse-address": "0.0.8",
     "pg": "^7.3.0",
-    "sails": "^1.0.0-37",
-    "sails-hook-grunt": "^2.0.0",
-    "sails-hook-orm": "^2.0.0-16",
-    "sails-hook-sockets": "^1.4.0",
     "uuid": "^3.1.0",
-    "winston": "^2.4.0",
-    "xlsx": "^0.11.4"
+    "vision": "^5.3.0",
+    "xlsx": "^0.11.15"
   },
   "devDependencies": {
     "chai": "^4.1.2",
@@ -40,13 +38,11 @@
     "sinon-chai": "^2.14.0"
   },
   "scripts": {
-    "start": "NODE_ENV=production node app.js",
+    "start": "node server/server.js",
     "test:domain": "mocha --require ./scripts/test-setup --watch ./api/domain/**/*.spec.js",
-    "lint": "node ./node_modules/eslint/bin/eslint . --max-warnings=0 && echo '✔  Your code looks good.'",
-    "custom-tests": "echo \"(No other custom tests yet.)\" && echo",
-    "debug": "node debug app.js"
+    "find-unused-packages": "npx depcheck --ignores=eslint,good,good-squeeze,good-console,pg"
   },
-  "main": "app.js",
+  "main": "server/server.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/goodmorninggoaway/vendex"

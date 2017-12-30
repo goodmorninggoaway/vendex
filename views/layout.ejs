@@ -23,15 +23,11 @@
       }
     }
   </style>
-
-  <!--STYLES-->
-  <link rel="stylesheet" href="/styles/importer.css">
-  <!--STYLES END-->
 </head>
 
 <body>
 <ul id="slide-out" class="side-nav fixed">
-  <li data-session-required="false"><a href="/"><h3>VENDEX</h3></a></li>
+  <li data-session-required="false"><a href="/ui"><h3>VENDEX</h3></a></li>
   <li><a class="subheader">Alba</a></li>
   <li><a class="waves-effect" href="/ui/alba/locations">Import Locations</a></li>
   <li class="divider"></li>
@@ -48,26 +44,19 @@
   <li><a class="waves-effect" href="/ui/reset">Reset</a></li>
   <% } %>
   <li class="divider"></li>
-  <li data-session-required="false"><a>version <%= sails.config.globals.version %></a></li>
+  <li data-session-required="false"><a>version <%= version %></a></li>
 </ul>
 <main>
   <%- body %>
 </main>
 
-<!--TEMPLATES-->
-
-<!--TEMPLATES END-->
-
-<!--SCRIPTS-->
-<script src="/dependencies/sails.io.js"></script>
-<!--SCRIPTS END-->
 <script>
   $(document).ready(function () {
     $('select').material_select();
   });
 </script>
 <script>
-  /* Update any URLs in the page with the current values such as congregationId*/
+  /* Update any URLs in the page with the current values such as congregationId */
   (() => {
     const congregationName = window.localStorage.getItem('congregationName');
     if (congregationName) {
@@ -90,7 +79,7 @@
 </script>
 <script>
   /* Remove nav when a congregation is not set */
-  (function () {
+  (() => {
     const congregationId = window.localStorage.getItem('congregationId');
     if (congregationId) {
       return;
@@ -115,8 +104,8 @@
       return;
     }
 
-    window.location.href = '/';
-  }())
+    window.location.href = '/ui';
+  })()
 </script>
 </body>
 </html>
