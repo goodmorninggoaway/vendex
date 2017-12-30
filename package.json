@@ -40,7 +40,7 @@
   "scripts": {
     "start": "node server/server.js",
     "test:domain": "mocha --require ./scripts/test-setup --watch ./api/domain/**/*.spec.js",
-    "find-unused-packages": "npx depcheck --ignores=pg,eslint"
+    "find-unused-packages": "npx depcheck --ignores=eslint,good,good-squeeze,good-console,pg"
   },
   "main": "server/server.js",
   "repository": {

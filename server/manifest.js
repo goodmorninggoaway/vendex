@@ -24,7 +24,7 @@ const plugins = [
 
 if (process.env.APP_ENV === 'DEV') {
   plugins.push({
-    plugin: require('good'),
+    plugin: 'good',
     options: {
       ops: {
         interval: 1000
@@ -32,11 +32,11 @@ if (process.env.APP_ENV === 'DEV') {
       reporters: {
         console: [
           {
-            module: require('good-squeeze'),
+            module: 'good-squeeze',
             name: 'Squeeze',
             args: [{ log: '*', response: '*' }]
           },
-          { module: require('good-console') },
+          { module: 'good-console' },
           'stdout'
         ]
       },
