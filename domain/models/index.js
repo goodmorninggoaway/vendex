@@ -7,3 +7,6 @@ exports.Language = require('./Language');
 exports.Location = require('./Location');
 exports.Territory = require('./Territory');
 exports.GeocodeResponse = require('./GeocodeResponse');
+exports.User = require('./User');
+exports.Role = require('./Role');
+exports.Resource = require('./Resource');

@@ -1,5 +1,17 @@
 const plugins = [
   {
+    plugin: 'schwifty',
+    options: {
+      knex: require('../domain/dataAccess').knex,
+    },
+  },
+  {
+    plugin: './routes/users',
+    routes: {
+      prefix: '/users',
+    },
+  },
+  {
     plugin: './routes/root',
   },
   {
