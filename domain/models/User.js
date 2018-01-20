@@ -15,7 +15,7 @@ class User extends Model {
       required: ['username'],
       properties: {
         userId: { type: 'integer' },
-        isActive: { type: 'string', minLength: 3, maxLength: 64 }, // TODO
+        isActive: { type: 'boolean' },
         username: { type: 'string', minLength: 3, maxLength: 64 },
         password: { type: 'string', minLength: 3, maxLength: 128 },
         salt: { type: 'string', minLength: 3, maxLength: 128 },
