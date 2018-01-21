@@ -1,12 +1,12 @@
 const Boom = require('boom');
 
 module.exports = {
+  // TODO Filter based on user auth
   listUsers: {
     async handler(req) {
       try {
         const { User } = req.server.models();
-        const users = await User.query().select('*');
-        return res.view('users/list', { users });
+        return User.query().select('*');
       } catch (ex) {
         console.log(ex);
         return Boom.badImplementation();

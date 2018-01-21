@@ -1,4 +1,5 @@
 const { Model } = require('objection');
+const Bcrypt = require('bcrypt');
 
 class User extends Model {
   static get tableName() {
@@ -24,8 +25,51 @@ class User extends Model {
         passwordResetTimestamp: { type: 'date-time' },
         congregationId: { type: 'string', minLength: 3, maxLength: 64 },
         roles: { type: 'array', items: { type: 'string' } },
+        authenticationCode: { type: 'string', maxLength: 64 },
+        authenticationCreationTimestamp: { type: 'date-time' },
       },
     };
+  }
+
+  static async generateSaltAndHash(plainPassword) {
+    const salt = await Bcrypt.genSalt();
+    const hash = await Bcrypt.hash(plainPassword, salt);
+
+    return { salt, hash };
+  }
+
+  static async login(username, password, db) {
+    let user = await User.query(db).findOne({ username, isActive: true });
+    const isAuthenticated = user && user.verifyPassword(password);
+    if (!isAuthenticated) {
+      return null;
+    }
+
+    user.loginTimestamp = new Date();
+    user = await User.query(db)
+      .update(user)
+      .first()
+      .returning('*');
+
+    return user;
+  }
+
+  async verifyPassword(plainPassword) {
+    const { password } = this;
+    return Bcrypt.compare(plainPassword, password);
+  }
+
+  async resetPassword(password, db) {
+    const { salt, hash } = await User.generateSaltAndHash(password);
+
+    this.salt = salt;
+    this.password = hash;
+    this.passwordResetTimestamp = new Date();
+    this.isActive = true;
+
+    return User.query(db)
+      .update(this)
+      .returning('*');
   }
 }
 

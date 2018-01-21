@@ -1,0 +1,31 @@
+@startuml
+title: Admin Self-Registration
+
+User -> API: Post /users/register
+API -> "User Service": Register
+"User Service" -> "User Service": Email user
+API --> User: "Check your email"
+Email -> User: Link with auth code to create password
+User -> API: PUT /user/registration/{key} - set's password
+API --> User: "Done. Now login"
+@enduml
+
+@startuml
+title: Admin Invites new Congregation Admin
+
+Admin -> API: Create Congregation
+Admin -> API: Create Congregation Admin
+API -> RegistrationSvc: Start Registration
+RegistrationSvc -> Email: "You're the new congregation admin"
+CongAdmin -> Email: Clicks link
+CongAdmin -> API: Sets password
+CongAdmin -> API: Edit congregation details
+@enduml
+
+@startuml
+title: Congregation Admin Invites new User
+
+CongAdmin -> API: Invite user by email
+API -> Invitee: Email: "You've been invited to cong"
+Invitee -> API: registered ? verify addition : register
+@enduml

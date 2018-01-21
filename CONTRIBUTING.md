@@ -21,7 +21,12 @@ MAX_CONCURRENCY=4
 DATABASE_DEBUG=true
 DATABASE_URL=postgres://vendex:vendex@localhost:5432/vendex
 APP_ENV=DEV
+SECRET=<GENERATE A SECRET>
+TOKEN_EXPIRATION_MINUTES=60
 ```
+
+Easy way to generate a secret:   
+`node -e "console.log(require('crypto').randomBytes(256).toString('base64'));"`
 1. Install dependencies: `npm install`
 1. Start the server: `npm start`
 

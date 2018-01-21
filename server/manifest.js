@@ -1,14 +1,22 @@
 const plugins = [
+  { plugin: 'hapi-auth-jwt2' },
   {
     plugin: 'schwifty',
     options: {
       knex: require('../domain/dataAccess').knex,
+      models: Object.values(require('../domain/models')),
     },
   },
   {
     plugin: './routes/users',
     routes: {
       prefix: '/users',
+    },
+  },
+  {
+    plugin: './routes/auth',
+    routes: {
+      prefix: '/auth',
     },
   },
   {
@@ -46,7 +54,7 @@ if (process.env.APP_ENV === 'DEV') {
           {
             module: 'good-squeeze',
             name: 'Squeeze',
-            args: [{ log: '*', response: '*' }],
+            args: [{ log: '*', response: '*', error: '*' }],
           },
           { module: 'good-console' },
           'stdout',
