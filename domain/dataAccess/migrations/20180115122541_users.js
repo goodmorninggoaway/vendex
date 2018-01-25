@@ -138,7 +138,7 @@ exports.up = async function(knex) {
     table.string('code', 128).notNullable();
     table.jsonb('roles');
     table
-      .integer('congregationId', 128)
+      .integer('congregationId')
       .notNullable()
       .references('congregation.congregationId');
 

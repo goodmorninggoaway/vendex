@@ -2,7 +2,6 @@ require('dotenv').config();
 process.env.APP_ENV = process.env.APP_ENV || 'PROD';
 
 require('babel-core/register')({
-  only: /views/,
   extensions: '.jsx',
 });
 

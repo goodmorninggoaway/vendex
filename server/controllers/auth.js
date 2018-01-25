@@ -61,4 +61,21 @@ module.exports = {
       }
     },
   },
+
+  inviteNewUser: {
+    async handler(req) {
+      try {
+        const { Invitation } = req.server.models();
+        const { email, congregationId } = req.payload;
+        return Invitation.addInvitation({
+          email,
+          congregationId: +congregationId,
+          roles: ['admin'],
+        });
+      } catch (ex) {
+        console.log(ex);
+        return Boom.badImplementation();
+      }
+    },
+  },
 };

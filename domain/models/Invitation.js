@@ -2,6 +2,8 @@ const { Model, transaction } = require('objection');
 const Bcrypt = require('bcrypt');
 const Moment = require('moment');
 const User = require('./User');
+const Congregation = require('./Congregation');
+const Notification = require('../notifications');
 
 const MAX_CODE_AGE_MINUTES = process.env.INVITATION_MAX_CODE_AGE || 60 * 24 * 3;
 
@@ -22,7 +24,7 @@ class Invitation extends Model {
         userId: { type: 'integer' },
         email: { type: 'string', minLength: 3, maxLength: 128 },
         createTimestamp: { type: 'date-time' },
-        congregationId: { type: 'string', minLength: 3, maxLength: 64 },
+        congregationId: { type: 'integer' },
         code: { type: 'string', maxLength: 64 },
         roles: { type: 'array', items: { type: 'string' } },
       },
@@ -31,15 +33,25 @@ class Invitation extends Model {
 
   static async addInvitation({ email, congregationId, roles }) {
     const code = await Bcrypt.genSalt();
-    const invitation = await Invitation.insert({
-      email,
-      congregationId,
-      code,
-      createTimestamp: new Date(),
-      roles,
-    });
+    let invitation = await Invitation.query().findOne({ email });
 
-    // TODO send email
+    invitation = await Invitation.query()
+      [invitation ? 'update' : 'insert']({
+        email,
+        congregationId,
+        code,
+        createTimestamp: new Date(),
+        roles,
+      })
+      .returning('*');
+
+    const congregation = await Congregation.query().findById(congregationId);
+    await new Notification(Notification.types.INVITE_NEW_USER)
+      .asEmail()
+      .to(email)
+      .properties({ congregation, activationLink: 'https://vendex.com' }) // TODO add real link
+      .send();
+
     return invitation;
   }
 
