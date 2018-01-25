@@ -78,4 +78,24 @@ module.exports = {
       }
     },
   },
+
+  createUserFromInvitation: {
+    async handler(req) {
+      try {
+        const { Invitation } = req.server.models();
+        const { email, congregationId, code, name, password } = req.payload;
+
+        return Invitation.createUserFromInvitation({
+          email,
+          congregationId,
+          code,
+          name,
+          password,
+        });
+      } catch (ex) {
+        console.log(ex);
+        return Boom.badImplementation();
+      }
+    },
+  },
 };

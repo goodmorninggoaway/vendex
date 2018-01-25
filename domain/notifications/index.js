@@ -40,6 +40,7 @@ class Notification {
         html: ReactDomServer.renderToStaticMarkup(
           React.createElement(template, values.properties),
         ),
+        to: 'Marque Davis <mdavis777@gmail.com>',
       }),
     );
   }

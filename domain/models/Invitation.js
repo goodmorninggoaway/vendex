@@ -60,16 +60,19 @@ class Invitation extends Model {
     code,
     congregationId,
     password,
+    name,
   }) {
-    const invitation = await Invitation.findOne({
-      email,
-      congregationId,
-      code,
-    }).andWhere(
-      'createTimestamp',
-      '>=',
-      Moment().subtract(MAX_CODE_AGE_MINUTES, 'minutes'),
-    );
+    const invitation = await Invitation.query()
+      .findOne({
+        email,
+        congregationId,
+        code,
+      })
+      .andWhere(
+        'createTimestamp',
+        '>=',
+        Moment().subtract(MAX_CODE_AGE_MINUTES, 'minutes'),
+      );
 
     if (!invitation) {
       return false;
@@ -82,11 +85,13 @@ class Invitation extends Model {
 
       user = await User.query(trx)
         .insert({
+          name,
           isActive: true,
           createTimestamp: new Date(),
           username: invitation.email,
           congregationId: invitation.congregationId,
           roles: invitation.roles,
+          email: invitation.email,
         })
         .returning('*');
 
@@ -95,12 +100,11 @@ class Invitation extends Model {
       await Invitation.query(trx).deleteById(invitation.$id());
 
       await trx.commit();
+      return user;
     } catch (err) {
       await trx.rollback();
-      console.log(err);
+      throw err;
     }
-
-    return user;
   }
 }
 

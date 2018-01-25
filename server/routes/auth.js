@@ -9,7 +9,16 @@ exports.plugin = {
     ]);
 
     server.route([
-      { method: 'POST', path: '/invite', options: Controller.inviteNewUser },
+      {
+        method: 'POST',
+        path: '/invitations',
+        options: Controller.inviteNewUser,
+      },
+      {
+        method: 'PUT',
+        path: '/invitations',
+        options: Controller.createUserFromInvitation,
+      },
       { method: 'POST', path: '/login', options: Controller.login },
       {
         method: 'PUT',

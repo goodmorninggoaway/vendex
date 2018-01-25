@@ -107,6 +107,7 @@ exports.up = async function(knex) {
     table.boolean('isActive');
     table.string('username', 64).notNullable();
     table.string('password', 64);
+    table.string('name', 64);
     table.string('salt', 64);
     table.string('email', 128);
     table.integer('congregationId').references('congregation.congregationId');

@@ -19,11 +19,12 @@ class User extends Model {
         isActive: { type: 'boolean' },
         username: { type: 'string', minLength: 3, maxLength: 64 },
         password: { type: 'string', minLength: 3, maxLength: 128 },
+        name: { type: 'string', minLength: 3, maxLength: 128 },
         salt: { type: 'string', minLength: 3, maxLength: 128 },
         createTimestamp: { type: 'date-time' },
         loginTimestamp: { type: 'date-time' },
         passwordResetTimestamp: { type: 'date-time' },
-        congregationId: { type: 'string', minLength: 3, maxLength: 64 },
+        congregationId: { type: 'integer' },
         roles: { type: 'array', items: { type: 'string' } },
         authenticationCode: { type: 'string', maxLength: 64 },
         authenticationCreationTimestamp: { type: 'date-time' },
@@ -48,6 +49,7 @@ class User extends Model {
     user.loginTimestamp = new Date();
     user = await User.query(db)
       .update(user)
+      .where({ userId: user.$id() })
       .first()
       .returning('*');
 
@@ -68,8 +70,10 @@ class User extends Model {
     this.isActive = true;
 
     return User.query(db)
-      .update(this)
-      .returning('*');
+      .patch(this)
+      .where({ userId: this.$id() })
+      .returning('*')
+      .first();
   }
 }
 
