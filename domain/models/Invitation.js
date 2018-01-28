@@ -49,7 +49,12 @@ class Invitation extends Model {
     await new Notification(Notification.types.INVITE_NEW_USER)
       .asEmail()
       .to(email)
-      .properties({ congregation, activationLink: 'https://vendex.com' }) // TODO add real link
+      .properties({
+        congregation,
+        activationLink: `${
+          process.env.UI_BASE_URL
+        }/rsvp?code=${code}&congregationId=${congregationId}&email=${email}`,
+      })
       .send();
 
     return invitation;
