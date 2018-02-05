@@ -10,6 +10,12 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
   <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+
+  <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prop-types/15.6.0/prop-types.js" integrity="sha256-cE3TQMhGTbaVzGQbDnLp+RpcnypFp4UXKsHMmWKeI2k=" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://unpkg.com/react-table@latest/react-table.css">
+
   <style>
     header, main, footer {
       margin-left: 300px;
@@ -40,6 +46,7 @@
   <li data-session-required="false"><a class="subheader">Admin</a></li>
   <li data-session-required="false"><a class="waves-effect" href="/ui/congregations">Congregations</a></li>
   <li><a class="waves-effect" href="/ui/languages">Languages</a></li>
+  <li><a class="waves-effect" href="/ui/users">Users</a></li>
   <% if (env && env !== 'PROD') { %>
   <li><a class="waves-effect" href="/ui/reset">Reset</a></li>
   <% } %>

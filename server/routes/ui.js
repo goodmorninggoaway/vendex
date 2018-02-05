@@ -111,6 +111,18 @@ exports.plugin = {
           },
         },
       },
+      {
+        method: 'GET',
+        path: '/users',
+        options: {
+          handler: {
+            view: {
+              template: 'reactView.ejs',
+              context: { componentName: 'UserList', props: {} },
+            },
+          },
+        },
+      },
     ]);
   },
   version: require('../../package.json').version,

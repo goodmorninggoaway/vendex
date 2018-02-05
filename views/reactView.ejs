@@ -1,0 +1,15 @@
+<div id="react-page"></div>
+<script src="/assets/react/views/AppRoot.js"></script>
+<script src="/assets/react/views/<%= componentName %>.js"></script>
+<script>
+  const {AppRoot, <%= componentName %>: Page} = window.vendex;
+
+  ReactDOM.render(
+    React.createElement(
+      AppRoot.default,
+      null,
+      React.createElement(Page.default, null, <%= JSON.stringify(typeof props !== undefined ? props : {}) %>)
+    ),
+    document.getElementById('react-page')
+  );
+</script>

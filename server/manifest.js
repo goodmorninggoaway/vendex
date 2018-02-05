@@ -8,6 +8,9 @@ const plugins = [
     },
   },
   {
+    plugin: 'inert',
+  },
+  {
     plugin: './routes/users',
     routes: {
       prefix: '/users',
@@ -38,6 +41,12 @@ const plugins = [
     plugin: './routes/territory-helper',
     routes: {
       prefix: '/territoryhelper',
+    },
+  },
+  {
+    plugin: './routes/static-assets',
+    routes: {
+      prefix: '/assets',
     },
   },
 ];
