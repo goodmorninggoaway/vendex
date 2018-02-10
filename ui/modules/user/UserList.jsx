@@ -116,10 +116,22 @@ class UserList extends Component {
         <ReactTable
           data={users}
           columns={[
-            { accessor: 'userId', Header: 'ID' },
             { accessor: 'email', Header: 'Email' },
             { accessor: 'name', Header: 'Name' },
-            { accessor: 'isActive', Header: 'Active' },
+            {
+              accessor: 'isActive',
+              Header: 'Active',
+              Cell({ value }) {
+                return value.toString();
+              },
+            },
+            {
+              accessor: 'roles',
+              Header: 'Roles',
+              Cell({ row: { roles } }) {
+                return roles && roles.join(', ');
+              },
+            },
           ]}
           defaultPageSize={10}
           className="-striped -highlight"
@@ -136,11 +148,10 @@ class UserList extends Component {
                   handleOriginal,
                 );
               },
-              style: {
-                backgroundColor: rowSelected ? 'red' : undefined,
-              },
+              className: rowSelected ? 'ms-bgColor-themeTertiary' : 'undefined',
             };
           }}
+          minRows={1}
         />
 
         <Modal
