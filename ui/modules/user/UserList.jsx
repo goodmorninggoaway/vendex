@@ -2,16 +2,26 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ReactTable from 'react-table';
 import { Spinner } from 'office-ui-fabric-react/lib-es2015/Spinner';
+import {
+  Button,
+  CommandBarButton,
+} from 'office-ui-fabric-react/lib-es2015/Button';
+import { Modal } from 'office-ui-fabric-react/lib-es2015/Modal';
 import { Route, Link } from 'react-router-dom';
 import autobind from 'react-autobind';
-
+import { updateItemById } from 'redux-toolbelt-immutable-helpers';
 import EditUser from './EditUser';
 
 class UserList extends Component {
   constructor(...args) {
     super(...args);
     autobind(this);
-    this.state = { tableExpansion: {} };
+    this.state = {
+      tableExpansion: {},
+      showModal: false,
+      modalType: null,
+      selectedRowIndex: undefined,
+    };
   }
 
   async componentDidMount() {
@@ -27,34 +37,130 @@ class UserList extends Component {
     }));
   }
 
+  async onSubmitInvitation(user) {
+    this.updateUser(user);
+    this.setState({ showModal: false, modalType: null });
+
+    const response = await fetch('/auth/invitations', {
+      method: 'POST',
+      body: JSON.stringify({
+        ...user,
+        congregationId: window.localStorage.getItem('congregationId'),
+      }),
+      headers: new Headers({
+        'Content-Type': 'application/json',
+      }),
+    });
+
+    const invitation = await response.json();
+    console.log(invitation);
+  }
+
+  async onSubmitUser(user) {
+    this.updateUser(user);
+    this.setState({ showModal: false, modalType: null });
+
+    const response = await fetch(`/users/${user.userId}`, {
+      method: 'PUT',
+      body: JSON.stringify(user),
+      headers: new Headers({
+        'Content-Type': 'application/json',
+      }),
+    });
+
+    user = await response.json();
+    this.setState(({ users }) => ({
+      users: updateItemById(users, user.userId, user, x => x.userId),
+    }));
+  }
+
   render() {
-    const { users, tableExpansion } = this.state;
+    const { users, selectedRowIndex, modalType } = this.state;
     if (!users) {
       return <Spinner />;
     }
 
+    const isRowSelected =
+      selectedRowIndex > -1 &&
+      selectedRowIndex !== null &&
+      selectedRowIndex !== undefined;
+
     return (
-      <ReactTable
-        data={users}
-        columns={[
-          { accessor: 'userId', Header: 'ID' },
-          { accessor: 'email', Header: 'Email' },
-          { accessor: 'name', Header: 'Name' },
-          { accessor: 'isActive', Header: 'Active' },
-        ]}
-        defaultPageSize={10}
-        className="-striped -highlight"
-        SubComponent={row => (
-          <EditUser
-            user={row.original}
-            onSubmit={user => this.updateUser(user, row.index)}
+      <div>
+        <div style={{ display: 'flex', alignItems: 'stretch', height: '40px' }}>
+          <CommandBarButton
+            iconProps={{ iconName: 'AddFriend' }}
+            text="Invite a new user"
+            onClick={() =>
+              this.setState({ showModal: true, modalType: 'invitation' })
+            }
           />
-        )}
-        expanded={tableExpansion}
-        onExpandedChange={(newExpanded, index) =>
-          this.setState({ tableExpansion: newExpanded })
-        }
-      />
+          <CommandBarButton
+            disabled={!isRowSelected}
+            iconProps={{ iconName: 'Edit' }}
+            text="Edit"
+            onClick={() =>
+              this.setState({ showModal: true, modalType: 'editUser' })
+            }
+          />
+          <CommandBarButton
+            disabled={!isRowSelected}
+            iconProps={{ iconName: 'Delete' }}
+            text="Delete"
+            onClick={() =>
+              this.setState({ showModal: true, modalType: 'deleteUser' })
+            }
+          />
+        </div>
+
+        <ReactTable
+          data={users}
+          columns={[
+            { accessor: 'userId', Header: 'ID' },
+            { accessor: 'email', Header: 'Email' },
+            { accessor: 'name', Header: 'Name' },
+            { accessor: 'isActive', Header: 'Active' },
+          ]}
+          defaultPageSize={10}
+          className="-striped -highlight"
+          getTdProps={(state, rowInfo, column, instance) => {
+            if (!rowInfo) {
+              return {};
+            }
+
+            const rowSelected = this.state.selectedRowIndex === rowInfo.index;
+            return {
+              onClick: (e, handleOriginal) => {
+                this.setState(
+                  { selectedRowIndex: rowSelected ? null : rowInfo.index },
+                  handleOriginal,
+                );
+              },
+              style: {
+                backgroundColor: rowSelected ? 'red' : undefined,
+              },
+            };
+          }}
+        />
+
+        <Modal
+          isOpen={this.state.showModal}
+          onDismiss={() => this.setState({ showModal: false, modalType: null })}
+          isBlocking={false}
+          containerClassName="pad"
+        >
+          {modalType === 'invitation' && (
+            <EditUser type="invitation" onSubmit={this.onSubmitInvitation} />
+          )}
+          {modalType === 'editUser' && (
+            <EditUser
+              type="edit"
+              onSubmit={this.onSubmitUser}
+              user={users[selectedRowIndex]}
+            />
+          )}
+        </Modal>
+      </div>
     );
   }
 }

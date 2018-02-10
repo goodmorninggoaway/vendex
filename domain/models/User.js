@@ -1,5 +1,6 @@
 const { Model } = require('objection');
 const Bcrypt = require('bcrypt');
+const Omit = require('lodash/omit');
 
 class User extends Model {
   static get tableName() {
@@ -74,6 +75,10 @@ class User extends Model {
       .where({ userId: this.$id() })
       .returning('*')
       .first();
+  }
+
+  omitInternalFields() {
+    return Omit(this, 'password', 'salt', 'authenticationCode', 'authenticationCreationTimestamp');
   }
 }
 
