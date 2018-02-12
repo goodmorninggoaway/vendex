@@ -21,6 +21,7 @@ class UserList extends Component {
       showModal: false,
       modalType: null,
       selectedRowIndex: undefined,
+      users: null,
     };
   }
 
@@ -45,7 +46,7 @@ class UserList extends Component {
       method: 'POST',
       body: JSON.stringify({
         ...user,
-        congregationId: window.localStorage.getItem('congregationId'),
+        congregationId: this.props.congregationId,
       }),
       headers: new Headers({
         'Content-Type': 'application/json',
@@ -179,11 +180,7 @@ class UserList extends Component {
 }
 
 UserList.propTypes = {
-  users: PropTypes.arrayOf(
-    PropTypes.shape({
-      userId: PropTypes.number,
-    }),
-  ),
+  congregationId: PropTypes.number,
 };
 
 export default UserList;

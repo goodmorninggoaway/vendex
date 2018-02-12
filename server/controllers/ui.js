@@ -3,11 +3,6 @@ const sortBy = require('lodash/sortBy');
 const DAL = require('../../domain/dataAccess').DAL;
 
 const handlers = {
-  homepage: async function(req, res) {
-    const congregations = await DAL.getCongregations();
-    return res.view('homepage.ejs', { congregations });
-  },
-
   listCongregations: async function(req, res) {
     const [congregations, languages] = await Promise.all([
       DAL.getCongregations(),
@@ -134,10 +129,6 @@ const handlers = {
     const destinationCongregationId =
       req.params.destinationCongregationId ||
       req.payload.destinationCongregationId;
-    const congregationId =
-      req.params.congregationId ||
-      (req.payload && req.payload.congregationId) ||
-      req.query.congregationid;
     let language = req.query.language;
     if (!language || language === '') {
       language = null;
@@ -147,6 +138,8 @@ const handlers = {
       destinationCongregationId,
       language,
     });
+    const { congregationId } = req.auth.credentials;
+
     return res.redirect(`/ui/congregations/${congregationId}`);
   },
 
