@@ -1,14 +1,20 @@
+const XLSX = require('xlsx');
+const uuid = require('uuid/v4');
+const importLocations = require('../../domain/import-territory-helper');
+const importTerritories = require('../../domain/territoryHelper/territories');
+const exportLocations = require('../../domain/territoryHelper/export');
+
 module.exports = {
   importLocations: {
     handler: async function(req, res) {
-      const XLSX = require('xlsx');
       const wb = XLSX.read(req.payload.file);
       const ws = wb.Sheets[wb.SheetNames[0]];
       const inputData = XLSX.utils.sheet_to_json(ws, { header: 1 });
 
-      const importLocations = require('../../domain/import-territory-helper');
+      const { congregationId } = req.auth.credentials;
+
       importLocations({
-        congregationId: +req.headers.congregationid,
+        congregationId,
         fileStream: req.payload.file,
         sourceData: inputData,
       });
@@ -22,11 +28,13 @@ module.exports = {
 
   importTerritories: {
     handler: async function(req, res) {
-      const importTerritories = require('../../domain/territoryHelper/territories');
+      const { congregationId } = req.auth.credentials;
+
       await importTerritories({
-        congregationId: +req.headers.congregationid,
+        congregationId,
         inputData: req.payload.file,
       });
+
       return null;
     },
     payload: {
@@ -38,10 +46,9 @@ module.exports = {
 
   exportLocations: {
     handler: async function(req, res) {
-      const congregationId =
-        req.headers.congregationid || req.query.congregationid;
-      const tracer = require('uuid/v4')();
-      const exportLocations = require('../../domain/territoryHelper/export');
+      const { congregationId } = req.auth.credentials;
+      const tracer = uuid();
+
       exportLocations({ congregationId, tracer });
 
       return res

@@ -167,7 +167,8 @@ const handlers = {
   },
 
   getTerritoryHelperExportHistory: async function(req, res) {
-    const { congregationid: congregationId } = req.query;
+    const { congregationId } = req.auth.credentials;
+
     const exports = (await DAL.getExportActivities({ congregationId })).filter(
       e => {
         // the summary was added later

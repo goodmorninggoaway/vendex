@@ -2,13 +2,16 @@ const Boom = require('boom');
 const { pick } = require('lodash');
 
 module.exports = {
-  // TODO Filter based on user auth
   // TODO Filter privileged fields using a hapi lifecycle hook
   listUsers: {
     async handler(req) {
       try {
         const { User } = req.server.models();
-        const users = await User.query().select('*');
+        const { congregationId } = req.auth.credentials;
+        const users = await User.query()
+          .skipUndefined()
+          .where({ congregationId })
+          .select('*');
 
         return users.map(x => x.omitInternalFields());
       } catch (ex) {
@@ -16,9 +19,9 @@ module.exports = {
         return Boom.badImplementation();
       }
     },
-    auth: 'jwt',
   },
 
+  // TODO limit access by property based on auth
   editUser: {
     async handler(req) {
       try {

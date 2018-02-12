@@ -7,13 +7,14 @@ const TOKEN_TTL = process.env.TOKEN_EXPIRATION_MINUTES || 24 * 60;
 
 module.exports = {
   login: {
+    auth: false,
     async handler(req, h) {
       try {
         const { User } = req.server.models();
         const { email: username, password } = req.payload;
         const user = await User.login(username, password);
         if (!user) {
-          return Boom.unauthorized();
+          return Boom.forbidden();
         }
 
         const token = Jwt.sign(
@@ -53,7 +54,7 @@ module.exports = {
 
         let user = await User.query().findOne({ username });
         if (!user) {
-          return Boom.unauthorized();
+          return Boom.forbidden();
         }
 
         user = await user.resetPassword(password);
@@ -69,10 +70,12 @@ module.exports = {
     async handler(req) {
       try {
         const { Invitation } = req.server.models();
-        const { email, congregationId } = req.payload;
+        const { email } = req.payload;
+        const { congregationId } = req.auth.credentials;
+
         return Invitation.addInvitation({
           email,
-          congregationId: +congregationId,
+          congregationId,
           roles: ['admin'],
         });
       } catch (ex) {

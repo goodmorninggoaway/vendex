@@ -133,6 +133,7 @@ exports.plugin = {
               options: { layout: 'homepageLayout' },
             },
           },
+          auth: false,
         },
       },
     ]);

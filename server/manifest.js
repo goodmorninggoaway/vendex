@@ -1,5 +1,8 @@
 const plugins = [
   {
+    plugin: './auth/auth-provider',
+  },
+  {
     plugin: 'schwifty',
     options: {
       knex: require('../domain/dataAccess').knex,
@@ -8,9 +11,6 @@ const plugins = [
   },
   {
     plugin: 'inert',
-  },
-  {
-    plugin: './auth/auth-provider',
   },
   {
     plugin: './routes/users',
@@ -90,8 +90,7 @@ exports.manifest = {
         xframe: false,
       },
       cors: true,
-      jsonp: 'callback', // <3 Hapi,
-      auth: false,
+      jsonp: 'callback',
     },
     debug: !!process.env.DEBUG || false,
     port: +process.env.PORT || 1338,
@@ -117,10 +116,17 @@ exports.options = {
       layout: true,
       isCached: false,
       layoutKeyword: 'body',
-      context: {
-        moment: require('moment'),
-        env: process.env.APP_ENV || 'PROD',
-        version: require('../package.json').version,
+      context(request) {
+        const requestBits =
+          (request && request.auth && request.auth.credentials) || {};
+
+        return {
+          userId: requestBits.sub,
+          congregationId: requestBits.congregationId,
+          moment: require('moment'),
+          env: process.env.APP_ENV || 'PROD',
+          version: require('../package.json').version,
+        };
       },
     });
   },

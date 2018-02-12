@@ -23,7 +23,10 @@
 
     progressEl.classList.remove('hide');
 
-    fetch('/ui/reset', { method: 'DELETE' })
+    fetch('/ui/reset', {
+      method: 'DELETE',
+      credentials: 'same-origin',
+    })
       .then((response) => {
         progressEl.classList.add('hide');
         submitEl.removeAttribute('disabled');

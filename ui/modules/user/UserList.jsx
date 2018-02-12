@@ -50,6 +50,7 @@ class UserList extends Component {
       headers: new Headers({
         'Content-Type': 'application/json',
       }),
+      credentials: 'same-origin',
     });
 
     const invitation = await response.json();
@@ -66,6 +67,7 @@ class UserList extends Component {
       headers: new Headers({
         'Content-Type': 'application/json',
       }),
+      credentials: 'same-origin',
     });
 
     user = await response.json();

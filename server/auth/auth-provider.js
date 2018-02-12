@@ -1,5 +1,5 @@
 exports.plugin = {
-  async register(server, options, next) {
+  async register(server, options) {
     server.register(require('hapi-auth-jwt2'));
 
     server.auth.strategy('jwt', 'jwt', {

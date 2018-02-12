@@ -62,7 +62,7 @@
   <li><a class="subheader">Territory Helper</a></li>
   <li><a class="waves-effect" href="/ui/territoryhelper/territories">Import Territories</a></li>
   <li><a class="waves-effect" href="/ui/territoryhelper/locations">Import Locations</a></li>
-  <li><a class="waves-effect" data-set-href="/ui/territoryhelper/exports?congregationid=$congregationid">Exports</a></li>
+  <li><a class="waves-effect" href="/ui/territoryhelper/exports">Exports</a></li>
   <li class="divider"></li>
   <li class="subheader"></li>
   <li data-session-required="false"><a class="subheader">Admin</a></li>
@@ -91,19 +91,6 @@
     if (congregationName) {
       $('body').prepend($(`<div class="row teal lighten-4 center-align">${congregationName}</div>`));
     }
-  })();
-</script>
-<script>
-  /* Update any URLs in the page with the current values such as congregationId*/
-  (() => {
-    const congregationId = window.localStorage.getItem('congregationId');
-
-    const nodeList = document.querySelectorAll('[data-set-href]');
-
-    Array.prototype.forEach.call(nodeList, (node) => {
-      const { setHref } = node.dataset;
-      node.setAttribute('href', setHref.replace(/\$congregationid/g, congregationId));
-    })
   })();
 </script>
 <script>
