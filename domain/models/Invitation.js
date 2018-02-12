@@ -73,10 +73,12 @@ class Invitation extends Model {
         congregationId,
         code,
       })
-      .andWhere(
+      .where(
         'createTimestamp',
         '>=',
-        Moment().subtract(MAX_CODE_AGE_MINUTES, 'minutes'),
+        Moment()
+          .subtract(MAX_CODE_AGE_MINUTES, 'minutes')
+          .valueOf(),
       );
 
     if (!invitation) {

@@ -19,6 +19,11 @@ exports.plugin = {
         path: '/invitations',
         options: Controller.createUserFromInvitation,
       },
+      {
+        method: 'POST',
+        path: '/invitations/accept',
+        options: Controller.createUserFromInvitation,
+      },
       { method: 'POST', path: '/login', options: Controller.login },
       {
         method: 'PUT',

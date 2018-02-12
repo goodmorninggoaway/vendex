@@ -144,6 +144,19 @@ exports.plugin = {
           auth: false,
         },
       },
+      {
+        method: 'GET',
+        path: '/accept-invitation',
+        options: {
+          handler: {
+            view: {
+              template: 'auth/accept-invitation.ejs',
+              options: { layout: 'homepageLayout' },
+            },
+          },
+          auth: false,
+        },
+      },
     ]);
   },
   version: require('../../package.json').version,

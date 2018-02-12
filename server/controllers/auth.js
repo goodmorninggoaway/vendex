@@ -89,15 +89,32 @@ module.exports = {
     async handler(req) {
       try {
         const { Invitation } = req.server.models();
-        const { email, congregationId, code, name, password } = req.payload;
+        const {
+          email,
+          congregationId,
+          code,
+          name,
+          password,
+          confirmPassword,
+        } = req.payload;
 
-        return Invitation.createUserFromInvitation({
+        if (password !== confirmPassword) {
+          return Boom.badRequest();
+        }
+
+        const valid = await Invitation.createUserFromInvitation({
           email,
           congregationId,
           code,
           name,
           password,
         });
+
+        if (!valid) {
+          return Boom.badRequest();
+        }
+
+        return h.redirect('/ui/login');
       } catch (ex) {
         console.log(ex);
         return Boom.badImplementation();
