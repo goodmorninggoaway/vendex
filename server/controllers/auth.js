@@ -10,7 +10,7 @@ module.exports = {
     async handler(req, h) {
       try {
         const { User } = req.server.models();
-        const { username, password } = req.payload;
+        const { email: username, password } = req.payload;
         const user = await User.login(username, password);
         if (!user) {
           return Boom.unauthorized();
@@ -33,8 +33,11 @@ module.exports = {
           .response()
           .header('authorization', token)
           .state('token', token, {
+            path: '/',
             ttl: TOKEN_TTL * 60 * 1000,
-          });
+            isSecure: false, // TODO change this by running dev mode over ssl
+          })
+          .redirect('/ui');
       } catch (ex) {
         console.log(ex);
         return Boom.badImplementation();

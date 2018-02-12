@@ -123,6 +123,18 @@ exports.plugin = {
           },
         },
       },
+      {
+        method: 'GET',
+        path: '/login',
+        options: {
+          handler: {
+            view: {
+              template: 'auth/login.ejs',
+              options: { layout: 'homepageLayout' },
+            },
+          },
+        },
+      },
     ]);
   },
   version: require('../../package.json').version,

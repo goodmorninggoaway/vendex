@@ -25,7 +25,7 @@ class UserList extends Component {
   }
 
   async componentDidMount() {
-    const response = await fetch('/users');
+    const response = await fetch('/users', { credentials: 'same-origin' });
     const users = await response.json();
 
     this.setState({ users });

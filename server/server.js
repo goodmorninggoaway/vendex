@@ -12,17 +12,6 @@ const startServer = async function() {
   try {
     const options = { ...serverConfig.options, relativeTo: __dirname };
     const server = await Glue.compose(serverConfig.manifest, options);
-
-    server.auth.strategy('jwt', 'jwt', {
-      key: 'NeverShareYourSecret', // Never Share your secret key
-      validate() {
-        return true;
-      },
-      verifyOptions: { algorithms: ['HS256'] }, // pick a strong algorithm
-    });
-
-    // server.auth.default('jwt');
-
     await server.start();
     console.log('server started');
   } catch (err) {

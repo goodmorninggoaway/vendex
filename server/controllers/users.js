@@ -16,6 +16,7 @@ module.exports = {
         return Boom.badImplementation();
       }
     },
+    auth: 'jwt',
   },
 
   editUser: {

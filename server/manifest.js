@@ -1,5 +1,4 @@
 const plugins = [
-  { plugin: 'hapi-auth-jwt2' },
   {
     plugin: 'schwifty',
     options: {
@@ -9,6 +8,9 @@ const plugins = [
   },
   {
     plugin: 'inert',
+  },
+  {
+    plugin: './auth/auth-provider',
   },
   {
     plugin: './routes/users',
