@@ -10,6 +10,7 @@ module.exports = {
     UserList: './modules/user/UserList.jsx',
     AcceptInvitation: './modules/auth/AcceptInvitation.jsx',
     InvitationSuccess: './modules/auth/InvitationSuccess.jsx',
+    Login: './modules/auth/Login.jsx',
   },
   output: {
     path: OUTPUT_PATH,

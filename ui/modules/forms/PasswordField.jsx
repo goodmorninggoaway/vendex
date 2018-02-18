@@ -1,4 +1,5 @@
 import React, { Fragment } from 'react';
+import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { FormField } from 'react-form';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
@@ -122,6 +123,10 @@ const FabricPasswordField = ({
       )}
     </Fragment>
   );
+};
+
+FabricPasswordField.propTypes = {
+  validate: PropTypes.bool,
 };
 
 export default FormField(FabricPasswordField);

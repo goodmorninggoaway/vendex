@@ -137,7 +137,8 @@ exports.plugin = {
         options: {
           handler: {
             view: {
-              template: 'auth/login.ejs',
+              template: 'reactView.ejs',
+              context: { componentName: 'Login', props: {} },
               options: { layout: 'homepageLayout' },
             },
           },
