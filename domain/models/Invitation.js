@@ -60,26 +60,17 @@ class Invitation extends Model {
     return invitation;
   }
 
-  static async createUserFromInvitation({
-    email,
-    code,
-    congregationId,
-    password,
-    name,
-  }) {
+  static async createUserFromInvitation({ email, code, password, name }) {
     const invitation = await Invitation.query()
-      .findOne({
-        email,
-        congregationId,
-        code,
-      })
-      .where(
+      .where({ email, code })
+      .andWhere(
         'createTimestamp',
         '>=',
         Moment()
           .subtract(MAX_CODE_AGE_MINUTES, 'minutes')
-          .valueOf(),
-      );
+          .toDate(),
+      )
+      .first();
 
     if (!invitation) {
       return false;

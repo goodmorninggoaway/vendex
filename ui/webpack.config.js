@@ -8,6 +8,8 @@ module.exports = {
   entry: {
     AppRoot: './modules/layouts/AppRoot.jsx',
     UserList: './modules/user/UserList.jsx',
+    AcceptInvitation: './modules/auth/AcceptInvitation.jsx',
+    InvitationSuccess: './modules/auth/InvitationSuccess.jsx',
   },
   output: {
     path: OUTPUT_PATH,
@@ -29,7 +31,7 @@ module.exports = {
   externals: {
     React: 'react',
     ReactDOM: 'react-dom',
-    PropTypes: 'prop-types',
+    // PropTypes: 'prop-types',
   },
   devtool: 'source-map',
 };

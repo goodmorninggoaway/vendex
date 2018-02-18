@@ -7,6 +7,11 @@ exports.plugin = {
         path: '/react/views/{path*}',
         options: Controller.react,
       },
+      {
+        method: 'GET',
+        path: '/static/{path*}',
+        options: Controller.serve,
+      },
     ]);
   },
   version: require('../../package.json').version,

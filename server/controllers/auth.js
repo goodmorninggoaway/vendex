@@ -86,17 +86,11 @@ module.exports = {
   },
 
   createUserFromInvitation: {
-    async handler(req) {
+    auth: false,
+    async handler(req, h) {
       try {
         const { Invitation } = req.server.models();
-        const {
-          email,
-          congregationId,
-          code,
-          name,
-          password,
-          confirmPassword,
-        } = req.payload;
+        const { email, code, name, password, confirmPassword } = req.payload;
 
         if (password !== confirmPassword) {
           return Boom.badRequest();
@@ -104,7 +98,6 @@ module.exports = {
 
         const valid = await Invitation.createUserFromInvitation({
           email,
-          congregationId,
           code,
           name,
           password,

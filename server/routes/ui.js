@@ -150,7 +150,22 @@ exports.plugin = {
         options: {
           handler: {
             view: {
-              template: 'auth/accept-invitation.ejs',
+              template: 'reactView.ejs',
+              context: { componentName: 'AcceptInvitation', props: {} },
+              options: { layout: 'homepageLayout' },
+            },
+          },
+          auth: false,
+        },
+      },
+      {
+        method: 'GET',
+        path: '/accept-invitation/welcome',
+        options: {
+          handler: {
+            view: {
+              template: 'reactView.ejs',
+              context: { componentName: 'InvitationSuccess', props: {} },
               options: { layout: 'homepageLayout' },
             },
           },

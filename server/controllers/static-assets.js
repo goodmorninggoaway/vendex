@@ -1,12 +1,14 @@
 module.exports = {
   serve: {
+    files: { relativeTo: __dirname },
     handler: {
       directory: {
-        path: '.',
+        path: '../../static',
         redirectToSlash: true,
         index: true,
       },
     },
+    auth: false,
   },
   react: {
     files: { relativeTo: __dirname },
@@ -18,5 +20,6 @@ module.exports = {
         defaultExtension: 'js',
       },
     },
+    auth: false,
   },
 };
