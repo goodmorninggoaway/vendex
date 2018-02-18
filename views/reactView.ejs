@@ -12,23 +12,7 @@
 <body class="ms-Fabric ms-normalize ms-bgColor-neutralLighter" style="height: 100%">
   <div id="react-page" class="ms-font-m-plus" style="padding: 20px;"></div>
 </body>
-<script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
-<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/prop-types/15.6.0/prop-types.js" integrity="sha256-cE3TQMhGTbaVzGQbDnLp+RpcnypFp4UXKsHMmWKeI2k=" crossorigin="anonymous"></script>-->
 
-<script src="/assets/react/views/AppRoot.js"></script>
+<script src="/assets/react/views/vendor.js"></script>
 <script src="/assets/react/views/<%= componentName %>.js"></script>
-
-<script>
-  const { AppRoot, <%= componentName %>: Page } = window.vendex;
-
-  ReactDOM.render(
-    React.createElement(
-      AppRoot.default,
-      null,
-      React.createElement(Page.default, null, <%= JSON.stringify(typeof props !== undefined ? props : {}) %>)
-    ),
-    document.getElementById('react-page')
-  );
-</script>
 </html>

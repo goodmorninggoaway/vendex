@@ -126,7 +126,7 @@ exports.plugin = {
           handler: {
             view: {
               template: 'reactView.ejs',
-              context: { componentName: 'UserList', props: {} },
+              context: { componentName: 'UserListPage', props: {} },
             },
           },
         },
@@ -138,7 +138,7 @@ exports.plugin = {
           handler: {
             view: {
               template: 'reactView.ejs',
-              context: { componentName: 'Login', props: {} },
+              context: { componentName: 'LoginPage', props: {} },
               options: { layout: 'homepageLayout' },
             },
           },
@@ -152,7 +152,7 @@ exports.plugin = {
           handler: {
             view: {
               template: 'reactView.ejs',
-              context: { componentName: 'AcceptInvitation', props: {} },
+              context: { componentName: 'AcceptInvitationPage', props: {} },
               options: { layout: 'homepageLayout' },
             },
           },
@@ -166,7 +166,7 @@ exports.plugin = {
           handler: {
             view: {
               template: 'reactView.ejs',
-              context: { componentName: 'InvitationSuccess', props: {} },
+              context: { componentName: 'InvitationSuccessPage', props: {} },
               options: { layout: 'homepageLayout' },
             },
           },

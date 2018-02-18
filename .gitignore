@@ -13,3 +13,4 @@ dump.rdb
 .env
 .gradle
 ui/dist
+ui/tmp
