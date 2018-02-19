@@ -1,6 +1,10 @@
 require('dotenv').config();
 process.env.APP_ENV = process.env.APP_ENV || 'PROD';
 
+require('babel-core/register')({
+  extensions: '.jsx',
+});
+
 const Glue = require('glue');
 const serverConfig = require('./manifest');
 

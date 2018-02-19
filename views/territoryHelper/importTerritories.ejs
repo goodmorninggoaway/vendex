@@ -31,9 +31,7 @@
     fetch('/territoryhelper/territories', {
       body: new FormData(document.getElementById('th-territory-import')),
       method: 'POST',
-      headers: new Headers({
-        'congregationid': window.localStorage.getItem('congregationId'),
-      }),
+      credentials: 'same-origin',
     })
       .then((response) => {
         progressEl.classList.add('hide');

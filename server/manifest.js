@@ -1,5 +1,30 @@
 const plugins = [
   {
+    plugin: './auth/auth-provider',
+  },
+  {
+    plugin: 'schwifty',
+    options: {
+      knex: require('../domain/dataAccess').knex,
+      models: Object.values(require('../domain/models')),
+    },
+  },
+  {
+    plugin: 'inert',
+  },
+  {
+    plugin: './routes/users',
+    routes: {
+      prefix: '/users',
+    },
+  },
+  {
+    plugin: './routes/auth',
+    routes: {
+      prefix: '/auth',
+    },
+  },
+  {
     plugin: './routes/root',
   },
   {
@@ -20,6 +45,15 @@ const plugins = [
       prefix: '/territoryhelper',
     },
   },
+  {
+    plugin: './routes/static-assets',
+    routes: {
+      prefix: '/assets',
+    },
+  },
+  {
+    plugin: './server-extensions',
+  },
 ];
 
 if (process.env.APP_ENV === 'DEV') {
@@ -34,7 +68,7 @@ if (process.env.APP_ENV === 'DEV') {
           {
             module: 'good-squeeze',
             name: 'Squeeze',
-            args: [{ log: '*', response: '*' }],
+            args: [{ log: '*', response: '*', error: '*' }],
           },
           { module: 'good-console' },
           'stdout',
@@ -59,8 +93,7 @@ exports.manifest = {
         xframe: false,
       },
       cors: true,
-      jsonp: 'callback', // <3 Hapi,
-      auth: false,
+      jsonp: 'callback',
     },
     debug: !!process.env.DEBUG || false,
     port: +process.env.PORT || 1338,
@@ -86,10 +119,17 @@ exports.options = {
       layout: true,
       isCached: false,
       layoutKeyword: 'body',
-      context: {
-        moment: require('moment'),
-        env: process.env.APP_ENV || 'PROD',
-        version: require('../package.json').version,
+      context(request) {
+        const requestBits =
+          (request && request.auth && request.auth.credentials) || {};
+
+        return {
+          userId: requestBits.sub,
+          congregationId: requestBits.congregationId,
+          moment: require('moment'),
+          env: process.env.APP_ENV || 'PROD',
+          version: require('../package.json').version,
+        };
       },
     });
   },

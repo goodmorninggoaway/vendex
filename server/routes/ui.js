@@ -2,7 +2,15 @@ exports.plugin = {
   async register(server, options) {
     const Controller = require('../controllers/ui');
     server.route([
-      { method: 'GET', path: '/', options: Controller.homepage },
+      {
+        method: 'GET',
+        path: '/',
+        options: {
+          async handler(req, h) {
+            return h.redirect('/ui/alba/locations');
+          },
+        },
+      },
       {
         method: 'GET',
         path: '/congregations/{congregationId}',
@@ -109,6 +117,88 @@ exports.plugin = {
           handler: {
             view: { template: 'territoryHelper/importTerritories.ejs' },
           },
+        },
+      },
+      {
+        method: 'GET',
+        path: '/users',
+        options: {
+          handler: {
+            view: {
+              template: 'reactView.ejs',
+              context: { componentName: 'UserListPage' },
+            },
+          },
+        },
+      },
+      {
+        method: 'GET',
+        path: '/login',
+        options: {
+          handler: {
+            view: {
+              template: 'reactView.ejs',
+              context: { componentName: 'LoginPage' },
+              options: { layout: 'homepageLayout' },
+            },
+          },
+          auth: false,
+        },
+      },
+      {
+        method: 'GET',
+        path: '/accept-invitation',
+        options: {
+          handler: {
+            view: {
+              template: 'reactView.ejs',
+              context: { componentName: 'AcceptInvitationPage' },
+              options: { layout: 'homepageLayout' },
+            },
+          },
+          auth: false,
+        },
+      },
+      {
+        method: 'GET',
+        path: '/accept-invitation/welcome',
+        options: {
+          handler: {
+            view: {
+              template: 'reactView.ejs',
+              context: { componentName: 'AcceptInvitationSuccessPage' },
+              options: { layout: 'homepageLayout' },
+            },
+          },
+          auth: false,
+        },
+      },
+      {
+        method: 'GET',
+        path: '/forgot-password',
+        options: {
+          handler: {
+            view: {
+              template: 'reactView.ejs',
+              context: { componentName: 'ForgotPasswordPage' },
+              options: { layout: 'homepageLayout' },
+            },
+          },
+          auth: false,
+        },
+      },
+      {
+        method: 'GET',
+        path: '/reset-password',
+        options: {
+          handler: {
+            view: {
+              template: 'reactView.ejs',
+              context: { componentName: 'ResetPasswordPage' },
+              options: { layout: 'homepageLayout' },
+            },
+          },
+          auth: false,
         },
       },
     ]);

@@ -1,12 +1,12 @@
+require('dotenv').config();
+
 module.exports = {
   client: 'pg',
-  connection:
-    process.env.DATABASE_URL ||
-    'postgres://vendex:vendex@localhost:5432/vendex_test',
+  connection: process.env.DATABASE_URL,
   migrations: {
-    directory: './api/domain/dataAccess/migrations',
+    directory: './domain/dataAccess/migrations',
   },
   seeds: {
-    directory: './api/domain/dataAccess/seeds',
+    directory: './domain/dataAccess/seeds',
   },
 };

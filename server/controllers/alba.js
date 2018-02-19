@@ -1,10 +1,12 @@
+const importLocations = require('../../domain/alba/import');
+
 module.exports = {
   importLocations: {
     handler: async function(req, res) {
-      const { congregationid } = req.headers;
-      const importLocations = require('../../domain/alba/import');
+      const { congregationId } = req.auth.credentials;
+
       return importLocations({
-        congregationId: +congregationid,
+        congregationId,
         inputData: req.payload,
       });
     },

@@ -1,9 +1,7 @@
 <h4>Territory Helper > Exports</h4>
 
 <div>
-  <button id="create-export" class="waves-effect waves-light btn"
-          data-set-href="/territoryhelper/locations?format=xlsx&congregationid=$congregationid"
-  >
+  <button id="create-export" class="waves-effect waves-light btn">
     <i class="material-icons right">file_download</i> Download a new export
   </button>
   <div class="progress hide" id="spinner">
@@ -46,9 +44,7 @@
     spinner.classList.remove('hide');
     el.setAttribute('disabled', 'disabled');
 
-    const congregationId = window.localStorage.getItem('congregationId');
-
-    const response = await fetch(`/territoryhelper/locations?format=xlsx&congregationid=${congregationId}`);
+    const response = await fetch(`/territoryhelper/locations?format=xlsx`, { credentials: 'same-origin' });
     if (!response.ok) {
       Materialize.toast('Error creating export.', 5000);
       return;
@@ -56,7 +52,7 @@
 
     const downloadUrl = response.headers.get('location');
     const pingDownload = () => {
-      fetch(downloadUrl)
+      fetch(downloadUrl, { credentials: 'same-origin' })
         .then(async (result) => {
           if (result.status === 204) {
             window.setTimeout(pingDownload, 2500);

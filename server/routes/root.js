@@ -1,7 +1,16 @@
 exports.plugin = {
   async register(server, options) {
-    const Controller = require('../controllers/ui');
-    server.route([{ method: 'GET', path: '/', options: Controller.homepage }]);
+    server.route([
+      {
+        method: 'GET',
+        path: '/',
+        options: {
+          async handler(req, h) {
+            return h.redirect('/ui/users');
+          },
+        },
+      },
+    ]);
   },
   version: require('../../package.json').version,
   name: 'root-route',

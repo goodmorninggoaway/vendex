@@ -10,6 +10,10 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
   <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+
+  <link rel="stylesheet" href="https://unpkg.com/react-table@latest/react-table.css">
+  <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-core/9.3.0/css/fabric.min.css">
+
   <style>
     header, main, footer {
       margin-left: 300px;
@@ -22,29 +26,50 @@
         padding: 0 20px;
       }
     }
+
+    .pad,
+    .pad-left {
+      padding-left: 16px;
+    }
+
+    .pad,
+    .pad-right {
+      padding-right: 16px;
+    }
+
+    .pad,
+    .pad-bottom {
+      padding-bottom: 16px;
+    }
+
+    .pad,
+    .pad-top {
+      padding-top: 16px;
+    }
   </style>
 </head>
 
 <body>
 <ul id="slide-out" class="side-nav fixed">
-  <li data-session-required="false"><a href="/ui"><h3>VENDEX</h3></a></li>
+  <li><a href="/ui"><h3>VENDEX</h3></a></li>
   <li><a class="subheader">Alba</a></li>
   <li><a class="waves-effect" href="/ui/alba/locations">Import Locations</a></li>
   <li class="divider"></li>
   <li><a class="subheader">Territory Helper</a></li>
   <li><a class="waves-effect" href="/ui/territoryhelper/territories">Import Territories</a></li>
   <li><a class="waves-effect" href="/ui/territoryhelper/locations">Import Locations</a></li>
-  <li><a class="waves-effect" data-set-href="/ui/territoryhelper/exports?congregationid=$congregationid">Exports</a></li>
+  <li><a class="waves-effect" href="/ui/territoryhelper/exports">Exports</a></li>
   <li class="divider"></li>
   <li class="subheader"></li>
-  <li data-session-required="false"><a class="subheader">Admin</a></li>
-  <li data-session-required="false"><a class="waves-effect" href="/ui/congregations">Congregations</a></li>
+  <li><a class="subheader">Admin</a></li>
+  <li><a class="waves-effect" href="/ui/congregations">Congregations</a></li>
   <li><a class="waves-effect" href="/ui/languages">Languages</a></li>
+  <li><a class="waves-effect" href="/ui/users">Users</a></li>
   <% if (env && env !== 'PROD') { %>
   <li><a class="waves-effect" href="/ui/reset">Reset</a></li>
   <% } %>
   <li class="divider"></li>
-  <li data-session-required="false"><a>version <%= version %></a></li>
+  <li><a>version <%= version %></a></li>
 </ul>
 <main>
   <%- body %>
@@ -54,58 +79,6 @@
   $(document).ready(function () {
     $('select').material_select();
   });
-</script>
-<script>
-  /* Update any URLs in the page with the current values such as congregationId */
-  (() => {
-    const congregationName = window.localStorage.getItem('congregationName');
-    if (congregationName) {
-      $('body').prepend($(`<div class="row teal lighten-4 center-align">${congregationName}</div>`));
-    }
-  })();
-</script>
-<script>
-  /* Update any URLs in the page with the current values such as congregationId*/
-  (() => {
-    const congregationId = window.localStorage.getItem('congregationId');
-
-    const nodeList = document.querySelectorAll('[data-set-href]');
-
-    Array.prototype.forEach.call(nodeList, (node) => {
-      const { setHref } = node.dataset;
-      node.setAttribute('href', setHref.replace(/\$congregationid/g, congregationId));
-    })
-  })();
-</script>
-<script>
-  /* Remove nav when a congregation is not set */
-  (() => {
-    const congregationId = window.localStorage.getItem('congregationId');
-    if (congregationId) {
-      return;
-    }
-
-    const sessionFreePaths = [];
-    document.getElementById('slide-out').querySelectorAll('li')
-      .forEach((el) => {
-        if (el.getAttribute('data-session-required') === 'false') {
-          const link = el.querySelector('a');
-          if (!link || !link.getAttribute('href')) {
-            return;
-          }
-
-          sessionFreePaths.push(link.getAttribute('href'));
-          return;
-        }
-        el.parentNode.removeChild(el);
-      });
-
-    if (sessionFreePaths.some(x => window.location.pathname === x)) {
-      return;
-    }
-
-    window.location.href = '/ui';
-  })()
 </script>
 </body>
 </html>

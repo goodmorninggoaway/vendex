@@ -20,4 +20,4 @@ const knex = require('knex')({
 DAL.initialize(knex);
 Model.knex(knex);
 
-module.exports = { DAL };
+module.exports = { DAL, knex };

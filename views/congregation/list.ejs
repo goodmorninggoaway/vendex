@@ -1,3 +1,5 @@
+<% const globalCongregationId = congregationId; %>
+
 <h4>Congregations</h4>
 <blockquote>
   <div style="display: flex; align-items: center"><i class="material-icons teal-text">delete</i> - Delete</div>
@@ -35,7 +37,12 @@
     </tr>
     <% congregations.map(({ name, language, congregationId }) => { %>
     <tr>
-      <td><%= name %></td>
+      <td style="display: flex; align-items: center;">
+        <%= name %>
+        <% if (globalCongregationId === congregationId) { %>
+        <i class="material-icons">favorite</i>
+        <% } %>
+      </td>
       <td><%= language %></td>
       <td>
         <a href="/ui/congregations/<%= congregationId.toString() %>/delete" title="Delete <%= name %>" class="btn-floating">
@@ -44,46 +51,9 @@
         <a href="/ui/congregations/<%= congregationId.toString() %>" title="Update <%= name %>" class="btn-floating">
           <i class="material-icons">edit</i>
         </a>
-        <button
-          class="btn-floating"
-          type="button"
-          data-congregation-id="<%= congregationId %>"
-          data-toggle-congregation
-          onclick="onToggleCongregation(<%= congregationId %>, '<%= name %>')"
-        >
-          <i class="material-icons" data-current="false">favorite_border</i>
-        </button>
       </td>
     </tr>
     <% }); %>
     </tbody>
   </table>
 </form>
-<script>
-  function onToggleCongregation(congregationId, congregationName) {
-    const old = document.querySelector(`button[data-congregation-id="${window.localStorage.getItem('congregationId')}"]`)
-    if (old) {
-      old.querySelector('i').innerText = 'favorite_border';
-    }
-
-    if (!congregationId) {
-      return;
-    }
-
-    window.localStorage.setItem('congregationId', congregationId);
-    window.localStorage.setItem('congregationName', congregationName);
-
-    const current = document.querySelector(`button[data-congregation-id="${window.localStorage.getItem('congregationId')}"]`)
-    if (current) {
-      current.querySelector('i').innerText = 'favorite';
-    }
-
-    window.location.reload(true);
-  }
-</script>
-<script>
-  const current = document.querySelector(`button[data-congregation-id="${window.localStorage.getItem('congregationId')}"]`)
-  if (current) {
-    current.querySelector('i').innerText = 'favorite';
-  }
-</script>
