@@ -37,7 +37,7 @@ module.exports = {
           .state('token', token, {
             path: '/',
             ttl: TOKEN_TTL * 60 * 1000,
-            isSecure: false, // TODO change this by running dev mode over ssl
+            isSecure: process.env.USE_SSL !== 'false',
           })
           .redirect('/ui');
       } catch (ex) {
