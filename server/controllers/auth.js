@@ -4,6 +4,8 @@ const Jwt = require('jsonwebtoken');
 const Moment = require('moment');
 
 const TOKEN_TTL = process.env.TOKEN_EXPIRATION_MINUTES || 24 * 60;
+const PASSWORD_RESET_TOKEN_TTL =
+  process.env.PASSWORD_RESET_TOKEN_EXPIRATION_MINUTES || 60;
 
 module.exports = {
   login: {
@@ -58,6 +60,64 @@ module.exports = {
         }
 
         user = await user.resetPassword(password);
+        return h.response().code(HttpStatus.OK);
+      } catch (ex) {
+        console.log(ex);
+        return Boom.badImplementation();
+      }
+    },
+  },
+
+  createPasswordResetRequest: {
+    auth: false,
+    async handler(req, h) {
+      try {
+        const { User } = req.server.models();
+        const { email } = req.payload;
+
+        let user = await User.query().findOne({ email });
+        if (!user) {
+          return Boom.ok();
+        }
+
+        user = await user.createPasswordResetRequest();
+        return h.response().code(HttpStatus.OK);
+      } catch (ex) {
+        console.log(ex);
+        return Boom.badImplementation();
+      }
+    },
+  },
+
+  finishPasswordResetRequest: {
+    auth: false,
+    async handler(req, h) {
+      try {
+        const { User } = req.server.models();
+        const { authenticationCode } = req.params;
+        const { password, confirmPassword } = req.payload;
+
+        if (password !== confirmPassword) {
+          return Boom.badRequest('Passwords do not match');
+        }
+
+        let user = await User.query()
+          .where({ authenticationCode })
+          .andWhere(
+            'authenticationCreationTimestamp',
+            '>=',
+            Moment()
+              .subtract(PASSWORD_RESET_TOKEN_TTL, 'minutes')
+              .toDate(),
+          )
+          .first();
+
+        if (!user) {
+          return Boom.badRequest('Invalid or expired code.');
+        }
+
+        user = await user.resetPassword(password);
+
         return h.response().code(HttpStatus.OK);
       } catch (ex) {
         console.log(ex);

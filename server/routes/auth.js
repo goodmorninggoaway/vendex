@@ -30,6 +30,16 @@ exports.plugin = {
         path: '/password',
         options: Controller.setPassword,
       },
+      {
+        method: 'POST',
+        path: '/password-reset-requests',
+        options: Controller.createPasswordResetRequest,
+      },
+      {
+        method: 'PUT',
+        path: '/password-reset-requests/{authenticationCode}',
+        options: Controller.finishPasswordResetRequest,
+      },
     ]);
   },
   version: require('../../package.json').version,

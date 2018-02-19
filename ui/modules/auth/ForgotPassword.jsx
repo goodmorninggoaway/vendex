@@ -7,37 +7,32 @@ import {
   MessageBar,
   MessageBarType,
 } from 'office-ui-fabric-react/lib-es2015/MessageBar';
-import { TextField, PasswordField } from '../forms';
+import { TextField } from '../forms';
 
-class Login extends Component {
+class ForgotPassword extends Component {
   constructor(...args) {
     super(...args);
     autobind(this);
 
-    this.state = { error: false, loading: false, success: false };
+    this.state = { error: null, loading: false, success: false };
   }
 
-  onSubmit(user) {
+  onSubmit({ email }) {
     this.setState({ loading: true }, async () => {
-      const response = await fetch('/auth/login', {
+      const response = await fetch(`/auth/password-reset-requests`, {
         method: 'POST',
-        body: JSON.stringify(user),
+        body: JSON.stringify({ email }),
         headers: new Headers({
           'Content-Type': 'application/json',
         }),
-        credentials: 'same-origin',
       });
 
-      if (response.status !== 200) {
-        this.setState({ error: true, loading: false });
-      } else {
-        window.location.href = `/ui`;
-      }
+      this.setState({ error: response.status !== 200, loading: false });
     });
   }
 
   render() {
-    const { error, loading } = this.state;
+    const { error, loading, success } = this.state;
     return (
       <div className="ms-Grid">
         <style
@@ -55,8 +50,14 @@ class Login extends Component {
           <div className="ms-Grid-col ms-md4">
             <div className="ms-fontWeight-semibold">
               <div className="ms-fontColor-magentaDark ms-fontSize-su">
-                Vendex
+                Forgot Password
               </div>
+              {success && (
+                <div className="ms-fontColor-magentaDark ms-fontSize-l">
+                  If there is an account with your email address, you should
+                  receive instructions in a few minutes.
+                </div>
+              )}
             </div>
 
             <Form onSubmit={this.onSubmit}>
@@ -69,16 +70,21 @@ class Login extends Component {
                         isMultiline
                         onDismiss={() => this.setState({ error: null })}
                       >
-                        Invalid password.
+                        Something's wrong. Did you use the right email address?
+                      </MessageBar>
+                    </div>
+                  )}
+                  {error === false && (
+                    <div style={{ margin: '12px 0' }}>
+                      <MessageBar
+                        messageBarType={MessageBarType.success}
+                        isMultiline
+                      >
+                        Check your email for a password reset link.
                       </MessageBar>
                     </div>
                   )}
                   <TextField label="Email" field="email" />
-                  <PasswordField
-                    label="Password"
-                    field="password"
-                    type="password"
-                  />
 
                   <div
                     style={{
@@ -90,14 +96,10 @@ class Login extends Component {
                     <DefaultButton
                       primary={true}
                       type="submit"
-                      text="Login"
+                      text="Send Email"
                       disabled={loading}
                     />
                     {loading && <Spinner />}
-                    <DefaultButton
-                      text="Forgot Password"
-                      href="/ui/forgot-password"
-                    />
                   </div>
                 </form>
               )}
@@ -110,4 +112,4 @@ class Login extends Component {
   }
 }
 
-export default Login;
+export default ForgotPassword;

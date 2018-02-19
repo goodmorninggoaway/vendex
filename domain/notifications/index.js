@@ -48,6 +48,7 @@ class Notification {
 
 Notification.types = {
   INVITE_NEW_USER: 'inviteNewUser',
+  PASSWORD_RESET: 'passwordReset',
 };
 
 module.exports = Notification;

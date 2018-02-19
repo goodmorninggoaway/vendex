@@ -126,7 +126,7 @@ exports.plugin = {
           handler: {
             view: {
               template: 'reactView.ejs',
-              context: { componentName: 'UserListPage', props: {} },
+              context: { componentName: 'UserListPage' },
             },
           },
         },
@@ -138,7 +138,7 @@ exports.plugin = {
           handler: {
             view: {
               template: 'reactView.ejs',
-              context: { componentName: 'LoginPage', props: {} },
+              context: { componentName: 'LoginPage' },
               options: { layout: 'homepageLayout' },
             },
           },
@@ -152,7 +152,7 @@ exports.plugin = {
           handler: {
             view: {
               template: 'reactView.ejs',
-              context: { componentName: 'AcceptInvitationPage', props: {} },
+              context: { componentName: 'AcceptInvitationPage' },
               options: { layout: 'homepageLayout' },
             },
           },
@@ -166,7 +166,35 @@ exports.plugin = {
           handler: {
             view: {
               template: 'reactView.ejs',
-              context: { componentName: 'InvitationSuccessPage', props: {} },
+              context: { componentName: 'InvitationSuccessPage' },
+              options: { layout: 'homepageLayout' },
+            },
+          },
+          auth: false,
+        },
+      },
+      {
+        method: 'GET',
+        path: '/forgot-password',
+        options: {
+          handler: {
+            view: {
+              template: 'reactView.ejs',
+              context: { componentName: 'ForgotPasswordPage' },
+              options: { layout: 'homepageLayout' },
+            },
+          },
+          auth: false,
+        },
+      },
+      {
+        method: 'GET',
+        path: '/reset-password',
+        options: {
+          handler: {
+            view: {
+              template: 'reactView.ejs',
+              context: { componentName: 'ResetPasswordPage' },
               options: { layout: 'homepageLayout' },
             },
           },

@@ -1,6 +1,7 @@
 const { Model } = require('objection');
 const Bcrypt = require('bcrypt');
 const Omit = require('lodash/omit');
+const Notification = require('../notifications');
 
 class User extends Model {
   static get tableName() {
@@ -48,6 +49,9 @@ class User extends Model {
     }
 
     user.loginTimestamp = new Date();
+    user.authenticationCode = null;
+    user.authenticationCreationTimestamp = null;
+
     user = await User.query(db)
       .update(user)
       .where({ userId: user.$id() })
@@ -69,6 +73,8 @@ class User extends Model {
     this.password = hash;
     this.passwordResetTimestamp = new Date();
     this.isActive = true;
+    this.authenticationCode = null;
+    this.authenticationCreationTimestamp = null;
 
     return User.query(db)
       .patch(this)
@@ -77,8 +83,36 @@ class User extends Model {
       .first();
   }
 
+  async createPasswordResetRequest(db) {
+    const user = await User.query(db)
+      .patch({
+        authenticationCode: await Bcrypt.genSalt(),
+        authenticationCreationTimestamp: new Date(),
+      })
+      .where({ userId: this.$id() })
+      .returning('*')
+      .first();
+
+    await new Notification(Notification.types.PASSWORD_RESET)
+      .asEmail()
+      .to(this.email)
+      .properties({
+        name: this.name,
+        resetLink: `${process.env.UI_BASE_URL}/reset-password?code=${
+          user.authenticationCode
+        }`,
+      })
+      .send();
+  }
+
   omitInternalFields() {
-    return Omit(this, 'password', 'salt', 'authenticationCode', 'authenticationCreationTimestamp');
+    return Omit(
+      this,
+      'password',
+      'salt',
+      'authenticationCode',
+      'authenticationCreationTimestamp',
+    );
   }
 }
 

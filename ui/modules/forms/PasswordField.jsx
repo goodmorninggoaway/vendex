@@ -76,6 +76,7 @@ const FabricPasswordField = ({
           }
         }}
         errorMessage={getError()}
+        type="password"
         {...rest}
       />
 
