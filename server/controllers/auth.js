@@ -16,6 +16,7 @@ module.exports = {
         const { email: username, password } = req.payload;
         const user = await User.login(username, password);
         if (!user) {
+          console.warn(`Failed login attempt for ${username}`, { ...req.info });
           return Boom.forbidden();
         }
 
@@ -31,6 +32,8 @@ module.exports = {
           },
           process.env.SECRET,
         );
+
+        console.info(`Login succeeded for ${username}`, { ...req.info });
 
         return h
           .response()
@@ -77,10 +80,17 @@ module.exports = {
 
         let user = await User.query().findOne({ email });
         if (!user) {
-          return Boom.ok();
+          // Don't give an attacker info
+          console.warn(`Invalid password reset requested for email ${email}`, {
+            ...req.info,
+          });
+          return h.response().code(HttpStatus.OK);
         }
 
         user = await user.createPasswordResetRequest();
+        console.info(`Password reset requested for email ${email}`, {
+          ...req.info,
+        });
         return h.response().code(HttpStatus.OK);
       } catch (ex) {
         console.log(ex);
@@ -113,11 +123,16 @@ module.exports = {
           .first();
 
         if (!user) {
+          console.warn(`Failed attempt to reset password`, {
+            ...req.info,
+          });
           return Boom.badRequest('Invalid or expired code.');
         }
 
         user = await user.resetPassword(password);
-
+        console.info(`Password reset User ${user.userId}`, {
+          ...req.info,
+        });
         return h.response().code(HttpStatus.OK);
       } catch (ex) {
         console.log(ex);
@@ -164,9 +179,15 @@ module.exports = {
         });
 
         if (!valid) {
+          console.info(`Registration attempt failed for ${email}`, {
+            ...req.info,
+          });
           return Boom.badRequest();
         }
 
+        console.info(`Registration attempt succeeded for ${email}`, {
+          ...req.info,
+        });
         return h.redirect('/ui/login');
       } catch (ex) {
         console.log(ex);
