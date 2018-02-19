@@ -39,7 +39,6 @@ class AcceptInvitation extends Component {
           'Content-Type': 'application/json',
         }),
         credentials: 'same-origin',
-        redirect: 'error',
       });
 
       if (response.status !== 200) {
