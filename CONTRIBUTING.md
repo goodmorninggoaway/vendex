@@ -23,6 +23,13 @@ DATABASE_URL=postgres://vendex:vendex@localhost:5432/vendex
 APP_ENV=DEV
 SECRET=<GENERATE A SECRET>
 TOKEN_EXPIRATION_MINUTES=60
+
+MAILGUN_API_KEY=<-- PRIVATE -->
+MAILGUN_DOMAIN=<-- PRIVATE -->
+MAILGUN_FROM=My Name <some email address>
+UI_BASE_URL=http://localhost:1337/ui
+#DEBUG_NOTIFICATION_TO_EMAIL=My Name <some email address>
+
 ```
 
 Easy way to generate a secret:   
@@ -31,4 +38,4 @@ Easy way to generate a secret:
 1. Start the server: `npm start`
 
 ## TODO
-[ ] Dockerize
+[ ] Containerize
