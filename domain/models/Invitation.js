@@ -53,7 +53,7 @@ class Invitation extends Model {
         congregation,
         activationLink: `${
           process.env.UI_BASE_URL
-        }/rsvp?code=${code}&congregationId=${congregationId}&email=${email}`,
+        }/accept-invitation?code=${code}&congregationId=${congregationId}&email=${email}`,
       })
       .send();
 
