@@ -84,7 +84,7 @@
     "lint": "eslint -c .eslintrc --fix ./",
     "build:ui": "webpack --config ./ui/webpack.config.js",
     "build:dev": "webpack-dev-server --config ./ui/webpack.config.js",
-    "heroku-postbuild": "npm-run-all -p db:migrate build"
+    "heroku-postbuild": "npm-run-all -p db:migrate build:ui"
   },
   "main": "server/server.js",
   "repository": {
