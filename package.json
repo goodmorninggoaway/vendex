@@ -72,7 +72,8 @@
     "sinon-chai": "^2.14.0",
     "webpack": "^3.10.0",
     "webpack-dev-server": "^2.11.1",
-    "write-file-webpack-plugin": "^4.2.0"
+    "write-file-webpack-plugin": "^4.2.0",
+    "yargs": "^11.0.0"
   },
   "scripts": {
     "start": "node server/server.js",

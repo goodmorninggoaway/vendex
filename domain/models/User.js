@@ -2,6 +2,8 @@ const { Model } = require('objection');
 const Bcrypt = require('bcrypt');
 const Omit = require('lodash/omit');
 const Notification = require('../notifications');
+const Jwt = require('jsonwebtoken');
+const Moment = require('moment');
 
 class User extends Model {
   static get tableName() {
@@ -59,6 +61,19 @@ class User extends Model {
       .returning('*');
 
     return user;
+  }
+
+  static async generateJWT(userId, claims, ttl) {
+    return await Jwt.sign(
+      {
+        iss: 'vendex',
+        sub: userId,
+        iat: new Moment().unix(),
+        exp: new Moment().add(ttl, 'minutes').unix(),
+        ...claims,
+      },
+      process.env.SECRET,
+    );
   }
 
   async verifyPassword(plainPassword) {

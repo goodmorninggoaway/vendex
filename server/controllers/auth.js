@@ -1,6 +1,5 @@
 const Boom = require('boom');
 const HttpStatus = require('http-status-codes');
-const Jwt = require('jsonwebtoken');
 const Moment = require('moment');
 
 const TOKEN_TTL = process.env.TOKEN_EXPIRATION_MINUTES || 24 * 60;
@@ -20,17 +19,14 @@ module.exports = {
           return Boom.forbidden();
         }
 
-        const token = Jwt.sign(
+        const token = User.generateJWT(
+          user.userId,
           {
-            iss: 'vendex',
-            sub: user.userId,
-            iat: new Moment().unix(),
-            exp: new Moment().add(TOKEN_TTL, 'minutes').unix(),
             congregationId: user.congregationId,
             roles: user.roles,
             email: user.email,
           },
-          process.env.SECRET,
+          TOKEN_TTL,
         );
 
         console.info(`Login succeeded for ${username}`, { ...req.info });
@@ -143,18 +139,25 @@ module.exports = {
   },
 
   inviteNewUser: {
+    auth: false,
     async handler(req) {
       try {
         const { Invitation } = req.server.models();
-        const { email, name } = req.payload;
-        const { congregationId } = req.auth.credentials;
-
-        return Invitation.addInvitation({
+        const {
           email,
-          congregationId,
+          name,
+          congregationId: requestedCongregationId,
+        } = req.payload;
+        // const { congregationId } = req.auth.credentials;
+
+        const invitation = await Invitation.addInvitation({
+          email,
+          congregationId: requestedCongregationId, // || congregationId,
           name,
           roles: ['admin'],
         });
+
+        return invitation;
       } catch (ex) {
         console.log(ex);
         return Boom.badImplementation();
