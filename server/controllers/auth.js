@@ -55,9 +55,10 @@ module.exports = {
     async handler(req, h) {
       try {
         const { User } = req.server.models();
-        const { username, password } = req.payload;
+        const { email, password } = req.payload;
+        const { sub: userId } = req.auth.credentials;
 
-        let user = await User.query().findOne({ username });
+        let user = await User.query().findOne({ email, userId });
         if (!user) {
           return Boom.forbidden();
         }
