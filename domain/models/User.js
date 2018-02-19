@@ -43,7 +43,7 @@ class User extends Model {
 
   static async login(username, password, db) {
     let user = await User.query(db).findOne({ username, isActive: true });
-    const isAuthenticated = user && user.verifyPassword(password);
+    const isAuthenticated = user && (await user.verifyPassword(password));
     if (!isAuthenticated) {
       return null;
     }
