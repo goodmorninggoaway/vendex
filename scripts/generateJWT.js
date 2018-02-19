@@ -1,5 +1,5 @@
 require('dotenv').config();
-const Omit = require('lodash/omit');
+const Pick = require('lodash/pick');
 const Yargs = require('yargs');
 const { User } = require('../domain/models');
 
@@ -21,7 +21,7 @@ const { argv } = Yargs.array('roles')
   })
   .showHelpOnFail();
 
-const claims = Omit(argv, 'userId', 'ttl');
+const claims = Pick(argv, 'roles', 'congregationId', 'email');
 User.generateJWT(argv.userId, claims, argv.ttl)
   .then(console.log)
   .catch(console.error);
