@@ -19,10 +19,11 @@ class Invitation extends Model {
   static get jsonSchema() {
     return {
       type: 'object',
-      required: ['email', 'createTimestamp', 'congregationId', 'code'],
+      required: ['email', 'createTimestamp', 'congregationId', 'code', 'name'],
       properties: {
         userId: { type: 'integer' },
         email: { type: 'string', minLength: 3, maxLength: 128 },
+        name: { type: 'string', minLength: 3, maxLength: 128 },
         createTimestamp: { type: 'date-time' },
         congregationId: { type: 'integer' },
         code: { type: 'string', maxLength: 64 },
@@ -31,24 +32,36 @@ class Invitation extends Model {
     };
   }
 
-  static async addInvitation({ email, congregationId, roles }) {
+  static async addInvitation({ name, email, congregationId, roles }) {
     const code = await Bcrypt.genSalt();
     let invitation = await Invitation.query().findOne({ email });
 
-    invitation = await Invitation.query()
-      [invitation ? 'update' : 'insert']({
-        email,
-        congregationId,
-        code,
-        createTimestamp: new Date(),
-        roles,
-      })
-      .returning('*');
+    const patch = {
+      email,
+      congregationId,
+      code,
+      createTimestamp: new Date(),
+      roles,
+      name,
+    };
+
+    if (invitation) {
+      invitation = await Invitation.query()
+        .patch(patch)
+        .where({ invitationId: invitation.$id() })
+        .returning('*');
+    } else {
+      invitation = await Invitation.query()
+        .insert(patch)
+        .returning('*');
+    }
 
     const congregation = await Congregation.query().findById(congregationId);
-    await new Notification(Notification.types.INVITE_NEW_USER)
+    const notification = await new Notification(
+      Notification.types.INVITE_NEW_USER,
+    )
       .asEmail()
-      .to(email)
+      .to(`${name} <${email}>`)
       .properties({
         congregation,
         activationLink: `${

@@ -41,8 +41,8 @@ class User extends Model {
     return { salt, hash };
   }
 
-  static async login(username, password, db) {
-    let user = await User.query(db).findOne({ username, isActive: true });
+  static async login(email, password, db) {
+    let user = await User.query(db).findOne({ email, isActive: true });
     const isAuthenticated = user && (await user.verifyPassword(password));
     if (!isAuthenticated) {
       return null;
@@ -95,7 +95,7 @@ class User extends Model {
 
     await new Notification(Notification.types.PASSWORD_RESET)
       .asEmail()
-      .to(this.email)
+      .to(`${this.name} <${this.email}>`)
       .properties({
         name: this.name,
         resetLink: `${process.env.UI_BASE_URL}/reset-password?code=${

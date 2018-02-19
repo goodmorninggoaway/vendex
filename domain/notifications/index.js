@@ -3,6 +3,9 @@ const Path = require('path');
 const React = require('react');
 const ReactDomServer = require('react-dom/server');
 
+const DEBUG_EMAIL_DESTINATION = process.env.DEBUG_NOTIFICATION_TO_EMAIL;
+const NOTIFICATION_BCC = process.env.DEBUG_NOTIFICATION_BCC_EMAIL;
+
 const mailgun = new Mailgun({
   apiKey: process.env.MAILGUN_API_KEY,
   domain: process.env.MAILGUN_DOMAIN,
@@ -35,14 +38,20 @@ class Notification {
     const attributes = require(Path.join(__dirname, `./${values.id}.json`));
     const template = require(Path.join(__dirname, `./${values.id}.jsx`));
 
-    return await mailgun.messages().send(
-      Object.assign(values, attributes, {
-        html: ReactDomServer.renderToStaticMarkup(
-          React.createElement(template, values.properties),
-        ),
-        to: 'Marque Davis <mdavis777@gmail.com>',
-      }),
-    );
+    const options = {
+      ...values,
+      ...attributes,
+      html: ReactDomServer.renderToStaticMarkup(
+        React.createElement(template, values.properties),
+      ),
+      to: DEBUG_EMAIL_DESTINATION || values.to,
+    };
+
+    if (NOTIFICATION_BCC) {
+      options.bcc = NOTIFICATION_BCC;
+    }
+
+    return await mailgun.messages().send(options);
   }
 }
 

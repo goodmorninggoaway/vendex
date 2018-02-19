@@ -137,6 +137,7 @@ exports.up = async function(knex) {
     table.string('email', 128).notNullable();
     table.timestamp('createTimestamp').notNullable();
     table.string('code', 128).notNullable();
+    table.string('name', 128).notNullable();
     table.jsonb('roles');
     table
       .integer('congregationId')

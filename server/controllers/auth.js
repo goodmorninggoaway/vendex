@@ -145,12 +145,13 @@ module.exports = {
     async handler(req) {
       try {
         const { Invitation } = req.server.models();
-        const { email } = req.payload;
+        const { email, name } = req.payload;
         const { congregationId } = req.auth.credentials;
 
         return Invitation.addInvitation({
           email,
           congregationId,
+          name,
           roles: ['admin'],
         });
       } catch (ex) {
