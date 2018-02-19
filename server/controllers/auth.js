@@ -139,7 +139,6 @@ module.exports = {
   },
 
   inviteNewUser: {
-    auth: false,
     async handler(req) {
       try {
         const { Invitation } = req.server.models();
