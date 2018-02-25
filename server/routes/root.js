@@ -6,7 +6,7 @@ exports.plugin = {
         path: '/',
         options: {
           async handler(req, h) {
-            return h.redirect('/ui/users');
+            return h.redirect('/ui');
           },
         },
       },
