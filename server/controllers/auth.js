@@ -164,13 +164,14 @@ module.exports = {
           name,
           congregationId: requestedCongregationId,
         } = req.payload;
-        const { congregationId } = req.auth.credentials;
+        const { congregationId, name: invitingUserName } = req.auth.credentials;
 
         return await Invitation.addInvitation({
           email,
           congregationId: requestedCongregationId || congregationId,
           name,
           roles: ['admin'],
+          invitingUserName,
         });
       } catch (ex) {
         console.log(ex);
