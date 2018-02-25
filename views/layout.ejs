@@ -60,7 +60,6 @@
   <li><a class="waves-effect" href="/ui/territoryhelper/locations">Import Locations</a></li>
   <li><a class="waves-effect" href="/ui/territoryhelper/exports">Exports</a></li>
   <li class="divider"></li>
-  <li class="subheader"></li>
   <li><a class="subheader">Admin</a></li>
   <li><a class="waves-effect" href="/ui/congregations">Congregations</a></li>
   <li><a class="waves-effect" href="/ui/languages">Languages</a></li>
@@ -69,7 +68,10 @@
   <li><a class="waves-effect" href="/ui/reset">Reset</a></li>
   <% } %>
   <li class="divider"></li>
-  <li><a>version <%= version %></a></li>
+  <li><a class="subheader"><%= credentials.name %></a></li>
+  <li><a class="waves-effect" href="/auth/logout">Log out</a></li>
+  <li class="divider"></li>
+  <li><a>version <%= credentials.version %></a></li>
 </ul>
 <main>
   <%- body %>

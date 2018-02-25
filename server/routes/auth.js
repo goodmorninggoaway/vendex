@@ -25,6 +25,8 @@ exports.plugin = {
         options: Controller.createUserFromInvitation,
       },
       { method: 'POST', path: '/login', options: Controller.login },
+      { method: 'POST', path: '/logout', options: Controller.logout },
+      { method: 'GET', path: '/logout', options: Controller.logout },
       {
         method: 'PUT',
         path: '/password',

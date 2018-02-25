@@ -124,11 +124,10 @@ exports.options = {
           (request && request.auth && request.auth.credentials) || {};
 
         return {
-          userId: requestBits.sub,
+          credentials: requestBits,
           congregationId: requestBits.congregationId,
           moment: require('moment'),
           env: process.env.APP_ENV || 'PROD',
-          version: require('../package.json').version,
         };
       },
     });

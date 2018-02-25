@@ -4,6 +4,7 @@ const Omit = require('lodash/omit');
 const Notification = require('../notifications');
 const Jwt = require('jsonwebtoken');
 const Moment = require('moment');
+const { version } = require('../../package');
 
 class User extends Model {
   static get tableName() {
@@ -66,6 +67,7 @@ class User extends Model {
   static async generateJWT(userId, claims, ttl) {
     return await Jwt.sign(
       {
+        version,
         iss: 'vendex',
         sub: userId,
         iat: new Moment().unix(),
@@ -115,7 +117,7 @@ class User extends Model {
         name: this.name,
         resetLink: `${process.env.UI_BASE_URL}/reset-password?code=${
           user.authenticationCode
-        }`,
+          }`,
       })
       .send();
   }

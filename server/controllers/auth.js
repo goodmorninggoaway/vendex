@@ -6,6 +6,14 @@ const TOKEN_TTL = process.env.TOKEN_EXPIRATION_MINUTES || 24 * 60;
 const PASSWORD_RESET_TOKEN_TTL =
   process.env.PASSWORD_RESET_TOKEN_EXPIRATION_MINUTES || 60;
 
+const COOKIE_PATH = '/';
+const SECURE_COOKIE = process.env.USE_SSL !== 'false';
+const cookieOptions = {
+  path: COOKIE_PATH,
+  isSecure: SECURE_COOKIE,
+  ttl: TOKEN_TTL * 60 * 1000,
+};
+
 module.exports = {
   login: {
     auth: false,
@@ -25,6 +33,7 @@ module.exports = {
             congregationId: user.congregationId,
             roles: user.roles,
             email: user.email,
+            name: user.name,
           },
           TOKEN_TTL,
         );
@@ -34,12 +43,20 @@ module.exports = {
         return h
           .response()
           .header('authorization', token)
-          .state('token', token, {
-            path: '/',
-            ttl: TOKEN_TTL * 60 * 1000,
-            isSecure: process.env.USE_SSL !== 'false',
-          })
+          .state('token', token, cookieOptions)
           .redirect('/ui');
+      } catch (ex) {
+        console.log(ex);
+        return Boom.badImplementation();
+      }
+    },
+  },
+
+  logout: {
+    auth: false,
+    async handler(req, h) {
+      try {
+        return h.redirect('/ui/login').unstate('token', cookieOptions);
       } catch (ex) {
         console.log(ex);
         return Boom.badImplementation();
