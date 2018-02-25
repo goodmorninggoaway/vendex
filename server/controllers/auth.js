@@ -147,16 +147,14 @@ module.exports = {
           name,
           congregationId: requestedCongregationId,
         } = req.payload;
-        // const { congregationId } = req.auth.credentials;
+        const { congregationId } = req.auth.credentials;
 
-        const invitation = await Invitation.addInvitation({
+        return await Invitation.addInvitation({
           email,
-          congregationId: requestedCongregationId, // || congregationId,
+          congregationId: requestedCongregationId || congregationId,
           name,
           roles: ['admin'],
         });
-
-        return invitation;
       } catch (ex) {
         console.log(ex);
         return Boom.badImplementation();
