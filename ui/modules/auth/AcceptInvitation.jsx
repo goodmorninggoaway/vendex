@@ -98,7 +98,7 @@ class AcceptInvitation extends Component {
               validateError={this.validate}
             >
               {formApi => (
-                <form onSubmit={formApi.submitForm}>
+                <form onSubmit={formApi.submitForm} autoComplete="off">
                   {registrationError && (
                     <div style={{ margin: '12px 0' }}>
                       <MessageBar

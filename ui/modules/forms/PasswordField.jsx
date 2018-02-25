@@ -77,6 +77,7 @@ const FabricPasswordField = ({
         }}
         errorMessage={getError()}
         type="password"
+        autoComplete="off"
         {...rest}
       />
 
