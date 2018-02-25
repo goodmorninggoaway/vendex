@@ -32,7 +32,13 @@ class Invitation extends Model {
     };
   }
 
-  static async addInvitation({ name, email, congregationId, roles }) {
+  static async addInvitation({
+    name,
+    email,
+    congregationId,
+    roles,
+    invitingUserName,
+  }) {
     const code = await Bcrypt.genSalt();
     let invitation = await Invitation.query().findOne({ email });
 
@@ -64,6 +70,7 @@ class Invitation extends Model {
       .to(`${name} <${email}>`)
       .properties({
         congregation,
+        invitingUserName,
         activationLink: `${
           process.env.UI_BASE_URL
         }/accept-invitation?code=${code}&congregationId=${congregationId}&email=${email}`,

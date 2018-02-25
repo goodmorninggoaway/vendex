@@ -1,11 +1,11 @@
 const React = require('react');
 const PropTypes = require('prop-types');
 
-const InviteNewUser = ({ activationLink, congregation, inviterName }) => (
+const InviteNewUser = ({ activationLink, congregation, invitingUserName }) => (
   <div>
     <p>Welcome to Vendex!</p>
     <p>
-      {inviterName || 'Administrator'} has invited you to the{' '}
+      {invitingUserName || 'Administrator'} has invited you to the{' '}
       {congregation.name} Congregation.
     </p>
 
@@ -22,7 +22,7 @@ InviteNewUser.propTypes = {
   congregation: PropTypes.shape({
     name: PropTypes.string.isRequired,
   }).isRequired,
-  inviterName: PropTypes.string,
+  invitingUserName: PropTypes.string,
 };
 
 module.exports = InviteNewUser;
