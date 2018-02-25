@@ -5,6 +5,7 @@ const ReactDomServer = require('react-dom/server');
 
 const DEBUG_EMAIL_DESTINATION = process.env.DEBUG_NOTIFICATION_TO_EMAIL;
 const NOTIFICATION_BCC = process.env.DEBUG_NOTIFICATION_BCC_EMAIL;
+const isProdEnv = (process.env.APP_ENV || 'PROD') === 'PROD';
 
 const mailgun = new Mailgun({
   apiKey: process.env.MAILGUN_API_KEY,
@@ -34,17 +35,29 @@ class Notification {
   }
 
   async send() {
-    const values = internals.get(this);
-    const attributes = require(Path.join(__dirname, `./${values.id}.json`));
-    const template = require(Path.join(__dirname, `./${values.id}.jsx`));
+    const inputAttributes = internals.get(this);
+    const commonAttributes = require(Path.join(
+      __dirname,
+      `./${inputAttributes.id}.json`,
+    ));
+    const template = require(Path.join(
+      __dirname,
+      `./${inputAttributes.id}.jsx`,
+    ));
+
+    let { subject } = commonAttributes;
+    if (!isProdEnv) {
+      subject = `[${process.env.APP_ENV}] ${subject}`;
+    }
 
     const options = {
-      ...values,
-      ...attributes,
+      ...inputAttributes,
+      ...commonAttributes,
+      subject,
       html: ReactDomServer.renderToStaticMarkup(
-        React.createElement(template, values.properties),
+        React.createElement(template, inputAttributes.properties),
       ),
-      to: DEBUG_EMAIL_DESTINATION || values.to,
+      to: DEBUG_EMAIL_DESTINATION || inputAttributes.to,
     };
 
     if (NOTIFICATION_BCC) {

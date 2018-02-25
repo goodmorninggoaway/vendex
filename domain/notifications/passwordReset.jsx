@@ -6,7 +6,7 @@ const PasswordReset = ({ name, resetLink }) => (
     <p>Hi {name}</p>
     <p>
       You recently requested to reset your password for your Vendex account. Use
-      the button below to reset it.{' '}
+      the link below to reset it.{' '}
       <strong>This reset is only valid for one hour.</strong>
     </p>
     <p>
