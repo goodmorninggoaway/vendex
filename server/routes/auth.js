@@ -10,6 +10,11 @@ exports.plugin = {
 
     server.route([
       {
+        method: 'GET',
+        path: '/invitations',
+        options: Controller.listInvitations,
+      },
+      {
         method: 'POST',
         path: '/invitations',
         options: Controller.inviteNewUser,
@@ -18,6 +23,11 @@ exports.plugin = {
         method: 'PUT',
         path: '/invitations',
         options: Controller.createUserFromInvitation,
+      },
+      {
+        method: 'DELETE',
+        path: '/invitations/{invitationId}',
+        options: Controller.deleteInvitation,
       },
       {
         method: 'POST',

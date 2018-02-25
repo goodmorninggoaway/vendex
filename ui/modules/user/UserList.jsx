@@ -3,14 +3,20 @@ import PropTypes from 'prop-types';
 import ReactTable from 'react-table';
 import { Spinner } from 'office-ui-fabric-react/lib-es2015/Spinner';
 import {
-  Button,
   CommandBarButton,
+  PrimaryButton,
+  DefaultButton,
 } from 'office-ui-fabric-react/lib-es2015/Button';
 import { Modal } from 'office-ui-fabric-react/lib-es2015/Modal';
-import { Route, Link } from 'react-router-dom';
+import {
+  Dialog,
+  DialogType,
+  DialogFooter,
+} from 'office-ui-fabric-react/lib/Dialog';
 import autobind from 'react-autobind';
 import { updateItemById } from 'redux-toolbelt-immutable-helpers';
 import EditUser from './EditUser';
+import PendingInvitationList from './PendingInvitationList';
 
 class UserList extends Component {
   constructor(...args) {
@@ -54,8 +60,9 @@ class UserList extends Component {
       credentials: 'same-origin',
     });
 
-    const invitation = await response.json();
-    console.log(invitation);
+    if (response.status === 200 || response.status === 201) {
+      window.location.reload(true);
+    }
   }
 
   async onSubmitUser(user) {
@@ -77,6 +84,34 @@ class UserList extends Component {
     }));
   }
 
+  async deleteUser() {
+    this.hideDialog();
+
+    const { users, selectedRowIndex } = this.state;
+    const user = users[selectedRowIndex];
+
+    if (!user) {
+      return;
+    }
+
+    const response = await fetch(`/users/${user.userId}`, {
+      method: 'DELETE',
+      credentials: 'same-origin',
+    });
+
+    if (response.status === 200) {
+      this.setState(({ users }) => ({
+        users: users.filter(x => x.userId !== user.userId),
+      }));
+    } else {
+      window.alert('Error deleting invitation');
+    }
+  }
+
+  showDialog() {
+    this.setState({ showDialog: true });
+  }
+
   render() {
     const { users, selectedRowIndex, modalType } = this.state;
     if (!users) {
@@ -90,6 +125,7 @@ class UserList extends Component {
 
     return (
       <div>
+        <h5>Active Users</h5>
         <div style={{ display: 'flex', alignItems: 'stretch', height: '40px' }}>
           <CommandBarButton
             iconProps={{ iconName: 'AddFriend' }}
@@ -104,14 +140,6 @@ class UserList extends Component {
             text="Edit"
             onClick={() =>
               this.setState({ showModal: true, modalType: 'editUser' })
-            }
-          />
-          <CommandBarButton
-            disabled={!isRowSelected}
-            iconProps={{ iconName: 'Delete' }}
-            text="Delete"
-            onClick={() =>
-              this.setState({ showModal: true, modalType: 'deleteUser' })
             }
           />
         </div>
@@ -174,6 +202,27 @@ class UserList extends Component {
             />
           )}
         </Modal>
+
+        <Dialog
+          hidden={!this.state.showDialog}
+          onDismiss={this.hideDialog}
+          dialogContentProps={{
+            type: DialogType.normal,
+            title: 'Delete this user?',
+          }}
+          modalProps={{
+            isBlocking: true,
+            containerClassName: 'ms-dialogMainOverride',
+          }}
+        >
+          <DialogFooter>
+            <PrimaryButton onClick={this.deleteUser} text="Yes" />
+            <DefaultButton onClick={this.hideDialog} text="No" />
+          </DialogFooter>
+        </Dialog>
+
+        <h5>Invitations</h5>
+        <PendingInvitationList {...this.props} />
       </div>
     );
   }

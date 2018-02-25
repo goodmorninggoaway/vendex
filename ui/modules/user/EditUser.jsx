@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Form, Text, Radio, RadioGroup, Select, Checkbox } from 'react-form';
 import { DefaultButton } from 'office-ui-fabric-react/lib-es2015/Button';
+import { Toggle } from 'office-ui-fabric-react/lib/Toggle';
+import ToggleField from '../forms/ToggleField';
 
 class EditUser extends Component {
   render() {
@@ -24,6 +26,7 @@ class EditUser extends Component {
               Email Address
               <Text field="email" />
             </label>
+            {type === 'edit' && <ToggleField label="Active" field="isActive" />}
             <DefaultButton primary={true} type="submit" text={buttonText} />
           </form>
         )}

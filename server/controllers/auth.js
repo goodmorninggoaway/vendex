@@ -215,4 +215,38 @@ module.exports = {
       }
     },
   },
+
+  listInvitations: {
+    async handler(req) {
+      try {
+        const { Invitation } = req.server.models();
+        const { congregationId } = req.auth.credentials;
+
+        return Invitation.query()
+          .where({ congregationId })
+          .eager('[congregation]')
+          .select('*');
+      } catch (ex) {
+        console.log(ex);
+        return Boom.badImplementation();
+      }
+    },
+  },
+
+  deleteInvitation: {
+    async handler(req) {
+      try {
+        const { Invitation } = req.server.models();
+        const { invitationId } = req.params;
+        const { congregationId } = req.auth.credentials;
+
+        return Invitation.query()
+          .where({ congregationId, invitationId })
+          .delete();
+      } catch (ex) {
+        console.log(ex);
+        return Boom.badImplementation();
+      }
+    },
+  },
 };

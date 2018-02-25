@@ -43,4 +43,22 @@ module.exports = {
       }
     },
   },
+
+  deactivateUser: {
+    async handler(req) {
+      try {
+        const { User } = req.server.models();
+        const { userId } = req.params;
+        const { congregationId } = req.auth.credentials;
+
+        return User.query()
+          .where({ congregationId, userId })
+          .patch({ isActive: false })
+          .returning('*');
+      } catch (ex) {
+        console.log(ex);
+        return Boom.badImplementation();
+      }
+    },
+  },
 };

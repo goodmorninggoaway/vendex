@@ -21,7 +21,6 @@ class Invitation extends Model {
       type: 'object',
       required: ['email', 'createTimestamp', 'congregationId', 'code', 'name'],
       properties: {
-        userId: { type: 'integer' },
         email: { type: 'string', minLength: 3, maxLength: 128 },
         name: { type: 'string', minLength: 3, maxLength: 128 },
         createTimestamp: { type: 'date-time' },
@@ -30,6 +29,25 @@ class Invitation extends Model {
         roles: { type: 'array', items: { type: 'string' } },
       },
     };
+  }
+
+  static get relationMappings() {
+    const { Congregation } = require('./');
+
+    return {
+      congregation: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: Congregation,
+        join: {
+          from: 'invitation.congregationId',
+          to: 'congregation.congregationId',
+        },
+      },
+    };
+  }
+
+  static get virtualAttributes() {
+    return ['isExpired'];
   }
 
   static async addInvitation({
@@ -83,16 +101,9 @@ class Invitation extends Model {
   static async createUserFromInvitation({ email, code, password, name }) {
     const invitation = await Invitation.query()
       .where({ email, code })
-      .andWhere(
-        'createTimestamp',
-        '>=',
-        Moment()
-          .subtract(MAX_CODE_AGE_MINUTES, 'minutes')
-          .toDate(),
-      )
       .first();
 
-    if (!invitation) {
+    if (!invitation || invitation.isExpired()) {
       return false;
     }
 
@@ -123,6 +134,12 @@ class Invitation extends Model {
       await trx.rollback();
       throw err;
     }
+  }
+
+  isExpired() {
+    return Moment()
+      .subtract(MAX_CODE_AGE_MINUTES, 'minutes')
+      .isAfter(this.createTimestamp);
   }
 }
 
