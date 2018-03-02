@@ -19,7 +19,7 @@ DATABASE_URL=postgres://vendex:vendex@localhost:5432/vendex
 APP_ENV=DEV
 SECRET=<GENERATE A SECRET>
 TOKEN_EXPIRATION_MINUTES=60
-
+USE_SSL=false
 MAILGUN_API_KEY=<-- PRIVATE -->
 MAILGUN_DOMAIN=<-- PRIVATE -->
 MAILGUN_FROM=My Name <some email address>
