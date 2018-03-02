@@ -78,6 +78,7 @@
   },
   "scripts": {
     "start": "node server/server.js",
+    "server:debug": "node $NODE_DEBUG_OPTION server/server.js",
     "test:domain": "mocha --require ./scripts/test-setup --watch ./api/domain/**/*.spec.js",
     "find-unused-packages": "npx depcheck --ignores=eslint,good,good-squeeze,good-console,pg",
     "db:migrate": "knex migrate:latest",

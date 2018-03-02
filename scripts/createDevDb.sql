@@ -1,5 +1,7 @@
 SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid() AND datname = 'vendex';
 
+CREATE ROLE vendex WITH SUPERUSER CREATEDB CREATEROLE LOGIN ENCRYPTED PASSWORD 'vendex';
+
 DROP DATABASE if exists vendex;
 
 CREATE DATABASE vendex WITH
@@ -11,7 +13,6 @@ CREATE DATABASE vendex WITH
 --    CONNECTION LIMIT = -1;
 ;
 
--- CREATE ROLE vendex WITH SUPERUSER CREATEDB CREATEROLE LOGIN ENCRYPTED PASSWORD 'vendex' if not exists;
 ALTER DEFAULT PRIVILEGES IN SCHEMA public
   GRANT SELECT, INSERT, UPDATE, DELETE ON tables TO vendex;
 
