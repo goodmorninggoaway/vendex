@@ -123,12 +123,15 @@ exports.options = {
         const requestBits =
           (request && request.auth && request.auth.credentials) || {};
 
-        return {
+        const context = {
           credentials: requestBits,
           congregationId: requestBits.congregationId,
           moment: require('moment'),
           env: process.env.APP_ENV || 'PROD',
         };
+
+        context.reactViewProps = requestBits;
+        return context;
       },
     });
   },

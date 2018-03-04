@@ -98,7 +98,12 @@ exports.plugin = {
         method: 'GET',
         path: '/alba/locations',
         options: {
-          handler: { view: { template: 'alba/importLocations.ejs' } },
+          handler: {
+            view: {
+              template: 'reactView.ejs',
+              context: { componentName: 'AlbaLocationImportPage' },
+            },
+          },
         },
       },
       {

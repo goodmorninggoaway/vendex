@@ -12,7 +12,7 @@
 <body class="ms-Fabric ms-normalize ms-bgColor-neutralLighter" style="height: 100%">
   <div id="react-page" class="ms-font-m-plus" style="padding: 20px;"></div>
 </body>
-
+<script type="application/ecmascript">window.vendexBootstrap = <%- JSON.stringify(reactViewProps) %></script>
 <script src="/assets/react/views/vendor.js"></script>
-<script src="/assets/react/views/<%= componentName %>.js"></script>
+<script async src="/assets/react/views/<%= componentName %>.js"></script>
 </html>
