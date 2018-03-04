@@ -51,9 +51,9 @@ const plugins = [
       prefix: '/assets',
     },
   },
-  {
-    plugin: './server-extensions',
-  },
+  //{
+  //  plugin: './server-extensions',
+  //},
 ];
 
 if (process.env.APP_ENV === 'DEV') {

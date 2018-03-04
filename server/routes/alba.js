@@ -7,6 +7,8 @@ exports.plugin = {
         path: '/locations',
         options: Controller.importLocations,
       },
+      { method: 'POST', path: '/session', options: Controller.createSession },
+      { method: 'GET', path: '/session', options: Controller.getOpenSessions },
     ]);
   },
   version: require('../../package.json').version,

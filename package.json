@@ -32,7 +32,7 @@
     "mailgun-js": "^0.14.1",
     "moment": "^2.19.2",
     "object-hash": "^1.1.8",
-    "objection": "^0.8.9",
+    "objection": "^1.0.0",
     "office-ui-fabric-react": "^5.45.3",
     "parse-address": "0.0.8",
     "pg": "^7.3.0",

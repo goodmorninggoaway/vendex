@@ -2,6 +2,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import autobind from 'react-autobind';
 import axios from 'axios';
+import SessionTable from './SessionTable';
+import SessionController from './SessionController';
+import { Spinner } from 'office-ui-fabric-react/lib/Spinner';
+import { MessageBar, MessageBarType } from 'office-ui-fabric-react/lib/MessageBar';
 
 class AlbaLocationImportPage extends Component {
   constructor(props) {
@@ -11,41 +15,25 @@ class AlbaLocationImportPage extends Component {
     this.state = {};
   }
 
-  submitLocations(e) {
+  async submitLocations(e) {
     e.preventDefault();
 
     this.setState({ loading: true });
     const { locations: body } = this.state;
 
-    fetch('/alba/locations', {
-      body,
-      method: 'POST',
-      headers: new Headers({
-        'content-type': 'text/plain',
-        'content-length': body.length,
-      }),
-      credentials: 'same-origin',
-    })
-      .then((response) => {
-        this.setState({ loading: false });
-
-        if (response.ok) {
-          Materialize.toast('Locations successfully imported.', 5000);
-          return;
-        }
-
-        Materialize.toast('Error importing locations.', 5000);
-        return response.text().then(x => errorMessageEl.innerText);
-      })
-      .catch((err) => {
-        this.setState({ loading: false });
-        Materialize.toast(err, 5000);
-      });
+    try {
+      const { data } = await axios.post('/alba/session', { payload: body });
+      this.setState({ loading: false, session: data });
+      Materialize.toast('Locations successfully imported.', 5000);
+    } catch (ex) {
+      this.setState({ loading: false, error: ex });
+      Materialize.toast(`Error importing locations. ${ex}`, 5000);
+    }
   }
 
   render() {
     const { congregationId } = this.props;
-
+    const { loading, session, error } = this.state;
     return (
       <div>
         <h4>Alba > Import Locations</h4>
@@ -61,13 +49,11 @@ class AlbaLocationImportPage extends Component {
         <blockquote>
           If an address exists more than once in the import data, the last one wins.
         </blockquote>
-        <form id=" alba-location-import">
-          <div className=" row">
-            <label for=" alba-export-tsv">
-              Paste ALBA location export from <a target=" _blank" href=" https://www.mcmxiv.com/alba/addresses">Alba</a>:
-              <textarea
-                id="alba-export-tsv" onChange={(e) => this.setState({ locations: e.target.value })}
-              />
+        <form>
+          <div className="row">
+            <label htmlFor="alba-export-tsv">
+              Paste ALBA location export from <a target="_blank" href=" https://www.mcmxiv.com/alba/addresses">Alba</a>:
+              <textarea onChange={(e) => this.setState({ locations: e.target.value })} />
             </label>
           </div>
 
@@ -75,11 +61,22 @@ class AlbaLocationImportPage extends Component {
             <button onClick={this.submitLocations}>Import</button>
           </div>
 
-          <div className="progress hide">
-            <div className="indeterminate"></div>
-          </div>
+          {loading && <Spinner />}
+          {error && <MessageBar messageBarType={MessageBarType.error} isMultiline>{error}</MessageBar>}
 
-          <div id="error-message"></div>
+          <SessionController session={session}>
+            {({ session, error, loading }) => {
+              if (loading) {
+                return <Spinner />;
+              }
+
+              if (error) {
+                return <MessageBar messageBarType={MessageBarType.error} isMultiline>{error}</MessageBar>;
+              }
+
+              return <SessionTable {...session} />;
+            }}
+          </SessionController>
         </form>
       </div>
     );

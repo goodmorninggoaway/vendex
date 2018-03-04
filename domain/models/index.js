@@ -1,3 +1,4 @@
+exports.AlbaSession = require('./AlbaSession');
 exports.Congregation = require('./Congregation');
 exports.CongregationIntegration = require('./CongregationIntegration');
 exports.CongregationLocation = require('./CongregationLocation');
