@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import autobind from 'react-autobind';
 import classnames from 'classnames';
 import axios from 'axios';
+import replaceItem from 'redux-toolbelt-immutable-helpers/lib/replaceItem';
 
 class SessionController extends Component {
   constructor(props, context) {
@@ -22,15 +23,35 @@ class SessionController extends Component {
       this.setState({ loading: true })
       const { data } = await axios.get('/alba/session');
       this.setState({ session: data, loading: false })
-    } catch (error) {
+    } catch (ex) {
+      let error = 'Sorry, something went wrong.';
+      if (ex.response && ex.response.data) {
+        console.log(ex.response.data);
+        error = ex.response.data.message;
+      }
+
       this.setState({ error, loading: false })
     }
+  }
 
+  updateLocation(id, location) {
+    if (!this.state.session) {
+      return;
+    }
+
+    this.setState(({ session }) => {
+      const index = session.locations.findIndex(x => x.id === id);
+      if (index === -1) {
+        return { session };
+      }
+
+      return { session: { ...session, locations: replaceItem(session.locations, index, location) } };
+    })
   }
 
   render() {
     const { children: renderer } = this.props;
-    return renderer(this.state);
+    return renderer(this.state, this);
   }
 }
 

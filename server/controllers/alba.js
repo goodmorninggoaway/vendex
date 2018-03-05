@@ -19,7 +19,7 @@ module.exports = {
       try {
         const { congregationId, sub } = req.auth.credentials;
         const { payload } = req.payload;
-        const { AlbaSession } = req.server.models();
+        const { AlbaLocationImport } = req.server.models();
 
         const json = await csvToJson({ tsv: payload });
         if (!json) {
@@ -27,7 +27,8 @@ module.exports = {
           return Boom.badData(`Invalid payload. Cannot create Alba session. Length=${payload ? payload.length : 0}`);
         }
 
-        return AlbaSession.createSession({ congregationId, userId: sub, payload: json });
+        const session = AlbaLocationImport.createSession({ congregationId, userId: sub, payload: json });
+        return session || null;
       } catch (ex) {
         console.error(ex);
         return Boom.badImplementation();
@@ -39,9 +40,31 @@ module.exports = {
     async handler(req) {
       try {
         const { congregationId } = req.auth.credentials;
-        const { AlbaSession } = req.server.models();
+        const { AlbaLocationImport } = req.server.models();
 
-        return await AlbaSession.query().findOne({ congregation_id: congregationId }) || null;
+        const session = await AlbaLocationImport.getActiveSession(congregationId);
+        return session || null;
+      } catch (ex) {
+        console.error(ex);
+        return Boom.badImplementation();
+      }
+    },
+  },
+
+  analyzeLocation: {
+    async handler(req) {
+      try {
+        const { congregationId, sub: userId } = req.auth.credentials;
+        const { AlbaLocationImportLocation } = req.server.models();
+        const { locationId } = req.params;
+
+        let location = await AlbaLocationImportLocation.findLocation(congregationId, locationId);
+        if (!location) {
+          return Boom.notFound();
+        }
+
+        location = await location.analyzeLocation(userId, congregationId, locationId);
+        return location;
       } catch (ex) {
         console.error(ex);
         return Boom.badImplementation();

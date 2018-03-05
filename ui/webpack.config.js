@@ -14,8 +14,7 @@ const ReactDOM = require('react-dom');
 const Page = require('${resourcePath}').default;
 const AppRoot = require('../modules/layouts/AppRoot').default;
 
-const rootEl = document.getElementById('react-page'); 
-ReactDOM.render(React.createElement(AppRoot, null, React.createElement(Page, window.vendexBootstrap, null)), rootEl);
+ReactDOM.render(React.createElement(AppRoot, window.vendexBootstrap, Page), document.getElementById('react-page'));
 `;
 
   return output;
@@ -84,11 +83,6 @@ module.exports = generatePageWrapper()
           },
         }),
       ],
-      // externals: {
-      //   react: 'react',
-      //   'react-dom': 'react-dom',
-      //   'prop-types': 'prop-types',
-      // },
       devtool: 'source-map',
     };
   })

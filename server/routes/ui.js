@@ -96,7 +96,7 @@ exports.plugin = {
       },
       {
         method: 'GET',
-        path: '/alba/locations',
+        path: '/alba/locations/{path?}',
         options: {
           handler: {
             view: {

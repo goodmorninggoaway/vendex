@@ -7,7 +7,7 @@ const geocode = require('../../geocode');
 const { DAL } = require('../../dataAccess');
 
 exports.requires = ['externalLocation'];
-exports.returns = 'location';
+exports.returns = ['location', 'isNew'];
 exports.handler = async function translateToLocation({ externalLocation }) {
   const address = buildAddressString(
     externalLocation.Suite,
@@ -21,7 +21,7 @@ exports.handler = async function translateToLocation({ externalLocation }) {
   const addressHash = hash.sha1(translatedLocation);
 
   let location = await DAL.findLocation({ externalLocationId: addressHash });
-  // TODO mark the address as "encountered" so we can handle the negative space
+  let isNew = false;
 
   if (!location) {
     location = Object.assign({}, translatedLocation, await geocode(address), {
@@ -30,7 +30,8 @@ exports.handler = async function translateToLocation({ externalLocation }) {
     });
 
     location = await DAL.insertLocation(location);
+    isNew = true;
   }
 
-  return location;
+  return { location, isNew };
 };

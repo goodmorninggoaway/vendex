@@ -51,9 +51,9 @@ const plugins = [
       prefix: '/assets',
     },
   },
-  //{
-  //  plugin: './server-extensions',
-  //},
+  {
+    plugin: './server-extensions',
+  },
 ];
 
 if (process.env.APP_ENV === 'DEV') {
@@ -130,7 +130,9 @@ exports.options = {
           env: process.env.APP_ENV || 'PROD',
         };
 
-        context.reactViewProps = requestBits;
+        context.reactViewProps = {
+          ...requestBits,
+        };
         return context;
       },
     });
