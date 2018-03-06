@@ -26,6 +26,7 @@ class AlbaLocationImport extends Model {
         version: { type: 'integer' },
         userId: { type: 'integer' },
         pendingLocationDeletions: { type: 'array', items: 'integer' },
+        congregationIntegrationAnalysis: { type: 'object' },
       },
     };
   }
@@ -63,7 +64,39 @@ class AlbaLocationImport extends Model {
   }
 
   static async getActiveSession(congregationId) {
-    return await AlbaLocationImport.query().eager('locations').findOne({ congregation_id: congregationId }).select('id', 'pending_location_deletions');
+    return await AlbaLocationImport.query().eager('locations').findOne({ congregation_id: congregationId });
+  }
+
+  async runPreLocationImportAnalysis() {
+    const Congregation = require('./Congregation');
+
+    const congregation = await Congregation.getCongregation(this.congregationId);
+
+    // Map out the current integrations
+    const agreementMap = {};
+    if (congregation.integrationSources && congregation.integrationSources.length) {
+      congregation.integrationSources.reduce((memo, source) => {
+        memo[source.sourceCongregation.name] = memo[source.sourceCongregation.name] || {};
+        memo[source.sourceCongregation.name][source.language === 'Any' ? '*' : source.language] = true;
+        return memo;
+      }, agreementMap);
+    }
+
+    // Map out the session's dataset
+    const sessionMap = this.payload.reduce((memo, element) => {
+      const { Account: recordCongregation, Language: recordLanguage } = element;
+      memo[recordCongregation] = memo[recordCongregation] || {};
+      memo[recordCongregation][recordLanguage] = memo[recordCongregation][recordLanguage] || 0;
+      memo[recordCongregation][recordLanguage] += 1;
+      return memo;
+    }, {});
+
+    return await AlbaLocationImport.query().patchAndFetchById(this.$id(), {
+      congregationIntegrationAnalysis: {
+        existing: agreementMap,
+        requested: sessionMap,
+      },
+    });
   }
 }
 

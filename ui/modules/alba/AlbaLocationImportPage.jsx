@@ -8,7 +8,9 @@ import { Spinner } from 'office-ui-fabric-react/lib/Spinner';
 import { MessageBar, MessageBarType } from 'office-ui-fabric-react/lib/MessageBar';
 import Route from 'react-router-dom/Route';
 import Redirect from 'react-router-dom/Redirect';
+import NavLink from 'react-router-dom/NavLink';
 import Switch from 'react-router-dom/Switch';
+import SessionAnalysis from './locationImport/SessionAnalysis';
 
 class AlbaLocationImportPage extends Component {
   constructor(props) {
@@ -41,10 +43,16 @@ class AlbaLocationImportPage extends Component {
     return (
       <div>
         <h4>Alba > Import Locations</h4>
-
+        <div>
+          <NavLink to="/">Start</NavLink>
+          <NavLink to="/analyze">Analyze</NavLink>
+          <NavLink to="/import">Import</NavLink>
+          <NavLink to="/import">Summary</NavLink>
+        </div>
         <Switch>
+          <Route path="/analyze" component={SessionAnalysis} />
           <Route
-            path="/review"
+            path="/import"
             render={props => (
               <SessionController>
                 {({ session, error, loading }, { updateLocation }) => {

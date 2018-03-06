@@ -8,6 +8,7 @@ exports.up = async function (knex, Promise) {
     table.integer('version').notNull();
     table.integer('user_id').notNull();
     table.jsonb('pending_location_deletions');
+    table.jsonb('congregation_integration_analysis');
   });
 
   await knex.schema.createTable('alba_location_import_by_location', table => {
@@ -25,7 +26,7 @@ exports.up = async function (knex, Promise) {
 
 };
 
-exports.down = function (knex, Promise) {
-  return knex.schema.dropTable('alba_location_import_by_location');
-  return knex.schema.dropTable('alba_location_import');
+exports.down = async function (knex, Promise) {
+  await knex.schema.dropTable('alba_location_import_by_location');
+  await knex.schema.dropTable('alba_location_import');
 };

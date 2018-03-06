@@ -56,7 +56,7 @@ class Congregation extends Model {
   }
 
   static async getCongregation(id) {
-    return await Congregation.query().findById(id).eager('integrationSources');
+    return await Congregation.query().findById(id).eager('[integrationSources, integrationSources.sourceCongregation]');
   }
 }
 

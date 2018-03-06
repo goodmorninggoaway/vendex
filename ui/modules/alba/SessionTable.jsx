@@ -4,13 +4,15 @@ import autobind from 'react-autobind';
 import classnames from 'classnames';
 import ReactTable from 'react-table';
 import axios from 'axios';
+import { DefaultButton } from 'office-ui-fabric-react/lib/Button';
+import { ProgressIndicator } from 'office-ui-fabric-react/lib/ProgressIndicator';
 
 class SessionTable extends Component {
   constructor(props, context) {
     super(props, context);
     autobind(this);
 
-    this.state = {};
+    this.state = { importStatus: {}, importIndex: -1 };
   }
 
   async processLocation(locationId) {
@@ -20,14 +22,61 @@ class SessionTable extends Component {
     } catch (ex) {
       console.log(ex);
     }
+  }
 
+  async beginImportingLocations() {
+    let { importIndex, importStatus } = this.state;
+    const { rowCount, locations } = this.props;
+
+    if (importStatus.started) {
+      return;
+    }
+
+    for (let i = 0; i < rowCount; i++) {
+      if (locations[i].translatedCongregationLocation) {
+        importIndex = i;
+      } else {
+        break;
+      }
+    }
+
+    this.setState({ importStatus: { started: true }, importIndex });
+    for (let i = importIndex; i < rowCount; i++) {
+      const location = locations[i];
+      if (this.state.importStatus.stopped) {
+        break;
+      }
+
+      try {
+        this.setState({ importIndex: i });
+        const { data } = await axios.post(`/alba/session/locations/${location.id}/process`);
+        console.log(data);
+      } catch (ex) {
+        console.log(ex);
+      }
+    }
+  }
+
+  async stopImportingLocations() {
+    this.setState({ importStatus: { stopped: true } });
   }
 
   render() {
     const { locations, rowCount } = this.props;
-    const {} = this.state;
+    const { importStatus, importIndex } = this.state;
+
     return (
       <div>
+        {importStatus.started
+          ? <DefaultButton onClick={this.stopImportingLocations} iconProps={{ iconName: 'CircleStopSolid' }}>Stop Import</DefaultButton>
+          : <DefaultButton onClick={this.beginImportingLocations} iconProps={{ iconName: 'BoxPlaySolid' }}>Start Import</DefaultButton>
+        }
+        {importStatus.started && (
+          <ProgressIndicator
+            label={`Processing ${importIndex + 1} of ${rowCount}`}
+            percentComplete={importIndex / rowCount}
+          />
+        )}
         <ReactTable
           data={locations}
           columns={[
