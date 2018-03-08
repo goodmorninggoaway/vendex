@@ -75,7 +75,7 @@ class AlbaLocationImportPage extends Component {
               <div>
                 <blockquote>
                   Setup relationships with other congregations by{' '}
-                  <a href="/ui/congregations">adding</a> the congregation, then <a href={`/ui/congregations/${congregationId}`}>edit this one</a> to link them.
+                  <a href="/ui/congregations">adding</a> the congregation, then <a href={`/ui/congregations/${congregationId}`}>your congregation</a> to link them.
                   You should only import locations for congregations with whom you've agreed to share locations.
                 </blockquote>
                 <blockquote>
