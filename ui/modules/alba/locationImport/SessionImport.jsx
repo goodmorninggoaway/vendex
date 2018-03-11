@@ -7,7 +7,7 @@ import axios from 'axios';
 import { DefaultButton } from 'office-ui-fabric-react/lib/Button';
 import { ProgressIndicator } from 'office-ui-fabric-react/lib/ProgressIndicator';
 
-class SessionTable extends Component {
+class SessionImport extends Component {
   constructor(props, context) {
     super(props, context);
     autobind(this);
@@ -24,37 +24,42 @@ class SessionTable extends Component {
     }
   }
 
-  async beginImportingLocations() {
-    let { importIndex, importStatus } = this.state;
+  determineStartLocationIndex() {
+    let { importIndex } = this.state;
     const { rowCount, locations } = this.props;
 
-    if (importStatus.started) {
+    for (let i = importIndex || 0; i < rowCount; i++) {
+      if (locations[i] && !locations[i].translatedCongregationLocation) {
+        return i;
+      }
+    }
+
+    return rowCount;
+  }
+
+  beginImportingLocations() {
+    if (this.state.importStatus.started) {
       return;
     }
 
-    for (let i = 0; i < rowCount; i++) {
-      if (locations[i].translatedCongregationLocation) {
-        importIndex = i;
-      } else {
-        break;
-      }
-    }
+    this.setState({ importStatus: { started: true } }, async () => {
+      const { rowCount, locations, refreshSession } = this.props;
+      for (let i = this.determineStartLocationIndex(); i < rowCount; i++) {
+        const location = locations[i];
+        if (this.state.importStatus.stopped) {
+          refreshSession();
+          break;
+        }
 
-    this.setState({ importStatus: { started: true }, importIndex });
-    for (let i = importIndex; i < rowCount; i++) {
-      const location = locations[i];
-      if (this.state.importStatus.stopped) {
-        break;
+        try {
+          this.setState({ importIndex: i });
+          const { data } = await axios.post(`/alba/session/locations/${location.id}/process`);
+          console.log(data);
+        } catch (ex) {
+          console.log(ex);
+        }
       }
-
-      try {
-        this.setState({ importIndex: i });
-        const { data } = await axios.post(`/alba/session/locations/${location.id}/process`);
-        console.log(data);
-      } catch (ex) {
-        console.log(ex);
-      }
-    }
+    });
   }
 
   async stopImportingLocations() {
@@ -69,7 +74,11 @@ class SessionTable extends Component {
       <div>
         {importStatus.started
           ? <DefaultButton onClick={this.stopImportingLocations} iconProps={{ iconName: 'CircleStopSolid' }}>Stop Import</DefaultButton>
-          : <DefaultButton onClick={this.beginImportingLocations} iconProps={{ iconName: 'BoxPlaySolid' }}>Start Import</DefaultButton>
+          : (
+            <DefaultButton onClick={this.beginImportingLocations} iconProps={{ iconName: 'BoxPlaySolid' }}>
+              {this.determineStartLocationIndex() ? 'Resume' : 'Start'} Import
+            </DefaultButton>
+          )
         }
         {importStatus.started && (
           <ProgressIndicator
@@ -95,6 +104,7 @@ class SessionTable extends Component {
             {
               Header: 'Actions',
               id: 'actions',
+              show: false,
               Cell: ({ original: { id } }) => <button onClick={() => this.processLocation(id)}>Process</button>
             }
           ]}
@@ -104,7 +114,7 @@ class SessionTable extends Component {
   }
 }
 
-SessionTable.propTypes = {
+SessionImport.propTypes = {
   locations: PropTypes.arrayOf(PropTypes.shape({
     payload: PropTypes.shape({
       Address_ID: PropTypes.string.isRequired,
@@ -122,6 +132,7 @@ SessionTable.propTypes = {
     }),
   })),
   updateLocation: PropTypes.func.isRequired,
+  refreshSession: PropTypes.func.isRequired,
 };
 
-export default SessionTable;
+export default SessionImport;

@@ -13,7 +13,26 @@ class SessionController extends Component {
     this.state = { session: null, loading: false, error: false };
   }
 
-  async componentDidMount() {
+  componentDidMount() {
+    this.refreshSession();
+  }
+
+  updateLocation(id, location) {
+    if (!this.state.session) {
+      return;
+    }
+
+    this.setState(({ session }) => {
+      const index = session.locations.findIndex(x => x.id === id);
+      if (index === -1) {
+        return { session };
+      }
+
+      return { session: { ...session, locations: replaceItem(session.locations, index, location) } };
+    })
+  }
+
+  async refreshSession() {
     if (this.props.session) {
       this.setState({ session: this.props.session });
       return;
@@ -34,24 +53,9 @@ class SessionController extends Component {
     }
   }
 
-  updateLocation(id, location) {
-    if (!this.state.session) {
-      return;
-    }
-
-    this.setState(({ session }) => {
-      const index = session.locations.findIndex(x => x.id === id);
-      if (index === -1) {
-        return { session };
-      }
-
-      return { session: { ...session, locations: replaceItem(session.locations, index, location) } };
-    })
-  }
-
   render() {
     const { children: renderer } = this.props;
-    return renderer(this.state, this);
+    return renderer({ ...this.state, updateLocation: this.updateLocation, refreshSession: this.refreshSession });
   }
 }
 

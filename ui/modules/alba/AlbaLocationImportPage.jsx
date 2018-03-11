@@ -2,15 +2,18 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import autobind from 'react-autobind';
 import axios from 'axios';
-import SessionTable from './SessionTable';
+import SessionImport from './locationImport/SessionImport';
 import SessionController from './SessionController';
 import { Spinner } from 'office-ui-fabric-react/lib/Spinner';
+import { CommandBar } from 'office-ui-fabric-react/lib/CommandBar';
 import { MessageBar, MessageBarType } from 'office-ui-fabric-react/lib/MessageBar';
 import Route from 'react-router-dom/Route';
 import Redirect from 'react-router-dom/Redirect';
 import NavLink from 'react-router-dom/NavLink';
 import Switch from 'react-router-dom/Switch';
 import SessionAnalysis from './locationImport/SessionAnalysis';
+import ExportCollector from './locationImport/ExportCollector';
+import NavBar from '../nav/NavBar';
 
 class AlbaLocationImportPage extends Component {
   constructor(props) {
@@ -43,19 +46,19 @@ class AlbaLocationImportPage extends Component {
     return (
       <div>
         <h4>Alba > Import Locations</h4>
-        <div>
-          <NavLink to="/">Start</NavLink>
+        <NavBar>
+          <NavLink to="/" exact>Start</NavLink>
           <NavLink to="/analyze">Analyze</NavLink>
           <NavLink to="/import">Import</NavLink>
-          <NavLink to="/import">Summary</NavLink>
-        </div>
+          <NavLink to="/summary">Summary</NavLink>
+        </NavBar>
         <Switch>
           <Route path="/analyze" component={SessionAnalysis} />
           <Route
             path="/import"
-            render={props => (
+            render={() => (
               <SessionController>
-                {({ session, error, loading }, { updateLocation }) => {
+                {({ session, error, loading, ...callbacks }) => {
                   if (loading) {
                     return <Spinner />;
                   }
@@ -64,45 +67,13 @@ class AlbaLocationImportPage extends Component {
                     return <MessageBar messageBarType={MessageBarType.error} isMultiline>{error}</MessageBar>;
                   }
 
-                  return <SessionTable {...session} updateLocation={updateLocation} />;
+                  return <SessionImport {...session} {...callbacks} />;
                 }}
               </SessionController>
             )}
           />
 
-          <Route
-            render={props => (
-              <div>
-                <blockquote>
-                  Setup relationships with other congregations by{' '}
-                  <a href="/ui/congregations">adding</a> the congregation, then <a href={`/ui/congregations/${congregationId}`}>your congregation</a> to link them.
-                  You should only import locations for congregations with whom you've agreed to share locations.
-                </blockquote>
-                <blockquote>
-                  Importing locations from Alba can take a long time to complete the initial import. Estimate about 1-2 seconds per location.
-                  Note that you may see an import error if it takes more than 30s to complete; It is still running in the background.
-                </blockquote>
-                <blockquote>
-                  If an address exists more than once in the import data, the last one wins.
-                </blockquote>
-                <form>
-                  <div className="row">
-                    <label htmlFor="alba-export-tsv">
-                      Paste ALBA location export from <a target="_blank" href=" https://www.mcmxiv.com/alba/addresses">Alba</a>:
-                      <textarea onChange={(e) => this.setState({ locations: e.target.value })} />
-                    </label>
-                  </div>
-
-                  <div className="row">
-                    <button onClick={this.submitLocations}>Import</button>
-                  </div>
-
-                  {loading && <Spinner />}
-                  {error && <MessageBar messageBarType={MessageBarType.error} isMultiline>{error}</MessageBar>}
-                </form>
-              </div>
-            )}
-          />
+          <Route render={props => <ExportCollector congregationId={congregationId} {...props} />} />
         </Switch>
       </div>
     );
