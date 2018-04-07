@@ -9,8 +9,9 @@ exports.plugin = {
       },
       { method: 'POST', path: '/session', options: Controller.createSession },
       { method: 'GET', path: '/session', options: Controller.getOpenSessions },
-      { method: 'POST', path: '/session/locations/{locationId}/process', options: Controller.importLocation },
+      { method: 'POST', path: '/location-import/{locationId}/process', options: Controller.importLocation },
       { method: 'POST', path: '/location-import/analyze', options: Controller.preprocessAnalysis },
+      { method: 'POST', path: '/location-import/finish', options: Controller.postprocessAnalysis },
     ]);
   },
   version: require('../../package.json').version,

@@ -28,23 +28,26 @@ class SessionImport extends Component {
     let { importIndex } = this.state;
     const { rowCount, locations } = this.props;
 
-    for (let i = importIndex || 0; i < rowCount; i++) {
-      if (locations[i] && !locations[i].translatedCongregationLocation) {
+    for (let i = rowCount; i > 0; i--) {
+      if (locations[i - 1] && locations[i - 1].isDone) {
         return i;
       }
     }
 
-    return rowCount;
+    return 0;
   }
 
   beginImportingLocations() {
-    if (this.state.importStatus.started) {
+    const { started, finished } = this.state.importStatus;
+    if (finished || started) {
       return;
     }
 
     this.setState({ importStatus: { started: true } }, async () => {
       const { rowCount, locations, refreshSession } = this.props;
-      for (let i = this.determineStartLocationIndex(); i < rowCount; i++) {
+
+      let i;
+      for (i = this.determineStartLocationIndex(); i < rowCount; i++) {
         const location = locations[i];
         if (this.state.importStatus.stopped) {
           refreshSession();
@@ -53,7 +56,18 @@ class SessionImport extends Component {
 
         try {
           this.setState({ importIndex: i });
-          const { data } = await axios.post(`/alba/session/locations/${location.id}/process`);
+          await axios.post(`/alba/location-import/${location.id}/process`);
+        } catch (ex) {
+          console.log(ex.response);
+        }
+      }
+
+      if (i >= rowCount - 1) {
+        this.setState({ importStatus: { finished: true } });
+
+        try {
+          this.setState({ importIndex: i });
+          const { data } = await axios.post(`/alba/location-import/finish`);
           console.log(data);
         } catch (ex) {
           console.log(ex);

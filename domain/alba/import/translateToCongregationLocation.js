@@ -19,6 +19,7 @@ exports.handler = async function translateToCongregationLocation({
   congregation,
   location: { locationId },
   source,
+  albaLocationImportId,
 }) {
   const { congregationId } = congregation;
   const attributes = compact([
@@ -72,6 +73,7 @@ exports.handler = async function translateToCongregationLocation({
       locationId,
       operation: 'D',
       source,
+      albaLocationImportId,
     });
     return null;
   } else if (!congregationLocation) {
@@ -88,6 +90,7 @@ exports.handler = async function translateToCongregationLocation({
       locationId,
       operation: 'I',
       source,
+      albaLocationImportId,
     });
   } else {
     // Update only when there is a change
@@ -102,6 +105,7 @@ exports.handler = async function translateToCongregationLocation({
         locationId,
         operation: 'U',
         source,
+        albaLocationImportId,
       });
     }
   }

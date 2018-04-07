@@ -50,7 +50,6 @@ class AlbaLocationImportPage extends Component {
           <NavLink to="/" exact>Start</NavLink>
           <NavLink to="/analyze">Analyze</NavLink>
           <NavLink to="/import">Import</NavLink>
-          <NavLink to="/summary">Summary</NavLink>
         </NavBar>
         <Switch>
           <Route path="/analyze" component={SessionAnalysis} />

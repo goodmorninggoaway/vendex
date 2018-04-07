@@ -1,3 +1,4 @@
+const { transaction } = require('objection');
 const { executeSerially } = require('../util');
 const models = require('../models');
 let knex;
@@ -72,10 +73,8 @@ exports.getTerritories = filter =>
     .where({ deleted: false })
     .where(filter);
 exports.findTerritory = filter => exports.getTerritories(filter).first();
-exports.findTerritoryContainingPoint = (
-  congregationId,
-  { longitude, latitude },
-) =>
+exports.findTerritoryContainingPoint = (congregationId,
+  { longitude, latitude },) =>
   exports
     .getTerritories({ congregationId })
     .whereRaw('"boundary" @> point (?, ?)', [longitude, latitude]);
@@ -113,8 +112,17 @@ exports.getLastExportActivity = filter =>
 exports.insertExportActivity = values =>
   models.ExportActivity.query().insert(values);
 
-exports.addCongregationLocationActivity = values =>
-  models.CongregationLocationActivity.query().insert(values);
+exports.addCongregationLocationActivity = ({ albaLocationImportId, ...values }) => transaction(
+  knex,
+  async (trx) => {
+    const activity = await models.CongregationLocationActivity.query(trx).insert(values);
+
+    await models.AlbaLocationImportLocation.query(trx)
+      .where({ alba_location_import_id: albaLocationImportId })
+      .patch({ operation: { value: values.operation } });
+
+    return activity;
+  });
 
 exports.getCongregationLocationActivity = ({
   congregationId,

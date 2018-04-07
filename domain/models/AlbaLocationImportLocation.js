@@ -26,6 +26,7 @@ class AlbaLocationImportLocation extends Model {
         translatedCongregationLocation: { type: 'object' },
         operation: { type: 'object' },
         geocoding: { type: 'object' },
+        isDone: { type: 'boolean' }
       },
     };
   }
@@ -71,8 +72,9 @@ class AlbaLocationImportLocation extends Model {
       congregation,
       location: translatedLocation.location,
       source: LOCATION_INTERFACES.ALBA,
+      albaLocationImportId: this.albaLocationImportId,
     });
-    await this.patch({ translatedCongregationLocation: { isValid: !!translatedCongregationLocation } });
+    await this.patch({ translatedCongregationLocation: { isValid: !!translatedCongregationLocation }, is_done: true });
 
     return await AlbaLocationImportLocation.query().findById(this.$id());
   }

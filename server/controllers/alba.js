@@ -64,7 +64,7 @@ module.exports = {
         }
 
         location = await location.importLocation(userId, congregationId, locationId);
-        return location;
+        return null;
       } catch (ex) {
         console.error(ex);
         return Boom.badImplementation();
@@ -78,12 +78,31 @@ module.exports = {
         const { congregationId } = req.auth.credentials;
         const { AlbaLocationImport } = req.server.models();
 
-        let location = await AlbaLocationImport.getActiveSession(congregationId);
-        if (!location) {
+        let session = await AlbaLocationImport.getActiveSession(congregationId);
+        if (!session) {
           return Boom.notFound();
         }
 
-        return location.runPreLocationImportAnalysis();
+        return session.preImportActions();
+      } catch (ex) {
+        console.error(ex);
+        return Boom.badImplementation();
+      }
+    },
+  },
+
+  postprocessAnalysis: {
+    async handler(req) {
+      try {
+        const { congregationId } = req.auth.credentials;
+        const { AlbaLocationImport } = req.server.models();
+
+        let session = await AlbaLocationImport.getActiveSession(congregationId);
+        if (!session) {
+          return Boom.notFound();
+        }
+
+        return await session.postImportActions();
       } catch (ex) {
         console.error(ex);
         return Boom.badImplementation();

@@ -1,4 +1,5 @@
 const differenceBy = require('lodash/differenceBy');
+const uniq = require('lodash/uniq');
 const { executeConcurrently } = require('../../util');
 const { DAL } = require('../../dataAccess');
 
@@ -15,11 +16,7 @@ exports.handler = async function removeMissingLocations({
   existingLocations,
   source,
 }) {
-  const deletedLocations = differenceBy(
-    existingLocations,
-    importedLocations,
-    'location.locationId',
-  );
+  const deletedLocations = uniq(differenceBy(existingLocations, importedLocations));
   const worker = async ({ locationId }) => {
     await DAL.deleteCongregationLocation({ congregationId, locationId });
     console.log(

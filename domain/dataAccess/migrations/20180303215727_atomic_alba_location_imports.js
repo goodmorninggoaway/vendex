@@ -9,6 +9,7 @@ exports.up = async function (knex, Promise) {
     table.integer('user_id').notNull();
     table.jsonb('pending_location_deletions');
     table.jsonb('congregation_integration_analysis');
+    table.jsonb('summary');
   });
 
   await knex.schema.createTable('alba_location_import_by_location', table => {
@@ -21,7 +22,7 @@ exports.up = async function (knex, Promise) {
     table.jsonb('translated_location');
     table.jsonb('translated_congregation_location');
     table.jsonb('operation');
-    table.jsonb('geocoding');
+    table.boolean('is_done').defaultTo(false);
   });
 
 };
