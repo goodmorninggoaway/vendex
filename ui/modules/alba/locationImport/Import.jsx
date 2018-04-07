@@ -7,7 +7,7 @@ import axios from 'axios';
 import { DefaultButton } from 'office-ui-fabric-react/lib/Button';
 import { ProgressIndicator } from 'office-ui-fabric-react/lib/ProgressIndicator';
 
-class SessionImport extends Component {
+class Import extends Component {
   constructor(props, context) {
     super(props, context);
     autobind(this);
@@ -122,13 +122,14 @@ class SessionImport extends Component {
               Cell: ({ original: { id } }) => <button onClick={() => this.processLocation(id)}>Process</button>
             }
           ]}
+          defaultPageSize={10}
         />
       </div>
     );
   }
 }
 
-SessionImport.propTypes = {
+Import.propTypes = {
   locations: PropTypes.arrayOf(PropTypes.shape({
     payload: PropTypes.shape({
       Address_ID: PropTypes.string.isRequired,
@@ -149,4 +150,4 @@ SessionImport.propTypes = {
   refreshSession: PropTypes.func.isRequired,
 };
 
-export default SessionImport;
+export default Import;

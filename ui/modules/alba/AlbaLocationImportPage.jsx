@@ -2,18 +2,21 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import autobind from 'react-autobind';
 import axios from 'axios';
-import SessionImport from './locationImport/SessionImport';
+import Import from './locationImport/Import';
 import SessionController from './SessionController';
 import { Spinner } from 'office-ui-fabric-react/lib/Spinner';
 import { CommandBar } from 'office-ui-fabric-react/lib/CommandBar';
 import { MessageBar, MessageBarType } from 'office-ui-fabric-react/lib/MessageBar';
+import { Label } from 'office-ui-fabric-react/lib/Label';
+import { Pivot, PivotItem, PivotLinkSize, PivotLinkFormat } from 'office-ui-fabric-react/lib/Pivot';
 import Route from 'react-router-dom/Route';
 import Redirect from 'react-router-dom/Redirect';
-import NavLink from 'react-router-dom/NavLink';
 import Switch from 'react-router-dom/Switch';
-import SessionAnalysis from './locationImport/SessionAnalysis';
-import ExportCollector from './locationImport/ExportCollector';
+import PreImport from './locationImport/PreImport';
+import TSVCollector from './locationImport/TSVCollector';
 import NavBar from '../nav/NavBar';
+import Page from '../layouts/Page';
+import Wizard from '../layouts/Wizard';
 
 class AlbaLocationImportPage extends Component {
   constructor(props) {
@@ -41,21 +44,25 @@ class AlbaLocationImportPage extends Component {
   }
 
   render() {
-    const { congregationId } = this.props;
-    const { loading, session, error } = this.state;
+    const { congregationId, history, location } = this.props;
     return (
-      <div>
-        <h4>Alba > Import Locations</h4>
-        <NavBar>
-          <NavLink to="/" exact>Start</NavLink>
-          <NavLink to="/analyze">Analyze</NavLink>
-          <NavLink to="/import">Import</NavLink>
-        </NavBar>
-        <Switch>
-          <Route path="/analyze" component={SessionAnalysis} />
-          <Route
-            path="/import"
-            render={() => (
+      <Wizard
+        title="Alba"
+        steps={[
+          {
+            id: 'start',
+            name: 'Start',
+            render: props => <TSVCollector congregationId={congregationId} {...props} />,
+          },
+          {
+            id: 'prepare',
+            name: 'Congregations & Languages',
+            render: props => <PreImport {...props} />,
+          },
+          {
+            id: 'import',
+            name: 'Import',
+            render: props => (
               <SessionController>
                 {({ session, error, loading, ...callbacks }) => {
                   if (loading) {
@@ -66,15 +73,13 @@ class AlbaLocationImportPage extends Component {
                     return <MessageBar messageBarType={MessageBarType.error} isMultiline>{error}</MessageBar>;
                   }
 
-                  return <SessionImport {...session} {...callbacks} />;
+                  return <Import {...session} {...callbacks} {...props} />;
                 }}
               </SessionController>
-            )}
-          />
-
-          <Route render={props => <ExportCollector congregationId={congregationId} {...props} />} />
-        </Switch>
-      </div>
+            )
+          },
+        ]}
+      />
     );
   }
 }
@@ -83,6 +88,9 @@ AlbaLocationImportPage.propTypes = {
   congregationId: PropTypes.number.isRequired,
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
+  }).isRequired,
+  match: PropTypes.shape({
+    url: PropTypes.string.isRequired,
   }).isRequired,
 };
 

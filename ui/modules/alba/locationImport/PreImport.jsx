@@ -9,7 +9,7 @@ import { Spinner } from 'office-ui-fabric-react/lib/Spinner';
 import sortBy from 'lodash/sortBy';
 import { MessageBar, MessageBarType } from 'office-ui-fabric-react/lib/MessageBar';
 
-class SessionAnalysis extends Component {
+class PreImport extends Component {
   constructor(props, context) {
     super(props, context);
     autobind(this);
@@ -57,16 +57,6 @@ class SessionAnalysis extends Component {
     const { preCheck } = this.state;
     return (
       <div>
-{/*
-        <DefaultButton
-          onClick={this.preImportAnalysis}
-          disabled={preCheck.loading}
-          iconProps={{ iconName: 'AnalyticsReport' }}
-        >
-          Analyze Alba Data
-        </DefaultButton>
-*/}
-
         {!preCheck.value && !preCheck.error && <Spinner />}
         {preCheck.error && <MessageBar messageBarType={MessageBarType.error} isMultiline>{preCheck.error}</MessageBar>}
         {preCheck.value && (
@@ -93,6 +83,7 @@ class SessionAnalysis extends Component {
                 }),
               });
             }}
+            defaultPageSize={10}
           />
         )}
       </div>
@@ -100,7 +91,7 @@ class SessionAnalysis extends Component {
   }
 }
 
-SessionAnalysis.propTypes = {
+PreImport.propTypes = {
   locations: PropTypes.arrayOf(PropTypes.shape({
     payload: PropTypes.shape({
       Address_ID: PropTypes.string.isRequired,
@@ -120,4 +111,4 @@ SessionAnalysis.propTypes = {
   updateLocation: PropTypes.func.isRequired,
 };
 
-export default SessionAnalysis;
+export default PreImport;

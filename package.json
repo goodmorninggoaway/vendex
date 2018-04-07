@@ -34,7 +34,7 @@
     "moment": "^2.19.2",
     "object-hash": "^1.1.8",
     "objection": "^1.0.0",
-    "office-ui-fabric-react": "^5.45.3",
+    "office-ui-fabric-react": "^5.79.1",
     "parse-address": "0.0.8",
     "pg": "^7.3.0",
     "prop-types": "^15.6.0",

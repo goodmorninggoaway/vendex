@@ -4,18 +4,20 @@
   <title>VENDEX</title>
 
   <!-- Viewport mobile tag for sensible mobile support -->
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" >
 
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" >
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css" >
   <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
 
-  <link rel="stylesheet" href="https://unpkg.com/react-table@latest/react-table.css">
-  <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-core/9.3.0/css/fabric.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/react-table@latest/react-table.css" >
+  <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-core/9.3.0/css/fabric.min.css" >
 
   <style>
-    header, main, footer {
+    body > header,
+    body > main,
+    body > footer {
       margin-left: 300px;
       padding: 0 20px;
     }
@@ -49,7 +51,7 @@
   </style>
 </head>
 
-<body>
+<body style="height: 100%">
 <ul id="slide-out" class="side-nav fixed">
   <li><a href="/ui"><h3>VENDEX</h3></a></li>
   <li><a class="subheader">Alba</a></li>
@@ -73,7 +75,7 @@
   <li class="divider"></li>
   <li><a>version <%= credentials.version %></a></li>
 </ul>
-<main>
+<main style="height: 100%">
   <%- body %>
 </main>
 
