@@ -8,6 +8,7 @@ import { ActivityItem } from 'office-ui-fabric-react/lib/ActivityItem';
 import { Icon } from 'office-ui-fabric-react/lib/Icon';
 import { Spinner } from 'office-ui-fabric-react/lib/Spinner';
 import { MessageBar, MessageBarType } from 'office-ui-fabric-react/lib/MessageBar';
+import Link from 'react-router-dom/Link';
 
 class Import extends Component {
   constructor(props, context) {
@@ -126,6 +127,11 @@ class Import extends Component {
             description={`${Math.floor(100 * importIndex / rowCount) || 1}% complete.`}
             percentComplete={importIndex / rowCount}
           />
+        )}
+        {importStatus.finished && (
+          <MessageBar messageBarType={MessageBarType.success} isMultiline>
+            Alba locations have been updated. <a href="/ui/territoryhelper/territories">Click here to move on to Territory Helper data.</a>
+          </MessageBar>
         )}
         {results.map(x => <ActivityItem key={x.id} {...x} styles={{ root: { marginBottom: '8px' } }} />)}
       </div>
