@@ -10,6 +10,7 @@ import { TooltipHost } from 'office-ui-fabric-react/lib/Tooltip';
 import { buildPath } from '../../utils/url';
 import autobind from 'react-autobind';
 import classnames from 'classnames'
+import isFunction from 'lodash/isFunction';
 
 class StepContainer extends Component {
   constructor(...args) {
@@ -50,7 +51,8 @@ class StepContainer extends Component {
   }
 
   render() {
-    const { name, render, title, previous, next, steps, id, match } = this.props;
+    const { name, render, component: RenderComponent, title, previous, next, steps, id, match } = this.props;
+
     return (
       <article style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <header className="ms-fontColor-themeDarkAlt ms-bgColor-neutralQuaternary">
@@ -70,7 +72,10 @@ class StepContainer extends Component {
             ))}
           </div>
         </header>
-        <main style={{ display: 'flex', flex: '1 auto', flexDirection: 'column', overflow: 'auto' }}>{render({ stepApi: this.stepApi })}</main>
+        <main style={{ display: 'flex', flex: '1 auto', flexDirection: 'column', overflow: 'auto' }}>
+          {isFunction(render) && render({ stepApi: this.stepApi })}
+          {isFunction(RenderComponent) && <RenderComponent stepApi={this.stepApi} />}
+        </main>
         <footer style={{ padding: '12px 0' }}>
           <div
             style={{ display: 'flex', justifyContent: previous ? 'space-between' : 'flex-end' }}
@@ -148,9 +153,18 @@ Wizard.propTypes = {
   steps: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
-    render: PropTypes.func.isRequired,
-    onBeforeGoToPrevious: PropTypes.func,
-    onBeforeGoToNext: PropTypes.func,
+
+    /**
+     * Either render() or a component is required.
+     * @param {{ stepApi: StepApi }} props
+     */
+    render: PropTypes.func,
+
+    /**
+     * Either render() or a component is required.
+     * @param {{ stepApi: StepApi }} props
+     */
+    component: PropTypes.func,
   })),
   match: PropTypes.shape(),
 

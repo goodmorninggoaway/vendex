@@ -4,7 +4,6 @@ import autobind from 'react-autobind';
 import axios from 'axios';
 import { Spinner } from 'office-ui-fabric-react/lib/Spinner';
 import { MessageBar, MessageBarType } from 'office-ui-fabric-react/lib/MessageBar';
-import { DefaultButton } from 'office-ui-fabric-react/lib/Button';
 
 class TSVCollector extends Component {
   constructor(props) {
@@ -48,10 +47,6 @@ class TSVCollector extends Component {
 }
 
 TSVCollector.propTypes = {
-  congregationId: PropTypes.number.isRequired,
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
   stepApi: PropTypes.shape({
     onBeforeGoToNext: PropTypes.func,
   })

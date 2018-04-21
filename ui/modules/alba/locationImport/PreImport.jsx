@@ -101,23 +101,6 @@ class PreImport extends Component {
 }
 
 PreImport.propTypes = {
-  locations: PropTypes.arrayOf(PropTypes.shape({
-    payload: PropTypes.shape({
-      Address_ID: PropTypes.string.isRequired,
-      Suite: PropTypes.string.isRequired,
-      Address: PropTypes.string.isRequired,
-      City: PropTypes.string.isRequired,
-      Province: PropTypes.string.isRequired,
-      Postal_code: PropTypes.string.isRequired,
-      Country: PropTypes.string.isRequired,
-      Notes: PropTypes.string.isRequired,
-      Kind: PropTypes.string.isRequired,
-      Status: PropTypes.string.isRequired,
-      Account: PropTypes.string.isRequired,
-      Language: PropTypes.string.isRequired,
-    }),
-  })),
-  updateLocation: PropTypes.func.isRequired,
   congregationId: PropTypes.number.isRequired,
 };
 
