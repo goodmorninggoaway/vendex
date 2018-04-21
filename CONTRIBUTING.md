@@ -34,3 +34,11 @@ Easy way to generate a secret:
 1. Start the server: `npm start`
 
 If you're using a NodeJS debugger, use the `server:debug` script.
+
+## Deploying
+Deployments are automated based on the branch:
+`master` -> dev
+`production` -> prod
+
+## Versioning
+Use npm to tag versions: `npm version patch|minor && git push && git push --tags`
