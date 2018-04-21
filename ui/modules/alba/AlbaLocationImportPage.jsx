@@ -5,17 +5,9 @@ import axios from 'axios';
 import Import from './locationImport/Import';
 import SessionController from './SessionController';
 import { Spinner } from 'office-ui-fabric-react/lib/Spinner';
-import { CommandBar } from 'office-ui-fabric-react/lib/CommandBar';
 import { MessageBar, MessageBarType } from 'office-ui-fabric-react/lib/MessageBar';
-import { Label } from 'office-ui-fabric-react/lib/Label';
-import { Pivot, PivotItem, PivotLinkSize, PivotLinkFormat } from 'office-ui-fabric-react/lib/Pivot';
-import Route from 'react-router-dom/Route';
-import Redirect from 'react-router-dom/Redirect';
-import Switch from 'react-router-dom/Switch';
 import PreImport from './locationImport/PreImport';
 import TSVCollector from './locationImport/TSVCollector';
-import NavBar from '../nav/NavBar';
-import Page from '../layouts/Page';
 import Wizard from '../layouts/Wizard';
 
 class AlbaLocationImportPage extends Component {
@@ -51,7 +43,7 @@ class AlbaLocationImportPage extends Component {
         steps={[
           {
             id: 'start',
-            name: 'Start',
+            name: 'Copy Alba Data',
             render: props => <TSVCollector congregationId={congregationId} {...props} />,
           },
           {
@@ -61,7 +53,7 @@ class AlbaLocationImportPage extends Component {
           },
           {
             id: 'import',
-            name: 'Import',
+            name: 'Upload Locations',
             render: props => (
               <SessionController>
                 {({ session, error, loading, ...callbacks }) => {

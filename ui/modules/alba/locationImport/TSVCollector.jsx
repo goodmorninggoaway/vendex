@@ -31,29 +31,18 @@ class TSVCollector extends Component {
   }
 
   render() {
-    const { congregationId } = this.props;
     const { loading, error } = this.state;
     return (
-      <React.Fragment>
-        <blockquote>
-          Setup relationships with other congregations by{' '}
-          <a href="/ui/congregations">adding</a> the congregation, then <a href={`/ui/congregations/${congregationId}`}>your congregation</a> to link them.
-          You should only import locations for congregations with whom you've agreed to share locations.
-        </blockquote>
-        <blockquote>
-          If an address exists more than once in the import data, the last one wins.
-        </blockquote>
-        <form style={{ flex: '1 auto' }}>
-          <div className="row">
-            <label htmlFor="alba-export-tsv">
-              Paste ALBA location export from <a target="_blank" href=" https://www.mcmxiv.com/alba/addresses">Alba</a>:
-              <textarea onChange={(e) => this.setState({ locations: e.target.value })} style={{ height: '50vh' }} />
-            </label>
-          </div>
-          {loading && <Spinner />}
-          {error && <MessageBar messageBarType={MessageBarType.error} isMultiline>{error}</MessageBar>}
-        </form>
-      </React.Fragment>
+      <form style={{ flex: '1 auto' }}>
+        <div className="row">
+          <label htmlFor="alba-export-tsv">
+            Paste ALBA location export from <a target="_blank" href=" https://www.mcmxiv.com/alba/addresses">Alba</a>:
+            <textarea onChange={(e) => this.setState({ locations: e.target.value })} style={{ height: '50vh' }} />
+          </label>
+        </div>
+        {loading && <Spinner />}
+        {error && <MessageBar messageBarType={MessageBarType.error} isMultiline>{error}</MessageBar>}
+      </form>
     );
   }
 }

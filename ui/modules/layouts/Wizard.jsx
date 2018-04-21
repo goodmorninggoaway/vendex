@@ -4,8 +4,10 @@ import withRouter from 'react-router-dom/withRouter';
 import Route from 'react-router-dom/Route';
 import Switch from 'react-router-dom/Switch';
 import { DefaultButton } from 'office-ui-fabric-react/lib/Button';
+import { Icon, IconType } from 'office-ui-fabric-react/lib/Icon';
 import { buildPath } from '../../utils/url';
 import autobind from 'react-autobind';
+import classnames from 'classnames'
 
 class StepContainer extends Component {
   constructor(...args) {
@@ -46,18 +48,27 @@ class StepContainer extends Component {
   }
 
   render() {
-    const { name, render, title, previous, next, index, count } = this.props;
-    return (
-      <article style={{ display: 'flex', flex: '1 auto', flexDirection: 'column', height: '100%' }}>
-        <header className="ms-bgColor-themeDarker ms-fontColor-neutralLighterAlt" style={{ padding: '24px' }}>
-          <div className="ms-fontSize-mPlus ms-fontWeight-semibold">
-            {title}: Step {index + 1} of {count}
-          </div>
-          <div className="ms-fontSize-xxl">{name}</div>
-        </header>
+    const { name, render, title, previous, next, index, count, steps, id } = this.props;
+    return <article style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <header className="ms-fontColor-themeDarkAlt ms-bgColor-neutralQuaternary">
+        <div className="ms-fontSize-mPlus ms-fontWeight-semibold">{title}</div>
+        <div className="ms-fontSize-xxl">{name}</div>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          {steps.map((step) => (
+            <Icon
+              iconName="CircleShapeSolid"
+              iconType={IconType.default}
+              className={classnames({ 'ms-fontColor-themeDarkAlt ms-font-m': id === step.id, 'ms-fontColor-neutralLight ms-font-m': id !== step.id })}
+              style={{ marginRight: '16px' }}
+            />
+          ))}
+        </div>
+      </header>
+      <main style={{ display: 'flex', flex: '1 auto', flexDirection: 'column', overflow: 'auto' }}>{render({ stepApi: this.stepApi })}</main>
+      <footer style={{ padding: '12px 0' }}>
         <div
           style={{ display: 'flex', justifyContent: previous ? 'space-between' : 'flex-end' }}
-          className="ms-bgColor-themeDarker ms-fontColor-neutralLighterAlt"
+          className="ms-fontColor-neutralLighterAlt"
         >
           {previous && (
             <DefaultButton
@@ -76,9 +87,8 @@ class StepContainer extends Component {
             />
           )}
         </div>
-        <section style={{ display: 'flex', flex: '1 auto', flexDirection: 'column' }}>{render({ stepApi: this.stepApi })}</section>
-      </article>
-    );
+      </footer>
+    </article>;
   }
 }
 
@@ -99,6 +109,7 @@ const Wizard = ({ steps, match, location, history, ...props }) => (
               {...props}
               {...step}
               id={id}
+              steps={steps}
               previous={previous}
               next={next}
               match={match}
