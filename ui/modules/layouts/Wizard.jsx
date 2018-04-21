@@ -48,47 +48,50 @@ class StepContainer extends Component {
   }
 
   render() {
-    const { name, render, title, previous, next, index, count, steps, id } = this.props;
-    return <article style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <header className="ms-fontColor-themeDarkAlt ms-bgColor-neutralQuaternary">
-        <div className="ms-fontSize-mPlus ms-fontWeight-semibold">{title}</div>
-        <div className="ms-fontSize-xxl">{name}</div>
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          {steps.map((step) => (
-            <Icon
-              iconName="CircleShapeSolid"
-              iconType={IconType.default}
-              className={classnames({ 'ms-fontColor-themeDarkAlt ms-font-m': id === step.id, 'ms-fontColor-neutralLight ms-font-m': id !== step.id })}
-              style={{ marginRight: '16px' }}
-            />
-          ))}
-        </div>
-      </header>
-      <main style={{ display: 'flex', flex: '1 auto', flexDirection: 'column', overflow: 'auto' }}>{render({ stepApi: this.stepApi })}</main>
-      <footer style={{ padding: '12px 0' }}>
-        <div
-          style={{ display: 'flex', justifyContent: previous ? 'space-between' : 'flex-end' }}
-          className="ms-fontColor-neutralLighterAlt"
-        >
-          {previous && (
-            <DefaultButton
-              primary
-              text={`Back: ${previous.name}`}
-              onClick={this.previous}
-              iconProps={{ iconName: 'CaretLeftSolid8' }}
-            />
-          )}
-          {next && (
-            <DefaultButton
-              primary
-              text={`Next: ${next.name}`}
-              onClick={this.next}
-              iconProps={{ iconName: 'CaretRightSolid8' }}
-            />
-          )}
-        </div>
-      </footer>
-    </article>;
+    const { name, render, title, previous, next, steps, id } = this.props;
+    return (
+      <article style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+        <header className="ms-fontColor-themeDarkAlt ms-bgColor-neutralQuaternary">
+          <div className="ms-fontSize-mPlus ms-fontWeight-semibold">{title}</div>
+          <div className="ms-fontSize-xxl">{name}</div>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            {steps.map(step => (
+              <Icon
+                key={step.id}
+                iconName="CircleShapeSolid"
+                iconType={IconType.default}
+                className={classnames({ 'ms-fontColor-themeDarkAlt ms-font-m': id === step.id, 'ms-fontColor-neutralLight ms-font-m': id !== step.id })}
+                style={{ marginRight: '16px' }}
+              />
+            ))}
+          </div>
+        </header>
+        <main style={{ display: 'flex', flex: '1 auto', flexDirection: 'column', overflow: 'auto' }}>{render({ stepApi: this.stepApi })}</main>
+        <footer style={{ padding: '12px 0' }}>
+          <div
+            style={{ display: 'flex', justifyContent: previous ? 'space-between' : 'flex-end' }}
+            className="ms-fontColor-neutralLighterAlt"
+          >
+            {previous && (
+              <DefaultButton
+                primary
+                text={`Back: ${previous.name}`}
+                onClick={this.previous}
+                iconProps={{ iconName: 'CaretLeftSolid8' }}
+              />
+            )}
+            {next && (
+              <DefaultButton
+                primary
+                text={`Next: ${next.name}`}
+                onClick={this.next}
+                iconProps={{ iconName: 'CaretRightSolid8' }}
+              />
+            )}
+          </div>
+        </footer>
+      </article>
+    );
   }
 }
 
@@ -115,8 +118,6 @@ const Wizard = ({ steps, match, location, history, ...props }) => (
               match={match}
               location={location}
               history={history}
-              index={index}
-              count={arr.length}
             />
           )}
         />
@@ -131,6 +132,7 @@ const Wizard = ({ steps, match, location, history, ...props }) => (
           match={match}
           location={location}
           history={history}
+          steps={steps}
         />
       )}
     />

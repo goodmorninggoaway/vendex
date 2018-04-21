@@ -1,79 +1,97 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import autobind from 'react-autobind';
-import classnames from 'classnames';
-import ReactTable from 'react-table';
 import axios from 'axios';
 import { DefaultButton } from 'office-ui-fabric-react/lib/Button';
 import { ProgressIndicator } from 'office-ui-fabric-react/lib/ProgressIndicator';
+import { ActivityItem } from 'office-ui-fabric-react/lib/ActivityItem';
+import { Icon } from 'office-ui-fabric-react/lib/Icon';
+import { Spinner } from 'office-ui-fabric-react/lib/Spinner';
+import { MessageBar, MessageBarType } from 'office-ui-fabric-react/lib/MessageBar';
 
 class Import extends Component {
   constructor(props, context) {
     super(props, context);
     autobind(this);
 
-    this.state = { importStatus: {}, importIndex: -1 };
+    this.state = { importStatus: {}, importIndex: -1, results: [] };
+    this.initialized = !!this.props.session;
   }
 
-  async processLocation(locationId) {
-    try {
-      const { data } = await axios.post(`/alba/session/locations/${locationId}/process`);
-      this.props.updateLocation(data);
-    } catch (ex) {
-      console.log(ex);
+  componentDidMount() {
+    if (this.initialized) {
+      this.beginImportingLocations();
+    }
+  }
+
+  componentDidUpdate() {
+    if (!this.initialized && this.props.session) {
+      this.initialized = true;
+      this.beginImportingLocations();
     }
   }
 
   determineStartLocationIndex() {
-    let { importIndex } = this.state;
-    const { rowCount, locations } = this.props;
-
-    for (let i = rowCount; i > 0; i--) {
-      if (locations[i - 1] && locations[i - 1].isDone) {
-        return i;
-      }
-    }
+    //const { session: { locations, locations: { length: rowCount } } } = this.props;
+    //for (let i = rowCount; i > 0; i--) {
+    //  if (locations[i - 1] && locations[i - 1].isDone) {
+    //    return i;
+    //  }
+    //}
 
     return 0;
   }
 
-  beginImportingLocations() {
+  setStateAsync(arg) {
+    return new Promise(resolve => this.setState(arg, resolve));
+  }
+
+  async beginImportingLocations() {
+    const { session: { locations } } = this.props;
+    const rowCount = locations.length;
     const { started, finished } = this.state.importStatus;
     if (finished || started) {
       return;
     }
 
-    this.setState({ importStatus: { started: true } }, async () => {
-      const { rowCount, locations, refreshSession } = this.props;
+    await this.setStateAsync({ importStatus: { started: true } });
 
-      let i;
-      for (i = this.determineStartLocationIndex(); i < rowCount; i++) {
-        const location = locations[i];
-        if (this.state.importStatus.stopped) {
-          refreshSession();
-          break;
-        }
-
-        try {
-          this.setState({ importIndex: i });
-          await axios.post(`/alba/location-import/${location.id}/process`);
-        } catch (ex) {
-          console.log(ex.response);
-        }
+    let i;
+    for (i = this.determineStartLocationIndex(); i < rowCount; i++) {
+      const location = locations[i];
+      if (this.state.importStatus.stopped) {
+        break;
       }
 
-      if (i >= rowCount - 1) {
-        this.setState({ importStatus: { finished: true } });
+      const { Address_ID, Suite, Address, City, Province, Postal_code, Country, Notes, Kind, Status, Account, Language } = location.payload;
+      const result = {
+        id: Address_ID,
+        activityDescription: `${Address || ''} ${Suite ? '#' + Suite : ''}, ${City || ''} ${Province || ''}`,
+        comments: <span><strong className="ms-fontWeight-semibold">{Language || 'Unknown'}</strong> {Account}</span>
+      };
 
-        try {
-          this.setState({ importIndex: i });
-          const { data } = await axios.post(`/alba/location-import/finish`);
-          console.log(data);
-        } catch (ex) {
-          console.log(ex);
-        }
+      try {
+        await this.setStateAsync({ importIndex: i });
+        await axios.post(`/alba/location-import/${location.id}/process`);
+        result.activityIcon = <Icon iconName="CheckMark" className="ms-fontColor-green" />;
+      } catch (ex) {
+        console.log(ex.response);
+        result.activityIcon = <Icon iconName="Cancel" className="ms-fontColor-red" />
       }
-    });
+
+      await this.setStateAsync(({ results }) => ({ results: [result, ...results] }));
+    }
+
+    if (i >= rowCount - 1) {
+      await this.setStateAsync({ importStatus: { finished: true } });
+
+      try {
+        await this.setStateAsync({ importIndex: i });
+        const { data } = await axios.post(`/alba/location-import/finish`);
+      } catch (ex) {
+        console.log(ex.response);
+      }
+    }
   }
 
   async stopImportingLocations() {
@@ -81,9 +99,17 @@ class Import extends Component {
   }
 
   render() {
-    const { locations, rowCount } = this.props;
-    const { importStatus, importIndex } = this.state;
+    const { loading, error } = this.props;
+    const { importStatus, importIndex, results } = this.state;
+    if (loading) {
+      return <Spinner />;
+    }
 
+    if (error) {
+      return <MessageBar messageBarType={MessageBarType.error} isMultiline>{error}</MessageBar>;
+    }
+
+    const { session: { locations: { length: rowCount } } } = this.props;
     return (
       <div>
         {importStatus.started
@@ -96,58 +122,38 @@ class Import extends Component {
         }
         {importStatus.started && (
           <ProgressIndicator
-            label={`Processing ${importIndex + 1} of ${rowCount}`}
+            label={`Importing ${rowCount} locations.`}
+            description={`${Math.floor(100 * importIndex / rowCount) || 1}% complete.`}
             percentComplete={importIndex / rowCount}
           />
         )}
-        <ReactTable
-          data={locations}
-          columns={[
-            { Header: 'Address ID', accessor: 'payload.Address_ID' },
-            { Header: 'Suite', accessor: 'payload.Suite' },
-            { Header: 'Address', accessor: 'payload.Address' },
-            { Header: 'City', accessor: 'payload.City' },
-            { Header: 'Province', accessor: 'payload.Province' },
-            { Header: 'Postal_code', accessor: 'payload.Postal_code' },
-            { Header: 'Country', accessor: 'payload.Country' },
-            { Header: 'Notes', accessor: 'payload.Notes' },
-            { Header: 'Kind', accessor: 'payload.Kind' },
-            { Header: 'Status', accessor: 'payload.Status' },
-            { Header: 'Account', accessor: 'payload.Account' },
-            { Header: 'Language', accessor: 'payload.Language' },
-            {
-              Header: 'Actions',
-              id: 'actions',
-              show: false,
-              Cell: ({ original: { id } }) => <button onClick={() => this.processLocation(id)}>Process</button>
-            }
-          ]}
-          defaultPageSize={10}
-        />
+        {results.map(x => <ActivityItem key={x.id} {...x} styles={{ root: { marginBottom: '8px' } }} />)}
       </div>
     );
   }
 }
 
 Import.propTypes = {
-  locations: PropTypes.arrayOf(PropTypes.shape({
-    payload: PropTypes.shape({
-      Address_ID: PropTypes.string.isRequired,
-      Suite: PropTypes.string.isRequired,
-      Address: PropTypes.string.isRequired,
-      City: PropTypes.string.isRequired,
-      Province: PropTypes.string.isRequired,
-      Postal_code: PropTypes.string.isRequired,
-      Country: PropTypes.string.isRequired,
-      Notes: PropTypes.string.isRequired,
-      Kind: PropTypes.string.isRequired,
-      Status: PropTypes.string.isRequired,
-      Account: PropTypes.string.isRequired,
-      Language: PropTypes.string.isRequired,
-    }),
-  })),
-  updateLocation: PropTypes.func.isRequired,
-  refreshSession: PropTypes.func.isRequired,
+  session: PropTypes.shape({
+    locations: PropTypes.arrayOf(PropTypes.shape({
+      payload: PropTypes.shape({
+        Address_ID: PropTypes.string.isRequired,
+        Suite: PropTypes.string.isRequired,
+        Address: PropTypes.string.isRequired,
+        City: PropTypes.string.isRequired,
+        Province: PropTypes.string.isRequired,
+        Postal_code: PropTypes.string.isRequired,
+        Country: PropTypes.string.isRequired,
+        Notes: PropTypes.string.isRequired,
+        Kind: PropTypes.string.isRequired,
+        Status: PropTypes.string.isRequired,
+        Account: PropTypes.string.isRequired,
+        Language: PropTypes.string.isRequired,
+      }),
+    })),
+  }),
+  error: PropTypes.node,
+  loading: PropTypes.bool,
 };
 
 export default Import;
