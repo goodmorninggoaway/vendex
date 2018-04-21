@@ -3,8 +3,10 @@ import PropTypes from 'prop-types';
 import withRouter from 'react-router-dom/withRouter';
 import Route from 'react-router-dom/Route';
 import Switch from 'react-router-dom/Switch';
+import Link from 'react-router-dom/Link';
 import { DefaultButton } from 'office-ui-fabric-react/lib/Button';
 import { Icon, IconType } from 'office-ui-fabric-react/lib/Icon';
+import { TooltipHost } from 'office-ui-fabric-react/lib/Tooltip';
 import { buildPath } from '../../utils/url';
 import autobind from 'react-autobind';
 import classnames from 'classnames'
@@ -48,7 +50,7 @@ class StepContainer extends Component {
   }
 
   render() {
-    const { name, render, title, previous, next, steps, id } = this.props;
+    const { name, render, title, previous, next, steps, id, match } = this.props;
     return (
       <article style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <header className="ms-fontColor-themeDarkAlt ms-bgColor-neutralQuaternary">
@@ -56,13 +58,15 @@ class StepContainer extends Component {
           <div className="ms-fontSize-xxl">{name}</div>
           <div style={{ display: 'flex', alignItems: 'center' }}>
             {steps.map(step => (
-              <Icon
-                key={step.id}
-                iconName="CircleShapeSolid"
-                iconType={IconType.default}
-                className={classnames({ 'ms-fontColor-themeDarkAlt ms-font-m': id === step.id, 'ms-fontColor-neutralLight ms-font-m': id !== step.id })}
-                style={{ marginRight: '16px' }}
-              />
+              <Link key={step.id} to={buildPath(match.url, step.id)} style={{ marginRight: '16px' }}>
+                <TooltipHost content={step.name}>
+                  <Icon
+                    iconName="CircleShapeSolid"
+                    iconType={IconType.default}
+                    className={classnames({ 'ms-fontColor-themeDarkAlt ms-font-m': id === step.id, 'ms-fontColor-neutralLight ms-font-m': id !== step.id })}
+                  />
+                </TooltipHost>
+              </Link>
             ))}
           </div>
         </header>
