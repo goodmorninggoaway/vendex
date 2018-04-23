@@ -60,7 +60,7 @@ class ConversionHistory extends Component {
             <tbody id="exports-list">
               {data.map(({ exportActivityId, timestamp, summary }) => (
                 <tr key={exportActivityId}>
-                  <td><a href={`/ui/territoryhelper/exports/${exportActivityId}`}>{moment(timestamp).format('L LTS')}</a></td>
+                  <td>{moment(timestamp).format('L LTS')}</td>
                   <td>{summary ? summary.inserts : 'N/A'}</td>
                   <td>{summary ? summary.updates : 'N/A'}</td>
                   <td>{summary ? summary.deletes : 'N/A'}</td>
