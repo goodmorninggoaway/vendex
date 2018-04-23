@@ -70,11 +70,6 @@ exports.plugin = {
       },
       {
         method: 'GET',
-        path: '/territoryhelper/exports',
-        options: Controller.getTerritoryHelperExportHistory,
-      },
-      {
-        method: 'GET',
         path: '/territoryhelper/exports/download',
         options: Controller.downloadTerritoryHelperExport,
       },
@@ -106,23 +101,26 @@ exports.plugin = {
           },
         },
       },
-      //{
-      //  method: 'GET',
-      //  path: '/territoryhelper/locations',
-      //  options: {
-      //    handler: {
-      //      view: { template: 'territoryHelper/importLocations.ejs' },
-      //    },
-      //  },
-      //},
       {
         method: 'GET',
-        path: '/territoryhelper/prepare-export/{path?}',
+        path: '/territoryhelper/forward-conversion/{path?}',
         options: {
           handler: {
             view: {
               template: 'reactView.ejs',
-              context: { componentName: 'TerritoryHelperImportPage' },
+              context: { componentName: 'TerritoryHelperForwardConversionPage' },
+            },
+          },
+        },
+      },
+      {
+        method: 'GET',
+        path: '/territoryhelper/forward-conversion-history/{path?}',
+        options: {
+          handler: {
+            view: {
+              template: 'reactView.ejs',
+              context: { componentName: 'TerritoryHelperForwardConversionHistoryPage' },
             },
           },
         },

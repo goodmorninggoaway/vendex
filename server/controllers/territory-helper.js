@@ -64,4 +64,26 @@ module.exports = {
         .location(`/ui/territoryhelper/exports/download?tracer=${tracer}`);
     },
   },
+
+  getExportHistory: {
+    async handler(req) {
+      const { congregationId } = req.auth.credentials;
+      const { ExportActivity } = req.server.models();
+
+      const exports = await ExportActivity.query()
+        .column('exportActivityId', 'timestamp', 'summary')
+        .where({ congregationId })
+        .orderBy('timestamp', 'desc');
+
+      return exports.filter(e => {
+        // the summary was added later
+        if (!e.summary) {
+          return true;
+        }
+
+        const { inserts, updates, deletes } = e.summary;
+        return inserts || deletes || updates;
+      });
+    },
+  },
 };

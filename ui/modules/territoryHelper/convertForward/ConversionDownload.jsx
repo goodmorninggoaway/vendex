@@ -6,7 +6,7 @@ import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/components/Spin
 import { MessageBar } from 'office-ui-fabric-react/lib/components/MessageBar';
 import { DefaultButton } from 'office-ui-fabric-react/lib/components/Button';
 
-class LocationImport extends Component {
+class ConversionDownload extends Component {
   constructor(...args) {
     super(...args);
     autobind(this);
@@ -40,7 +40,7 @@ class LocationImport extends Component {
   async generateExport() {
     await this.setStateAsync({ exportStatus: { loading: true } });
     try {
-      const { headers: { location } } = await axios.get('/territoryhelper/locations?format=xlsx');
+      const { headers: { location } } = await axios.post('/territoryhelper/forward-conversions?format=xlsx');
       await this.ping(location);
     } catch (ex) {
       console.log(ex.response);
@@ -63,4 +63,4 @@ class LocationImport extends Component {
   }
 }
 
-export default LocationImport;
+export default ConversionDownload;

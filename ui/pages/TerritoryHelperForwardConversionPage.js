@@ -1,13 +1,12 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import TerritoryImport from '../modules/territoryHelper/import/TerritoryImport';
-import LocationImport from '../modules/territoryHelper/import/LocationImport';
-import LocationExport from '../modules/territoryHelper/import/LocationExport';
+import TerritoryImport from '../modules/territoryHelper/convertForward/TerritoryImport';
+import LocationImport from '../modules/territoryHelper/convertForward/LocationImport';
+import LocationExport from '../modules/territoryHelper/convertForward/ConversionDownload';
 import Wizard from '../modules/layouts/Wizard';
 
 const TerritoryHelperImportPage = () => (
   <Wizard
-    title="Territory Helper Import"
+    title="Territory Helper"
     steps={[
       {
         id: 'territories',
@@ -21,7 +20,7 @@ const TerritoryHelperImportPage = () => (
       },
       {
         id: 'convert',
-        name: 'Download',
+        name: 'Convert & Download',
         component: LocationExport,
       },
       {

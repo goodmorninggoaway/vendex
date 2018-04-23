@@ -8,9 +8,14 @@ exports.plugin = {
         options: Controller.importLocations,
       },
       {
-        method: 'GET',
-        path: '/locations',
+        method: 'POST',
+        path: '/forward-conversions',
         options: Controller.exportLocations,
+      },
+      {
+        method: 'GET',
+        path: '/forward-conversions',
+        options: Controller.getExportHistory,
       },
       {
         method: 'POST',

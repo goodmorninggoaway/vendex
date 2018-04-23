@@ -11,6 +11,7 @@ import { buildPath } from '../../utils/url';
 import autobind from 'react-autobind';
 import classnames from 'classnames'
 import isFunction from 'lodash/isFunction';
+import { Footer, Header, Main, PreTitle, Title, Page } from './Page';
 
 class StepContainer extends Component {
   constructor(...args) {
@@ -54,10 +55,10 @@ class StepContainer extends Component {
     const { name, render, component: RenderComponent, title, previous, next, steps, id, match } = this.props;
 
     return (
-      <article style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        <header className="ms-fontColor-themeDarkAlt ms-bgColor-neutralQuaternary">
-          <div className="ms-fontSize-mPlus ms-fontWeight-semibold">{title}</div>
-          <div className="ms-fontSize-xxl">{name}</div>
+      <Page>
+        <Header>
+          <PreTitle className="ms-fontSize-mPlus ms-fontWeight-semibold">{title}</PreTitle>
+          <Title className="ms-fontSize-xxl">{name}</Title>
           <div style={{ display: 'flex', alignItems: 'center' }}>
             {steps.map(step => (
               <Link key={step.id} to={buildPath(match.url, step.id)} style={{ marginRight: '16px' }}>
@@ -71,12 +72,12 @@ class StepContainer extends Component {
               </Link>
             ))}
           </div>
-        </header>
-        <main style={{ display: 'flex', flex: '1 auto', flexDirection: 'column', overflow: 'auto' }}>
+        </Header>
+        <Main>
           {isFunction(render) && render({ stepApi: this.stepApi })}
           {isFunction(RenderComponent) && <RenderComponent stepApi={this.stepApi} />}
-        </main>
-        <footer style={{ padding: '12px 0' }}>
+        </Main>
+        <Footer>
           <div
             style={{ display: 'flex', justifyContent: previous ? 'space-between' : 'flex-end' }}
             className="ms-fontColor-neutralLighterAlt"
@@ -98,8 +99,8 @@ class StepContainer extends Component {
               />
             )}
           </div>
-        </footer>
-      </article>
+        </Footer>
+      </Page>
     );
   }
 }

@@ -1,19 +1,33 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
-const Page = ({ children, title, footer }) => (
-  <article>
-    <header className="ms-bgColor-themeDarker ms-fontColor-neutralLighterAlt" style={{ padding: '24px' }}>
-      <h4 style={{ margin: 0 }}>{title}</h4>
-    </header>
-    <main>{children}</main>
-    <footer>{footer}</footer>
-  </article>
+export const Header = ({ children }) => (
+  <header className="ms-fontColor-themeDarkAlt ms-bgColor-neutralQuaternary">
+    {children}
+  </header>
 );
 
-Page.propTypes = {
-  children: PropTypes.node.isRequired,
-  title: PropTypes.node.isRequired,
-};
+export const Title = ({ children }) => (
+  <div className="ms-fontSize-xxl">{children}</div>
+);
 
-export default Page;
+export const PreTitle = ({ children }) => (
+  <div className="ms-fontSize-mPlus ms-fontWeight-semibold">{children}</div>
+);
+
+export const Main = ({ children }) => (
+  <main style={{ display: 'flex', flex: '1 auto', flexDirection: 'column', overflow: 'auto' }}>
+    {children}
+  </main>
+);
+
+export const Footer = ({ children }) => (
+  <footer style={{ padding: '12px 0' }}>
+    {children}
+  </footer>
+);
+
+export const Page = ({ children }) => (
+  <article style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    {children}
+  </article>
+);

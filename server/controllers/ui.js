@@ -159,24 +159,6 @@ const handlers = {
     return res.view('territoryHelper/viewExport.ejs', exportActivity);
   },
 
-  getTerritoryHelperExportHistory: async function(req, res) {
-    const { congregationId } = req.auth.credentials;
-
-    const exports = (await DAL.getExportActivities({ congregationId })).filter(
-      e => {
-        // the summary was added later
-        if (!e.summary) {
-          return true;
-        }
-
-        const { inserts, updates, deletes } = e.summary;
-        return inserts || deletes || updates;
-      },
-    );
-
-    return res.view('territoryHelper/exportLocations.ejs', { exports });
-  },
-
   downloadTerritoryHelperExport: async function(req, res) {
     const exportActivityId = req.params.exportId;
     const key = req.query.tracer;
