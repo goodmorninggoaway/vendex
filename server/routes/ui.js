@@ -117,10 +117,13 @@ exports.plugin = {
       },
       {
         method: 'GET',
-        path: '/territoryhelper/territories',
+        path: '/territoryhelper/territories/{path?}',
         options: {
           handler: {
-            view: { template: 'territoryHelper/importTerritories.ejs' },
+            view: {
+              template: 'reactView.ejs',
+              context: { componentName: 'TerritoryHelperImportPage' },
+            },
           },
         },
       },
