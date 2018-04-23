@@ -106,18 +106,18 @@ exports.plugin = {
           },
         },
       },
+      //{
+      //  method: 'GET',
+      //  path: '/territoryhelper/locations',
+      //  options: {
+      //    handler: {
+      //      view: { template: 'territoryHelper/importLocations.ejs' },
+      //    },
+      //  },
+      //},
       {
         method: 'GET',
-        path: '/territoryhelper/locations',
-        options: {
-          handler: {
-            view: { template: 'territoryHelper/importLocations.ejs' },
-          },
-        },
-      },
-      {
-        method: 'GET',
-        path: '/territoryhelper/territories/{path?}',
+        path: '/territoryhelper/prepare-export/{path?}',
         options: {
           handler: {
             view: {

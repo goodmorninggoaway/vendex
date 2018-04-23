@@ -7,7 +7,11 @@ const exportLocations = require('../../domain/territoryHelper/export');
 
 module.exports = {
   importLocations: {
-    handler: async function (req, res) {
+    handler: async function (req) {
+      if (!req.payload.file) {
+        return Boom.badRequest('A file is required.');
+      }
+
       const wb = XLSX.read(req.payload.file);
       const ws = wb.Sheets[wb.SheetNames[0]];
       const inputData = XLSX.utils.sheet_to_json(ws, { header: 1 });
