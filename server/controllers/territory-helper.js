@@ -14,15 +14,11 @@ module.exports = {
 
       const wb = XLSX.read(req.payload.file);
       const ws = wb.Sheets[wb.SheetNames[0]];
-      const inputData = XLSX.utils.sheet_to_json(ws, { header: 1 });
+      const inputData = XLSX.utils.sheet_to_json(ws);
 
       const { congregationId } = req.auth.credentials;
 
-      importLocations({
-        congregationId,
-        fileStream: req.payload.file,
-        sourceData: inputData,
-      });
+      await importLocations({ congregationId, sourceData: inputData });
       return null;
     },
     payload: {

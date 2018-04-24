@@ -27,8 +27,7 @@ class CongregationLocation extends Model {
         sourceCongregationId: { type: 'integer' },
         language: { type: 'string', maxLength: 64 },
         source: { type: 'string', maxLength: 64 },
-        sourceData: { type: ['string', 'null'] }, // TODO get rid of this; it's a crutch
-        sourceLocationId: { type: 'string', maxLength: 64 },
+        sourceLocationId: { type: ['string', 'null'], maxLength: 64 },
         isPendingTerritoryMapping: { type: 'boolean' }, // TODO get rid of this
         isDeleted: { type: 'boolean' }, // TODO get rid of this
         isActive: { type: 'boolean' }, // TODO get rid of this until it does something

@@ -2,8 +2,8 @@ const Pipeline = require('../../pipeline');
 const DAL = require('../../dataAccess').DAL;
 const importTerritories = require('./importTerritories');
 const removeDeleted = require('./removeDeleted');
-
-const source = 'TERRITORY HELPER';
+const LOCATION_INTERFACES = require('../../../domain/models/enums/locationInterfaces');
+const source = LOCATION_INTERFACES.TERRITORY_HELPER;
 
 module.exports = async ({ congregationId, inputData }) => {
   const existingTerritories = await DAL.getTerritories({

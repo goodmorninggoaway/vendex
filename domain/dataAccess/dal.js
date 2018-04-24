@@ -90,13 +90,13 @@ exports.getLocationsForCongregation = congregationId =>
   models.Location.query()
     .eager('[congregationLocations]')
     .modifyEager('congregationLocations', builder =>
-      builder.where({ congregationId }),
+      builder.where({ congregationId, deleted: false }),
     );
 
 exports.getLocationsForCongregationFromSource = (congregationId, source) =>
   exports
     .getLocationsForCongregation(congregationId)
-    .where('externalSource', source);
+    .where({ externalSource: source });
 
 exports.getLastExportActivity = filter =>
   models.ExportActivity.query()
