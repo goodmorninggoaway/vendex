@@ -4,10 +4,11 @@ import autobind from 'react-autobind';
 import classnames from 'classnames';
 import ReactTable from 'react-table';
 import axios from 'axios';
-import { DefaultButton } from 'office-ui-fabric-react/lib/Button';
 import { Spinner } from 'office-ui-fabric-react/lib/Spinner';
 import sortBy from 'lodash/sortBy';
 import { MessageBar, MessageBarType } from 'office-ui-fabric-react/lib/MessageBar';
+import { ALBA, SYTHETIC_ALBA__OLD_APEX_SPANISH } from '../../../../domain/models/enums/locationInterfaces';
+import { withState } from './StateContext';
 
 class PreImport extends Component {
   constructor(props, context) {
@@ -24,7 +25,7 @@ class PreImport extends Component {
   async preImportAnalysis() {
     try {
       this.setState({ preCheck: { loading: true } });
-      const { data } = await axios.post(`/alba/location-import/analyze`);
+      const { data } = await axios.post(`/alba/${this.props.source}/location-import/analyze`);
       this.setState({ preCheck: { loading: false, value: data } });
     } catch (ex) {
       console.log(ex);
@@ -102,6 +103,11 @@ class PreImport extends Component {
 
 PreImport.propTypes = {
   congregationId: PropTypes.number.isRequired,
+  source: PropTypes.oneOf([ALBA, SYTHETIC_ALBA__OLD_APEX_SPANISH]),
 };
 
-export default PreImport;
+PreImport.defaultProps = {
+  source: ALBA,
+};
+
+export default withState(PreImport);

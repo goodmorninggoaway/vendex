@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import autobind from 'react-autobind';
 import axios from 'axios';
+import { withState } from './StateContext';
+import { ALBA, SYTHETIC_ALBA__OLD_APEX_SPANISH } from '../../../../domain/models/enums/locationInterfaces';
 
 class SessionController extends Component {
   constructor(props, context) {
@@ -19,7 +21,7 @@ class SessionController extends Component {
 
     try {
       this.setState({ loading: true });
-      const { data } = await axios.get('/alba/session');
+      const { data } = await axios.get(`/alba/${this.props.source}/session`);
       this.setState({ session: data, loading: false })
     } catch (ex) {
       let error = 'Sorry, something went wrong.';
@@ -50,6 +52,8 @@ SessionController.propTypes = {
    * Passthrough a session object instead of loading
    */
   session: PropTypes.object,
+
+  source: PropTypes.oneOf([ALBA, SYTHETIC_ALBA__OLD_APEX_SPANISH]),
 };
 
-export default SessionController;
+export default withState(SessionController);

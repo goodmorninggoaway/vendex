@@ -29,6 +29,7 @@ class AlbaLocationImport extends Model {
         pendingLocationDeletions: { type: 'array', items: 'integer' },
         congregationIntegrationAnalysis: { type: 'object' },
         summary: { type: 'object' },
+        source: { type: 'string' },
       },
     };
   }
@@ -46,10 +47,10 @@ class AlbaLocationImport extends Model {
     };
   }
 
-  static async createSession({ congregationId, userId, payload }) {
+  static async createSession({ congregationId, userId, payload, source }) {
     return await transaction(AlbaLocationImport.knex(), async (trx) => {
-      await AlbaLocationImport.query(trx).where({ congregation_id: congregationId }).delete();
-      let session = await AlbaLocationImport.query(trx).insert({ userId, congregationId, payload, rowCount: payload.length, version: 1 });
+      await AlbaLocationImport.query(trx).where({ source, congregation_id: congregationId }).delete();
+      let session = await AlbaLocationImport.query(trx).insert({ source, userId, congregationId, payload, rowCount: payload.length, version: 1 });
 
       await AlbaLocationImportLocation.query(trx).insert(payload.map(location => ({
         albaLocationImportId: session.$id(),
@@ -65,28 +66,30 @@ class AlbaLocationImport extends Model {
     return AlbaLocationImport.query(trx).eager('locations').findById(id);
   }
 
-  static async getActiveSession(congregationId) {
-    return await AlbaLocationImport.query().eager('locations').findOne({ congregation_id: congregationId });
+  static async getActiveSession(congregationId, source) {
+    return await AlbaLocationImport.query().eager('locations').findOne({ source, congregation_id: congregationId });
   }
 
-  async postImportActions() {
+  async postImportActions(source) {
     const Congregation = require('./Congregation');
     const CongregationLocation = require('./CongregationLocation');
     const CongregationLocationActivity = require('./CongregationLocationActivity');
-    const LOCATION_INTERFACES = require('./enums/locationInterfaces');
 
     const congregation = await Congregation.query().findById(this.congregationId).eager('[congregationLocations]');
     const { congregationId } = congregation;
-    const existingLocations = congregation.congregationLocations.map(x => x.locationId);
+    const existingLocations = congregation.congregationLocations
+      .filter(x => x.source === source)
+      .map(x => x.locationId);
+
     const touchedLocations = this.locations.map(x => x.translatedLocation && x.translatedLocation.locationId);
     const pendingLocationDeletions = uniq(difference(existingLocations, touchedLocations));
 
     await transaction(AlbaLocationImport.knex(), async (trx) => {
       for (let i in pendingLocationDeletions) {
         const locationId = pendingLocationDeletions[i];
-        await CongregationLocation.query(trx).delete().where({ locationId, congregationId });
-        await CongregationLocationActivity.query(trx).insert({ congregationId, locationId, operation: 'D', source: LOCATION_INTERFACES.ALBA });
-        console.log(`Deleted "congregationLocation": locationId=${locationId}, congregationId=${congregationId}`);
+        await CongregationLocation.query(trx).delete().where({ locationId, congregationId, source });
+        await CongregationLocationActivity.query(trx).insert({ congregationId, locationId, source, operation: 'D' });
+        console.log(`Deleted "congregationLocation": locationId=${locationId}, congregationId=${congregationId}, source=${source}`);
       }
     });
 

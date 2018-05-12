@@ -8,7 +8,7 @@ const { DAL } = require('../../dataAccess');
 
 exports.requires = ['externalLocation'];
 exports.returns = ['location', 'isNew'];
-exports.handler = async function translateToLocation({ externalLocation }) {
+exports.handler = async function translateToLocation({ externalLocation, source }) {
   const address = buildAddressString(
     externalLocation.Suite,
     externalLocation.Address,
@@ -26,7 +26,7 @@ exports.handler = async function translateToLocation({ externalLocation }) {
   if (!location) {
     location = Object.assign({}, translatedLocation, await geocode(address), {
       externalLocationId: addressHash,
-      externalSource: 'ALBA',
+      externalSource: source,
     });
 
     location = await DAL.insertLocation(location);

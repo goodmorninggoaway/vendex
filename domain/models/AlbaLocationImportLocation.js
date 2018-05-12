@@ -58,11 +58,11 @@ class AlbaLocationImportLocation extends Model {
     const { handler: translateToLocation } = require('../../domain/alba/import/translateToLocation');
     const { handler: translateToCongregationLocation } = require('../../domain/alba/import/translateToCongregationLocation');
     const Congregation = require('./Congregation');
-    const LOCATION_INTERFACES = require('./enums/locationInterfaces');
+    const { source } = this.session;
 
     // Translate and store location
     const externalLocation = this.payload;
-    const translatedLocation = await translateToLocation({ externalLocation });
+    const translatedLocation = await translateToLocation({ externalLocation, source });
     await this.patch({ translatedLocation: { locationId: translatedLocation.location.locationId, isNew: translatedLocation.isNew } });
 
     // Add congregationLocation if it passes tests
@@ -70,8 +70,8 @@ class AlbaLocationImportLocation extends Model {
     const translatedCongregationLocation = await translateToCongregationLocation({
       externalLocation,
       congregation,
+      source,
       location: translatedLocation.location,
-      source: LOCATION_INTERFACES.ALBA,
       albaLocationImportId: this.albaLocationImportId,
     });
     await this.patch({ translatedCongregationLocation: { isValid: !!translatedCongregationLocation }, is_done: true });

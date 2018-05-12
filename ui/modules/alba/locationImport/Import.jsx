@@ -8,7 +8,8 @@ import { ActivityItem } from 'office-ui-fabric-react/lib/ActivityItem';
 import { Icon } from 'office-ui-fabric-react/lib/Icon';
 import { Spinner } from 'office-ui-fabric-react/lib/Spinner';
 import { MessageBar, MessageBarType } from 'office-ui-fabric-react/lib/MessageBar';
-import Link from 'react-router-dom/Link';
+import { ALBA, SYTHETIC_ALBA__OLD_APEX_SPANISH } from '../../../../domain/models/enums/locationInterfaces';
+import { withState } from './StateContext';
 
 class Import extends Component {
   constructor(props, context) {
@@ -66,14 +67,14 @@ class Import extends Component {
 
       const { Address_ID, Suite, Address, City, Province, Postal_code, Country, Notes, Kind, Status, Account, Language } = location.payload;
       const result = {
-        id: Address_ID,
+        id: location.id,
         activityDescription: `${Address || ''} ${Suite ? '#' + Suite : ''}, ${City || ''} ${Province || ''}`,
         comments: <span><strong className="ms-fontWeight-semibold">{Language || 'Unknown'}</strong> {Account}</span>
       };
 
       try {
         await this.setStateAsync({ importIndex: i });
-        await axios.post(`/alba/location-import/${location.id}/process`);
+        await axios.post(`/alba/${this.props.source}/location-import/${location.id}/process`);
         result.activityIcon = <Icon iconName="CheckMark" className="ms-fontColor-green" />;
       } catch (ex) {
         console.log(ex.response);
@@ -88,7 +89,7 @@ class Import extends Component {
 
       try {
         await this.setStateAsync({ importIndex: i });
-        const { data } = await axios.post(`/alba/location-import/finish`);
+        const { data } = await axios.post(`/alba/${this.props.source}/location-import/finish`);
       } catch (ex) {
         console.log(ex.response);
       }
@@ -160,6 +161,11 @@ Import.propTypes = {
   }),
   error: PropTypes.node,
   loading: PropTypes.bool,
+  source: PropTypes.oneOf([ALBA, SYTHETIC_ALBA__OLD_APEX_SPANISH]),
 };
 
-export default Import;
+Import.defaultProps = {
+  source: ALBA,
+};
+
+export default withState(Import);

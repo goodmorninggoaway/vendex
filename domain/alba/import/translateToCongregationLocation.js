@@ -33,7 +33,7 @@ exports.handler = async function translateToCongregationLocation({
   const sourceCongregation = congregation.integrationSources.find(
     ({ language: integrationLanguage, sourceCongregation }) =>
       sourceCongregation.name.toLowerCase().replace(' ', '') ===
-        externalLocation.Account.toLowerCase().replace(' ', '') &&
+      externalLocation.Account.toLowerCase().replace(' ', '') &&
       (!integrationLanguage ||
         integrationLanguage === language ||
         integrationLanguage.toLowerCase() === 'any'),
@@ -59,11 +59,7 @@ exports.handler = async function translateToCongregationLocation({
     territoryId: null,
   };
 
-  let congregationLocation = await DAL.findCongregationLocation({
-    congregationId,
-    locationId,
-    source,
-  });
+  let congregationLocation = await DAL.findCongregationLocation({ congregationId, locationId, source });
 
   // This congregationLocation was imported at one time, but the congregation integration is no longer active.
   // This can happen when the language is changed to another foreign language or the destination congregation's language.
@@ -82,9 +78,8 @@ exports.handler = async function translateToCongregationLocation({
     }
 
     // New congregationLocation
-    congregationLocation = await DAL.insertCongregationLocation(
-      translatedCongregationLocation,
-    );
+    congregationLocation = await DAL.insertCongregationLocation(translatedCongregationLocation);
+
     await DAL.addCongregationLocationActivity({
       congregationId: sourceCongregationId,
       locationId,
