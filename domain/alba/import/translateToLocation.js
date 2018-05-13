@@ -2,6 +2,7 @@ const hash = require('object-hash');
 const {
   buildAddressString,
   getAddressParts,
+  cleanSuite
 } = require('../../validateAddress');
 const geocode = require('../../geocode');
 const { DAL } = require('../../dataAccess');
@@ -10,8 +11,8 @@ exports.requires = ['externalLocation'];
 exports.returns = ['location', 'isNew'];
 exports.handler = async function translateToLocation({ externalLocation, source }) {
   const address = buildAddressString(
-    externalLocation.Suite,
     externalLocation.Address,
+    cleanSuite(externalLocation.Suite),
     externalLocation.City,
     externalLocation.Province,
     externalLocation['Postal_code'],
