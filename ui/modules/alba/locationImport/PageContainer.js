@@ -11,7 +11,7 @@ import { ALBA, SYTHETIC_ALBA__OLD_APEX_SPANISH } from '../../../../domain/models
 const AlbaLocationImportPage = ({ congregationId, source, title }) => (
   <StateProvider source={source}>
     <Wizard
-      title={title}
+      title={`Import ${title} Locations`}
       steps={[
         {
           id: 'start',

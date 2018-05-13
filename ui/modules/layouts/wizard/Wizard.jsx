@@ -23,6 +23,8 @@ class Wizard extends Component {
         return { redirectTo: null };
       }
     }
+
+    return {};
   }
 
   constructor(props) {

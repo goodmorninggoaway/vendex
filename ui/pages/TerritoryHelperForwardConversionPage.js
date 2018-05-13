@@ -6,7 +6,7 @@ import Wizard from '../modules/layouts/wizard';
 
 const TerritoryHelperImportPage = () => (
   <Wizard
-    title="Territory Helper"
+    title="Convert to Territory Helper Format"
     steps={[
       {
         id: 'territories',
@@ -22,11 +22,6 @@ const TerritoryHelperImportPage = () => (
         id: 'convert',
         name: 'Convert & Download',
         component: LocationExport,
-      },
-      {
-        id: 'finish',
-        name: 'Finish',
-        render: () => <h1>Thumbs up</h1>,
       }
     ]}
   />

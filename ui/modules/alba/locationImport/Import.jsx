@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import autobind from 'react-autobind';
 import axios from 'axios';
-import { DefaultButton } from 'office-ui-fabric-react/lib/Button';
 import { ProgressIndicator } from 'office-ui-fabric-react/lib/ProgressIndicator';
 import { ActivityItem } from 'office-ui-fabric-react/lib/ActivityItem';
 import { Icon } from 'office-ui-fabric-react/lib/Icon';
@@ -12,11 +11,11 @@ import { ALBA, SYTHETIC_ALBA__OLD_APEX_SPANISH } from '../../../../domain/models
 import { withState } from './StateContext';
 
 class Import extends Component {
-  constructor(props, context) {
-    super(props, context);
+  constructor(props) {
+    super(props);
     autobind(this);
 
-    this.state = { importStatus: {}, importIndex: -1, results: [] };
+    this.state = { importStatus: {}, importIndex: -1, results: [], displayCount: 25 };
     this.initialized = !!this.props.session;
   }
 
@@ -31,17 +30,6 @@ class Import extends Component {
       this.initialized = true;
       this.beginImportingLocations();
     }
-  }
-
-  determineStartLocationIndex() {
-    //const { session: { locations, locations: { length: rowCount } } } = this.props;
-    //for (let i = rowCount; i > 0; i--) {
-    //  if (locations[i - 1] && locations[i - 1].isDone) {
-    //    return i;
-    //  }
-    //}
-
-    return 0;
   }
 
   setStateAsync(arg) {
@@ -59,7 +47,7 @@ class Import extends Component {
     await this.setStateAsync({ importStatus: { started: true } });
 
     let i;
-    for (i = this.determineStartLocationIndex(); i < rowCount; i++) {
+    for (i = 0; i < rowCount; i++) {
       const location = locations[i];
       if (this.state.importStatus.stopped) {
         break;
@@ -69,7 +57,7 @@ class Import extends Component {
       const result = {
         id: location.id,
         activityDescription: `${Address || ''} ${Suite ? '#' + Suite : ''}, ${City || ''} ${Province || ''}`,
-        comments: <span><strong className="ms-fontWeight-semibold">{Language || 'Unknown'}</strong> {Account}</span>
+        comments: <span><strong className="ms-fontWeight-semibold">{Language || 'Unknown'}</strong> {Account}</span>,
       };
 
       try {
@@ -78,10 +66,10 @@ class Import extends Component {
         result.activityIcon = <Icon iconName="CheckMark" className="ms-fontColor-green" />;
       } catch (ex) {
         console.log(ex.response);
-        result.activityIcon = <Icon iconName="Cancel" className="ms-fontColor-red" />
+        result.activityIcon = <Icon iconName="Cancel" className="ms-fontColor-red" />;
       }
 
-      await this.setStateAsync(({ results }) => ({ results: [result, ...results] }));
+      await this.setStateAsync(({ results }) => ({ results: [result].concat(results) }));
     }
 
     if (i >= rowCount - 1) {
@@ -96,13 +84,9 @@ class Import extends Component {
     }
   }
 
-  async stopImportingLocations() {
-    this.setState({ importStatus: { stopped: true } });
-  }
-
   render() {
     const { loading, error } = this.props;
-    const { importStatus, importIndex, results } = this.state;
+    const { importStatus, importIndex, results, displayCount } = this.state;
     if (loading) {
       return <Spinner />;
     }
@@ -114,14 +98,6 @@ class Import extends Component {
     const { session: { locations: { length: rowCount } } } = this.props;
     return (
       <div>
-        {importStatus.started
-          ? <DefaultButton onClick={this.stopImportingLocations} iconProps={{ iconName: 'CircleStopSolid' }}>Stop Import</DefaultButton>
-          : (
-            <DefaultButton onClick={this.beginImportingLocations} iconProps={{ iconName: 'BoxPlaySolid' }}>
-              {this.determineStartLocationIndex() ? 'Resume' : 'Start'} Import
-            </DefaultButton>
-          )
-        }
         {importStatus.started && (
           <ProgressIndicator
             label={`Importing ${rowCount} locations.`}
@@ -134,7 +110,8 @@ class Import extends Component {
             Alba locations have been updated. <a href="/ui/territoryhelper/territories">Click here to move on to Territory Helper data.</a>
           </MessageBar>
         )}
-        {results.map(x => <ActivityItem key={x.id} {...x} styles={{ root: { marginBottom: '8px' } }} />)}
+        {results.slice(0, displayCount).map(x => <ActivityItem key={x.id} {...x} styles={{ root: { marginBottom: '8px' } }} />)}
+        {results.length > displayCount && <span>{results.length - displayCount} more are not shown</span>}
       </div>
     );
   }
