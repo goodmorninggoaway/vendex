@@ -4,9 +4,14 @@ exports.plugin = {
     server.route([
       {
         method: 'POST',
-        path: '/locations',
+        path: '/{source}/locations',
         options: Controller.importLocations,
       },
+      { method: 'POST', path: '/{source}/session', options: Controller.createSession },
+      { method: 'GET', path: '/{source}/session', options: Controller.getOpenSessions },
+      { method: 'POST', path: '/{source}/location-import/{locationId}/process', options: Controller.importLocation },
+      { method: 'POST', path: '/{source}/location-import/analyze', options: Controller.preprocessAnalysis },
+      { method: 'POST', path: '/{source}/location-import/finish', options: Controller.postprocessAnalysis },
     ]);
   },
   version: require('../../package.json').version,

@@ -28,6 +28,12 @@ exports.handler = async function convertToExternalLocation({
   const notes = `${congregationLocation.notes}\n${$messages.map(
     ({ message, messageLevel }) => `${messageLevel}: ${message}\n`,
   )}`;
+
+  let address = `${location.number} ${location.street}`;
+  if (location.sec_unit_num) {
+    address = `${address} ${location.sec_unit_type} ${location.sec_unit_num}`;
+  }
+
   return {
     'Territory type': 'Homes', // TODO This should be a tag on the territory
     'Territory number': (territory && territory.externalTerritoryId) || '',
@@ -36,7 +42,7 @@ exports.handler = async function convertToExternalLocation({
     Language: congregationLocation.language,
     Latitude: location.latitude,
     Longitude: location.longitude,
-    Address: `${location.number} ${location.street}`,
+    Address: address,
     Number: location.number,
     Street: location.street,
     City: location.city,

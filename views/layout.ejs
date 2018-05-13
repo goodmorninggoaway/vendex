@@ -6,16 +6,18 @@
   <!-- Viewport mobile tag for sensible mobile support -->
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" data-owner="materialize">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
-  <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js" data-owner="materialize"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js" data-owner="materialize"></script>
 
   <link rel="stylesheet" href="https://unpkg.com/react-table@latest/react-table.css">
   <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-core/9.3.0/css/fabric.min.css">
 
   <style>
-    header, main, footer {
+    body > header,
+    body > main,
+    body > footer {
       margin-left: 300px;
       padding: 0 20px;
     }
@@ -49,16 +51,16 @@
   </style>
 </head>
 
-<body>
+<body style="height: 100%">
 <ul id="slide-out" class="side-nav fixed">
   <li><a href="/ui"><h3>VENDEX</h3></a></li>
-  <li><a class="subheader">Alba</a></li>
-  <li><a class="waves-effect" href="/ui/alba/locations">Import Locations</a></li>
+  <li><a class="subheader">Alba & Friends</a></li>
+  <li><a class="waves-effect" href="/ui/alba/locations">Import Alba Locations</a></li>
+  <li><a class="waves-effect" href="/ui/oas/locations">Import Old Apex Spanish Locations</a></li>
   <li class="divider"></li>
   <li><a class="subheader">Territory Helper</a></li>
-  <li><a class="waves-effect" href="/ui/territoryhelper/territories">Import Territories</a></li>
-  <li><a class="waves-effect" href="/ui/territoryhelper/locations">Import Locations</a></li>
-  <li><a class="waves-effect" href="/ui/territoryhelper/exports">Exports</a></li>
+  <li><a class="waves-effect" href="/ui/territoryhelper/forward-conversion">Convert to Territory Helper Format</a></li>
+  <li><a class="waves-effect" href="/ui/territoryhelper/forward-conversion-history">Conversion History</a></li>
   <li class="divider"></li>
   <li><a class="subheader">Admin</a></li>
   <li><a class="waves-effect" href="/ui/congregations">Congregations</a></li>
@@ -73,7 +75,7 @@
   <li class="divider"></li>
   <li><a>version <%= credentials.version %></a></li>
 </ul>
-<main>
+<main style="height: 100%">
   <%- body %>
 </main>
 

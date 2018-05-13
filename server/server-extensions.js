@@ -5,23 +5,10 @@ exports.plugin = {
       async method(req, h) {
         const res = req.response;
         if (res.isBoom) {
-          if (res.output.statusCode === 401) {
+          if (req.path.match(/^\/ui/) && res.output.statusCode === 401) {
             return h.redirect('/ui/login');
           }
-          return h.view(
-            'error',
-            {
-              errorTitle: res.output.payload.error,
-              errorMessage: res.output.payload.message,
-              statusCode: res.output.statusCode,
-              email: '',
-            },
-            {
-              layout: false,
-            },
-          );
         }
-
         return h.continue;
       },
     });

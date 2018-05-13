@@ -120,15 +120,17 @@ exports.options = {
       isCached: false,
       layoutKeyword: 'body',
       context(request) {
-        const requestBits =
-          (request && request.auth && request.auth.credentials) || {};
+        const requestBits = (request && request.auth && request.auth.credentials) || {};
 
-        return {
+        const context = {
           credentials: requestBits,
           congregationId: requestBits.congregationId,
           moment: require('moment'),
           env: process.env.APP_ENV || 'PROD',
         };
+
+        context.reactViewProps = { ...requestBits };
+        return context;
       },
     });
   },

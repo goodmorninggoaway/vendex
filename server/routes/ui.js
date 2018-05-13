@@ -70,11 +70,6 @@ exports.plugin = {
       },
       {
         method: 'GET',
-        path: '/territoryhelper/exports',
-        options: Controller.getTerritoryHelperExportHistory,
-      },
-      {
-        method: 'GET',
         path: '/territoryhelper/exports/download',
         options: Controller.downloadTerritoryHelperExport,
       },
@@ -96,26 +91,49 @@ exports.plugin = {
       },
       {
         method: 'GET',
-        path: '/alba/locations',
-        options: {
-          handler: { view: { template: 'alba/importLocations.ejs' } },
-        },
-      },
-      {
-        method: 'GET',
-        path: '/territoryhelper/locations',
+        path: '/alba/locations/{path?}',
         options: {
           handler: {
-            view: { template: 'territoryHelper/importLocations.ejs' },
+            view: {
+              template: 'reactView.ejs',
+              context: { componentName: 'AlbaLocationImportPage' },
+            },
           },
         },
       },
       {
         method: 'GET',
-        path: '/territoryhelper/territories',
+        path: '/oas/locations/{path?}',
         options: {
           handler: {
-            view: { template: 'territoryHelper/importTerritories.ejs' },
+            view: {
+              template: 'reactView.ejs',
+              context: { componentName: 'OASLocationImportPage' },
+            },
+          },
+        },
+      },
+      {
+        method: 'GET',
+        path: '/territoryhelper/forward-conversion/{path?}',
+        options: {
+          handler: {
+            view: {
+              template: 'reactView.ejs',
+              context: { componentName: 'TerritoryHelperForwardConversionPage' },
+            },
+          },
+        },
+      },
+      {
+        method: 'GET',
+        path: '/territoryhelper/forward-conversion-history/{path?}',
+        options: {
+          handler: {
+            view: {
+              template: 'reactView.ejs',
+              context: { componentName: 'TerritoryHelperForwardConversionHistoryPage' },
+            },
           },
         },
       },

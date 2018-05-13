@@ -8,6 +8,7 @@ exports.plugin = {
           async handler(req, h) {
             return h.redirect('/ui');
           },
+          auth: false,
         },
       },
     ]);

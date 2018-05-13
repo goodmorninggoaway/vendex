@@ -2,16 +2,17 @@ const hash = require('object-hash');
 const {
   buildAddressString,
   getAddressParts,
+  cleanSuite
 } = require('../../validateAddress');
 const geocode = require('../../geocode');
 const { DAL } = require('../../dataAccess');
 
 exports.requires = ['externalLocation'];
-exports.returns = 'location';
-exports.handler = async function translateToLocation({ externalLocation }) {
+exports.returns = ['location', 'isNew'];
+exports.handler = async function translateToLocation({ externalLocation, source }) {
   const address = buildAddressString(
-    externalLocation.Suite,
     externalLocation.Address,
+    cleanSuite(externalLocation.Suite),
     externalLocation.City,
     externalLocation.Province,
     externalLocation['Postal_code'],
@@ -21,16 +22,17 @@ exports.handler = async function translateToLocation({ externalLocation }) {
   const addressHash = hash.sha1(translatedLocation);
 
   let location = await DAL.findLocation({ externalLocationId: addressHash });
-  // TODO mark the address as "encountered" so we can handle the negative space
+  let isNew = false;
 
   if (!location) {
     location = Object.assign({}, translatedLocation, await geocode(address), {
       externalLocationId: addressHash,
-      externalSource: 'ALBA',
+      externalSource: source,
     });
 
     location = await DAL.insertLocation(location);
+    isNew = true;
   }
 
-  return location;
+  return { location, isNew };
 };

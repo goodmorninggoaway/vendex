@@ -1,8 +1,8 @@
 /* eslint-disable camelcase */
 const { parseLocation } = require('parse-address');
 
-const buildAddressString = (...parts) =>
-  parts.reduce((memo, part) => (part ? `${memo} ${part}` : memo), '').trim();
+const buildAddressString = (...parts) => parts.reduce((memo, part) => (part ? `${memo} ${part}` : memo), '').trim();
+
 module.exports.buildAddressString = buildAddressString;
 
 module.exports.getAddressParts = address => {
@@ -61,7 +61,7 @@ module.exports.getNormalizedAddressParts = address => {
 module.exports.validateAddress = function validateAddress(externalLocation) {
   const { addressLine1, addressLine2, city, zip, state } = externalLocation;
   const address = `${addressLine1 || ''} ${addressLine2 || ''} ${city ||
-    ''} ${state || ''} ${zip}`;
+  ''} ${state || ''} ${zip}`;
   const location = parseLocation(address);
   if (!location) {
     return false;
@@ -72,4 +72,17 @@ module.exports.validateAddress = function validateAddress(externalLocation) {
       Object.assign({}, memo, { [key]: value.toLowerCase() }),
     {},
   );
+};
+
+module.exports.cleanSuite = function cleanSuite(suite) {
+  if (!suite) {
+    return suite;
+  }
+
+  const lcase = suite.toLowerCase();
+  if (lcase.includes('apt') || lcase.includes('ste') || lcase.includes('suite') || lcase.includes('#')) {
+    return suite;
+  }
+
+  return `Apt ${suite}`;
 };

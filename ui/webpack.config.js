@@ -14,10 +14,7 @@ const ReactDOM = require('react-dom');
 const Page = require('${resourcePath}').default;
 const AppRoot = require('../modules/layouts/AppRoot').default;
 
-ReactDOM.render(
-  React.createElement(AppRoot, null, React.createElement(Page, null, null)),
-  document.getElementById('react-page'),
-);
+ReactDOM.render(React.createElement(AppRoot, window.vendexBootstrap, Page), document.getElementById('react-page'));
 `;
 
   return output;
@@ -61,8 +58,6 @@ module.exports = generatePageWrapper()
       output: {
         path: OUTPUT_PATH,
         filename: '[name].js',
-        // libraryTarget: 'umd',
-        // library: ['vendex', '[name]'],
       },
       module: {
         loaders: [
@@ -88,11 +83,6 @@ module.exports = generatePageWrapper()
           },
         }),
       ],
-      // externals: {
-      //   react: 'react',
-      //   'react-dom': 'react-dom',
-      //   'prop-types': 'prop-types',
-      // },
       devtool: 'source-map',
     };
   })
