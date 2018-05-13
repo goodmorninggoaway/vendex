@@ -4,7 +4,7 @@ import Import from '../modules/alba/locationImport/Import';
 import SessionController from '../modules/alba/locationImport/SessionController';
 import PreImport from '../modules/alba/locationImport/PreImport';
 import TSVCollector from '../modules/alba/locationImport/TSVCollector';
-import Wizard from '../modules/layouts/Wizard';
+import Wizard from '../modules/layouts/wizard';
 import { StateProvider } from '../modules/alba/locationImport/StateContext';
 
 const AlbaLocationImportPage = ({ congregationId }) => (

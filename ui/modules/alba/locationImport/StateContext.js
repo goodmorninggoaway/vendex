@@ -1,7 +1,7 @@
 import React from 'react';
 import { ALBA } from '../../../../domain/models/enums/locationInterfaces';
 
-const { Provider, Consumer } = React.createContext({ source: ALBA });
+const { Provider, Consumer } = React.createContext();
 
 export function withState(WrappedComponent) {
   return function StateConsumer(props) {

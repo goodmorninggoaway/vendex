@@ -2,7 +2,7 @@ import React from 'react';
 import TerritoryImport from '../modules/territoryHelper/convertForward/TerritoryImport';
 import LocationImport from '../modules/territoryHelper/convertForward/LocationImport';
 import LocationExport from '../modules/territoryHelper/convertForward/ConversionDownload';
-import Wizard from '../modules/layouts/Wizard';
+import Wizard from '../modules/layouts/wizard';
 
 const TerritoryHelperImportPage = () => (
   <Wizard

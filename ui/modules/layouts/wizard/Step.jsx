@@ -1,22 +1,16 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import withRouter from 'react-router-dom/withRouter';
-import Route from 'react-router-dom/Route';
-import Switch from 'react-router-dom/Switch';
 import Link from 'react-router-dom/Link';
 import { DefaultButton } from 'office-ui-fabric-react/lib/Button';
-import { Icon, IconType } from 'office-ui-fabric-react/lib/Icon';
-import { TooltipHost } from 'office-ui-fabric-react/lib/Tooltip';
-import { Label } from 'office-ui-fabric-react/lib/Label';
-import { buildPath } from '../../utils/url';
+import { buildPath } from '../../../utils/url';
 import autobind from 'react-autobind';
 import classnames from 'classnames'
 import isFunction from 'lodash/isFunction';
-import { Footer, Header, Main, TitleBar, Page } from './Page';
+import { Footer, Header, Main, TitleBar, Page } from '../Page';
 
-class StepContainer extends Component {
-  constructor(...args) {
-    super(...args);
+class Step extends Component {
+  constructor(props) {
+    super(props);
     autobind(this);
 
     this.stepApi = {
@@ -40,25 +34,24 @@ class StepContainer extends Component {
 
   next() {
     this.step.onBeforeGoToNext(() => {
-      const { next, match, history } = this.props;
-      return history.push(buildPath(match.url, next.id));
+      const { nextStep, match, history } = this.props;
+      return history.push(buildPath(match.url, nextStep.id));
     });
   }
 
   previous() {
     this.step.onBeforeGoToPrevious(() => {
-      const { previous, match, history } = this.props;
-      return history.push(buildPath(match.url, previous.id));
+      const { previousStep, match, history } = this.props;
+      return history.push(buildPath(match.url, previousStep.id));
     });
   }
 
   render() {
-    const { name, render, component: RenderComponent, title, previous, next, steps, id, match, index } = this.props;
+    const { render, component: RenderComponent, title, previousStep, nextStep, steps, id, match, index } = this.props;
 
     return (
       <Page>
         <Header>
-          {/*<PreTitle className="ms-fontSize-mPlus ms-fontWeight-semibold">{title}</PreTitle>*/}
           <TitleBar>{title}</TitleBar>
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
             {steps.map((step, stepIndex) => {
@@ -106,21 +99,21 @@ class StepContainer extends Component {
         </Main>
         <Footer>
           <div
-            style={{ display: 'flex', justifyContent: previous ? 'space-between' : 'flex-end' }}
+            style={{ display: 'flex', justifyContent: previousStep ? 'space-between' : 'flex-end' }}
             className="ms-fontColor-neutralLighterAlt"
           >
-            {previous && (
+            {previousStep && (
               <DefaultButton
                 primary
-                text={`Back: ${previous.name}`}
+                text={`Back: ${previousStep.name}`}
                 onClick={this.previous}
                 iconProps={{ iconName: 'CaretLeftSolid8' }}
               />
             )}
-            {next && (
+            {nextStep && (
               <DefaultButton
                 primary
-                text={`Next: ${next.name}`}
+                text={`Next: ${nextStep.name}`}
                 onClick={this.next}
                 iconProps={{ iconName: 'CaretRightSolid8' }}
               />
@@ -132,71 +125,35 @@ class StepContainer extends Component {
   }
 }
 
-const Wizard = ({ steps, match, location, history, ...props }) => (
-  <Switch>
-    {steps.map(({ id, ...step }, index, arr) => {
-      const isFirst = index === 0;
-      const isLast = index === arr.length - 1;
-      const previous = !isFirst ? arr[index - 1] : null;
-      const next = !isLast ? arr[index + 1] : null;
+Step.propTypes = {
+  /**
+   * This allows for convenient inline rendering and wrapping of a component.
+   * See https://reacttraining.com/web/api/Route/route-props for props
+   * props.render or props.component is required
+   */
+  render: PropTypes.func,
 
-      return (
-        <Route
-          key={id}
-          path={`/${id}`}
-          render={routeProps => (
-            <StepContainer
-              {...props}
-              {...step}
-              id={id}
-              steps={steps}
-              previous={previous}
-              next={next}
-              match={match}
-              location={location}
-              history={history}
-              index={index}
-            />
-          )}
-        />
-      );
-    })}
-    <Route
-      render={() => (
-        <StepContainer
-          {...props}
-          {...steps[0]}
-          next={steps[1]}
-          match={match}
-          location={location}
-          history={history}
-          steps={steps}
-        />
-      )}
-    />
-  </Switch>
-);
+  /**
+   * This allows for convenient inline rendering and wrapping of a component.
+   * See https://reacttraining.com/web/api/Route/route-props for props
+   * props.render or props.component is required
+   */
+  component: PropTypes.func,
 
-Wizard.propTypes = {
   title: PropTypes.string.isRequired,
-  steps: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
+  previousStep: PropTypes.object,
+  nextStep: PropTypes.object,
+  steps: PropTypes.arrayOf(PropTypes.object).isRequired,
+  id: PropTypes.string.isRequired,
+  index: PropTypes.number.isRequired,
 
-    /**
-     * Either render() or a component is required.
-     * @param {{ stepApi: StepApi }} props
-     */
-    render: PropTypes.func,
-
-    /**
-     * Either render() or a component is required.
-     * @param {{ stepApi: StepApi }} props
-     */
-    component: PropTypes.func,
-  })),
-  match: PropTypes.shape(),
-
+  // Injected by react-router
+  match: PropTypes.shape({
+    url: PropTypes.string.isRequired,
+  }).isRequired,
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }),
 };
 
-export default withRouter(Wizard);
+export default Step;
