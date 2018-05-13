@@ -1,5 +1,6 @@
 import React from 'react';
-import { ALBA } from '../../../../domain/models/enums/locationInterfaces';
+import PropTypes from 'prop-types';
+import { ALBA, SYTHETIC_ALBA__OLD_APEX_SPANISH } from '../../../../domain/models/enums/locationInterfaces';
 
 const { Provider, Consumer } = React.createContext();
 
@@ -10,7 +11,7 @@ export function withState(WrappedComponent) {
         {state => <WrappedComponent {...state}{...props} />}
       </Consumer>
     );
-  }
+  };
 }
 
 export class StateProvider extends React.Component {
@@ -18,7 +19,7 @@ export class StateProvider extends React.Component {
     super(...args);
 
     this.state = {
-      source: ALBA,
+      source: this.props.source || ALBA,
       setSource: source => this.setState({ source }),
     };
   }
@@ -27,3 +28,7 @@ export class StateProvider extends React.Component {
     return <Provider {...this.props} value={this.state} />;
   }
 }
+
+StateProvider.propTypes = {
+  source: PropTypes.oneOf([ALBA, SYTHETIC_ALBA__OLD_APEX_SPANISH]),
+};

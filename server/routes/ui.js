@@ -103,6 +103,18 @@ exports.plugin = {
       },
       {
         method: 'GET',
+        path: '/oas/locations/{path?}',
+        options: {
+          handler: {
+            view: {
+              template: 'reactView.ejs',
+              context: { componentName: 'OASLocationImportPage' },
+            },
+          },
+        },
+      },
+      {
+        method: 'GET',
         path: '/territoryhelper/forward-conversion/{path?}',
         options: {
           handler: {
