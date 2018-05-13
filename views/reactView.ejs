@@ -10,9 +10,18 @@
 </head>
 
 <body class="ms-Fabric ms-normalize ms-bgColor-neutralLighter" style="height: 100%">
-  <div id="react-page" class="ms-font-m-plus" style="height: 100%"></div>
-</body>
+
+<div id="react-page" class="ms-font-m-plus" style="height: 100%"></div>
+
 <script type="application/ecmascript">window.vendexBootstrap = <%- JSON.stringify(reactViewProps) %></script>
 <script src="/assets/react/views/vendor.js"></script>
 <script async src="/assets/react/views/<%= componentName %>.js"></script>
+<script>
+  document.querySelectorAll('[data-owner="materialize"]')
+    .forEach((el) => {
+      el.parentNode.removeChild(el);
+    });
+</script>
+
+</body>
 </html>

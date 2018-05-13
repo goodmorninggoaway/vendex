@@ -120,8 +120,7 @@ exports.options = {
       isCached: false,
       layoutKeyword: 'body',
       context(request) {
-        const requestBits =
-          (request && request.auth && request.auth.credentials) || {};
+        const requestBits = (request && request.auth && request.auth.credentials) || {};
 
         const context = {
           credentials: requestBits,
@@ -130,9 +129,7 @@ exports.options = {
           env: process.env.APP_ENV || 'PROD',
         };
 
-        context.reactViewProps = {
-          ...requestBits,
-        };
+        context.reactViewProps = { ...requestBits };
         return context;
       },
     });
