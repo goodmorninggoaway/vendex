@@ -7,11 +7,12 @@ import Link from 'react-router-dom/Link';
 import { DefaultButton } from 'office-ui-fabric-react/lib/Button';
 import { Icon, IconType } from 'office-ui-fabric-react/lib/Icon';
 import { TooltipHost } from 'office-ui-fabric-react/lib/Tooltip';
+import { Label } from 'office-ui-fabric-react/lib/Label';
 import { buildPath } from '../../utils/url';
 import autobind from 'react-autobind';
 import classnames from 'classnames'
 import isFunction from 'lodash/isFunction';
-import { Footer, Header, Main, PreTitle, Title, Page } from './Page';
+import { Footer, Header, Main, TitleBar, Page } from './Page';
 
 class StepContainer extends Component {
   constructor(...args) {
@@ -52,25 +53,51 @@ class StepContainer extends Component {
   }
 
   render() {
-    const { name, render, component: RenderComponent, title, previous, next, steps, id, match } = this.props;
+    const { name, render, component: RenderComponent, title, previous, next, steps, id, match, index } = this.props;
 
     return (
       <Page>
         <Header>
-          <PreTitle className="ms-fontSize-mPlus ms-fontWeight-semibold">{title}</PreTitle>
-          <Title className="ms-fontSize-xxl">{name}</Title>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            {steps.map(step => (
-              <Link key={step.id} to={buildPath(match.url, step.id)} style={{ marginRight: '16px' }}>
-                <TooltipHost content={step.name}>
-                  <Icon
-                    iconName="CircleShapeSolid"
-                    iconType={IconType.default}
-                    className={classnames({ 'ms-fontColor-themeDarkAlt ms-font-m': id === step.id, 'ms-fontColor-neutralLight ms-font-m': id !== step.id })}
-                  />
-                </TooltipHost>
-              </Link>
-            ))}
+          {/*<PreTitle className="ms-fontSize-mPlus ms-fontWeight-semibold">{title}</PreTitle>*/}
+          <TitleBar>{title}</TitleBar>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
+            {steps.map((step, stepIndex) => {
+              const isComplete = index > stepIndex;
+              const isCurrent = id === step.id;
+              const NameComponent = isComplete ? Link : 'span';
+              return (
+                <NameComponent
+                  key={step.id}
+                  to={buildPath(match.url, step.id)}
+                  style={{ marginRight: '16px', display: 'flex', alignItems: 'center', flexDirection: 'column' }}
+                >
+                  <div
+                    style={{
+                      borderRadius: '100%',
+                      padding: '4px',
+                      height: '2em',
+                      width: '2em',
+                      justifyContent: 'center',
+                      display: 'flex',
+                      alignItems: 'center'
+                    }}
+                    className={classnames({
+                      'ms-fontWeight-semibold': true,
+                      'ms-bgColor-purple': isCurrent,
+                      'ms-bgColor-neutralTertiary': !isCurrent,
+                      'ms-fontColor-white': true,
+                    })}
+                  >{stepIndex + 1}</div>
+                  <span
+                    className={classnames({
+                      'ms-fontWeight-semibold': isCurrent,
+                      'ms-fontColor-purple': isCurrent,
+                      'ms-fontColor-neutralTertiary': !isCurrent,
+                    })}
+                  >{step.name}</span>
+                </NameComponent>
+              );
+            })}
           </div>
         </Header>
         <Main>
@@ -128,6 +155,7 @@ const Wizard = ({ steps, match, location, history, ...props }) => (
               match={match}
               location={location}
               history={history}
+              index={index}
             />
           )}
         />

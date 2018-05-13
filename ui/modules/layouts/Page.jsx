@@ -10,6 +10,14 @@ export const Title = ({ children }) => (
   <div className="ms-fontSize-xxl">{children}</div>
 );
 
+export const TitleBar = ({ children }) => (
+  <div className="ms-fontSize-xxl ms-bgColor-neutralPrimaryAlt ms-fontColor-white" style={{ margin: '0 -20px 20px', padding: '10px 20px' }}>
+    <Title>
+      {children}
+    </Title>
+  </div>
+);
+
 export const PreTitle = ({ children }) => (
   <div className="ms-fontSize-mPlus ms-fontWeight-semibold">{children}</div>
 );
