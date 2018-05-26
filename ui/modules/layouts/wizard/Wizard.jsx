@@ -35,7 +35,7 @@ class Wizard extends Component {
   render() {
     const { steps, match, location, history, ...props } = this.props;
     if (this.state.redirectTo) {
-      //return <Redirect to={this.state.redirectTo} />;
+      return <Redirect to={this.state.redirectTo} />;
     }
 
     return (

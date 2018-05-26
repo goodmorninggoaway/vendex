@@ -125,7 +125,11 @@ class PreImport extends Component {
         </div>
 
         {!preCheck.value && !preCheck.error && <Spinner />}
-        {preCheck.error && <MessageBar messageBarType={MessageBarType.error} isMultiline>{preCheck.error}</MessageBar>}
+        {preCheck.error && (
+          <div style={{ marginBottom: '1em' }}>
+            <MessageBar messageBarType={MessageBarType.error} isMultiline>{preCheck.error}</MessageBar>
+          </div>
+        )}
         <div className="ms-font-m-plus">
           {preCheck.value && this.parseIntegrationAnalysis().map(({ name, allLanguagesEnabled, languages }) => (
             <div key={name} style={{ marginBottom: '1em' }}>
