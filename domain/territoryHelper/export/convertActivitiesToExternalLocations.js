@@ -27,17 +27,11 @@ exports.handler = async function convertActivitiesToExternalLocations({
   congregation,
   exportTracer,
 }) {
-  const worker = ({
-    operation,
-    sourceCongregationId,
-    locationId,
-    congregationLocationActivityId,
-  }) =>
+  const worker = ({ operation, locationId, congregationLocationActivityId }) =>
     new Pipeline({
       congregationId,
       destination,
       operation,
-      sourceCongregationId,
       indexedLocations,
       congregation,
       congregationLocationActivityId,

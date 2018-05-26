@@ -12,6 +12,10 @@ exports.plugin = {
       { method: 'POST', path: '/{source}/location-import/{locationId}/process', options: Controller.importLocation },
       { method: 'POST', path: '/{source}/location-import/analyze', options: Controller.preprocessAnalysis },
       { method: 'POST', path: '/{source}/location-import/finish', options: Controller.postprocessAnalysis },
+
+      { method: 'GET', path: '/integrations', options: Controller.getIntegrations },
+      { method: 'POST', path: '/integrations', options: Controller.addIntegration },
+      { method: 'DELETE', path: '/integrations/{albaIntegrationId}', options: Controller.deleteIntegration },
     ]);
   },
   version: require('../../package.json').version,

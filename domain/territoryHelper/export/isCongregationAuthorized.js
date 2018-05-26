@@ -1,18 +1,13 @@
+const AlbaIntegration = require('../../models/AlbaIntegration');
+
 exports.requires = ['congregation', 'sourceCongregationLocation'];
 exports.returns = 'sourceCongregationLocation';
-exports.handler = async function isCongregationAuthorized({
-  sourceCongregationLocation,
-  congregation,
-}) {
-  if (
-    congregation.integrationSources.some(
-      ({ sourceCongregation }) =>
-        sourceCongregation.congregationId ===
-        sourceCongregationLocation.sourceCongregationId,
-    )
-  ) {
-    return sourceCongregationLocation;
-  }
+exports.handler = async function isCongregationAuthorized({ sourceCongregationLocation, congregation }) {
+  const hasIt = AlbaIntegration.hasIntegration({
+    congregationId: congregation.congregationId,
+    language: sourceCongregationLocation.language,
+    source: sourceCongregationLocation.source,
+  });
 
-  return null;
+  return hasIt ? sourceCongregationLocation : null;
 };

@@ -5,11 +5,7 @@ const translateToCongregationLocation = require('./translateToCongregationLocati
 
 exports.requires = ['sourceData', 'source', 'congregation'];
 exports.returns = 'importedLocations';
-exports.handler = async function importLocations({
-  sourceData,
-  congregation,
-  source,
-}) {
+exports.handler = async function importLocations({ sourceData, congregation, source }) {
   return executeConcurrently(sourceData, externalLocation =>
     new Pipeline({ congregation, source, externalLocation })
       .addHandler(translateToLocation)

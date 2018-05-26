@@ -24,7 +24,6 @@ class CongregationLocation extends Model {
         congregationId: { type: 'integer' },
         locationId: { type: ['integer', 'string'] }, // bigint
         territoryId: { type: ['integer', 'null'] },
-        sourceCongregationId: { type: 'integer' },
         language: { type: 'string', maxLength: 64 },
         source: { type: 'string', maxLength: 64 },
         sourceData: { type: ['string', 'null'] }, // TODO get rid of this; it's a crutch

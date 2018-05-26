@@ -110,32 +110,39 @@ class AlbaLocationImport extends Model {
   }
 
   async preImportActions() {
-    const Congregation = require('./Congregation');
-
-    const congregation = await Congregation.getCongregation(this.congregationId);
+    const AlbaIntegration = require('./AlbaIntegration');
 
     // Map out the current integrations
-    const agreementMap = {};
-    if (congregation.integrationSources && congregation.integrationSources.length) {
-      congregation.integrationSources.reduce((memo, source) => {
-        memo[source.sourceCongregation.name] = memo[source.sourceCongregation.name] || {};
-        memo[source.sourceCongregation.name][source.language === 'Any' ? '*' : source.language] = true;
-        return memo;
-      }, agreementMap);
-    }
+    const integrations = await AlbaIntegration.query().where({ source: this.source, congregation_id: this.congregationId });
+    const integrationMap = integrations.reduce((memo, { language, account }) => {
+      let resolvedLanguage;
+      switch (language) {
+      case null:
+      case 'Any':
+        resolvedLanguage = '*';
+        break;
+      default:
+        resolvedLanguage = language;
+        break;
+      }
+
+      memo[account] = memo[account] || {};
+      memo[account][language] = true;
+      return memo;
+    }, {});
 
     // Map out the session's dataset
     const sessionMap = this.payload.reduce((memo, element) => {
-      const { Account: recordCongregation, Language: recordLanguage } = element;
-      memo[recordCongregation] = memo[recordCongregation] || {};
-      memo[recordCongregation][recordLanguage] = memo[recordCongregation][recordLanguage] || 0;
-      memo[recordCongregation][recordLanguage] += 1;
+      const { Account: account, Language: language } = element;
+      memo[account] = memo[account] || {};
+      memo[account][language] = memo[account][language] || 0;
+      memo[account][language] += 1;
       return memo;
     }, {});
 
     return await AlbaLocationImport.query().patchAndFetchById(this.$id(), {
       congregationIntegrationAnalysis: {
-        existing: agreementMap,
+        existing: integrationMap,
         requested: sessionMap,
       },
     });

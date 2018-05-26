@@ -2,6 +2,7 @@ const compact = require('lodash/compact');
 const { diff } = require('deep-diff');
 const { DAL } = require('../../dataAccess');
 const TAGS = require('../../models/enums/tags');
+const { AlbaIntegration } = require('../../models');
 
 const sourceKindTagMap = {
   'foreign-language': TAGS.FOREIGN_LANGUAGE,
@@ -27,19 +28,9 @@ exports.handler = async function translateToCongregationLocation({
     sourceStatusTagMap[(externalLocation.Status || '').toLowerCase()],
   ]);
 
-  const { language } = (await DAL.findLanguage(externalLocation.Language)) || {
-    language: 'Unknown',
-  };
-  const sourceCongregation = congregation.integrationSources.find(
-    ({ language: integrationLanguage, sourceCongregation }) =>
-      sourceCongregation.name.toLowerCase().replace(' ', '') ===
-      externalLocation.Account.toLowerCase().replace(' ', '') &&
-      (!integrationLanguage ||
-        integrationLanguage === language ||
-        integrationLanguage.toLowerCase() === 'any'),
-  );
-  const sourceCongregationId =
-    sourceCongregation && sourceCongregation.sourceCongregationId;
+  const { language } = (await DAL.findLanguage(externalLocation.Language)) || { language: 'Unknown' };
+
+  const hasIntegration = await AlbaIntegration.hasIntegration({ congregationId, source, language, account: externalLocation.Account });
 
   let translatedCongregationLocation = {
     congregationId,
@@ -47,7 +38,6 @@ exports.handler = async function translateToCongregationLocation({
     source,
     language,
     attributes,
-    sourceCongregationId,
     sourceData: null, // TODO remove this
     sourceLocationId: externalLocation.Address_ID,
     isPendingTerritoryMapping: false,
@@ -63,9 +53,9 @@ exports.handler = async function translateToCongregationLocation({
 
   // This congregationLocation was imported at one time, but the congregation integration is no longer active.
   // This can happen when the language is changed to another foreign language or the destination congregation's language.
-  if (congregationLocation && !sourceCongregationId) {
+  if (congregationLocation && !hasIntegration) {
     await DAL.addCongregationLocationActivity({
-      congregationId: congregationLocation.sourceCongregationId,
+      congregationId,
       locationId,
       operation: 'D',
       source,
@@ -73,7 +63,7 @@ exports.handler = async function translateToCongregationLocation({
     });
     return null;
   } else if (!congregationLocation) {
-    if (!sourceCongregationId) {
+    if (!hasIntegration) {
       return null;
     }
 
@@ -81,7 +71,7 @@ exports.handler = async function translateToCongregationLocation({
     congregationLocation = await DAL.insertCongregationLocation(translatedCongregationLocation);
 
     await DAL.addCongregationLocationActivity({
-      congregationId: sourceCongregationId,
+      congregationId,
       locationId,
       operation: 'I',
       source,
@@ -91,12 +81,9 @@ exports.handler = async function translateToCongregationLocation({
     // Update only when there is a change
     const diffs = diff(congregationLocation, translatedCongregationLocation);
     if (diffs && diffs.length) {
-      congregationLocation = await DAL.updateCongregationLocation(
-        { congregationId, locationId },
-        translatedCongregationLocation,
-      );
+      congregationLocation = await DAL.updateCongregationLocation({ congregationId, locationId }, translatedCongregationLocation);
       await DAL.addCongregationLocationActivity({
-        congregationId: sourceCongregationId,
+        congregationId,
         locationId,
         operation: 'U',
         source,

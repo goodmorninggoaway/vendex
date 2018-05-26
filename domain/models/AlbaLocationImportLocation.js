@@ -26,7 +26,7 @@ class AlbaLocationImportLocation extends Model {
         translatedCongregationLocation: { type: 'object' },
         operation: { type: 'object' },
         geocoding: { type: 'object' },
-        isDone: { type: 'boolean' }
+        isDone: { type: 'boolean' },
       },
     };
   }

@@ -99,50 +99,6 @@ const handlers = {
     return res.redirect('/ui/languages');
   },
 
-  addCongregationIntegration: async function (req, res) {
-    const sourceCongregationId = Number(
-      req.params.sourceCongregationId || req.payload.sourceCongregationId,
-    );
-    const destinationCongregationId = Number(
-      req.params.destinationCongregationId ||
-      req.payload.destinationCongregationId,
-    );
-    const congregationId =
-      req.params.congregationId || req.payload.destinationCongregationId;
-
-    let language = req.params.language || req.payload.language;
-    if (!language || language === '') {
-      language = null;
-    }
-
-    await DAL.addCongregationIntegration({
-      sourceCongregationId,
-      destinationCongregationId,
-      language,
-    });
-    return res.redirect(`/ui/congregations/${congregationId}`);
-  },
-
-  deleteCongregationIntegration: async function (req, res) {
-    const sourceCongregationId =
-      req.params.sourceCongregationId || req.payload.sourceCongregationId;
-    const destinationCongregationId =
-      req.params.destinationCongregationId ||
-      req.payload.destinationCongregationId;
-    let language = req.query.language;
-    if (!language || language === '') {
-      language = null;
-    }
-    await DAL.deleteCongregationIntegration({
-      sourceCongregationId,
-      destinationCongregationId,
-      language,
-    });
-    const { congregationId } = req.auth.credentials;
-
-    return res.redirect(`/ui/congregations/${congregationId}`);
-  },
-
   resetDatabase: async function (req, res) {
     if (process.env.APP_ENV !== 'PROD') {
       return DAL.reset();

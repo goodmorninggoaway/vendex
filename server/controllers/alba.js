@@ -111,4 +111,48 @@ module.exports = {
       }
     },
   },
+
+  getIntegrations: {
+    async handler(req) {
+      try {
+        const { congregationId } = req.auth.credentials;
+        const { AlbaIntegration } = req.server.models();
+        const { source } = req.query;
+
+        return AlbaIntegration.query().skipUndefined().where({ congregation_id: congregationId, source });
+      } catch (ex) {
+        console.error(ex);
+        return Boom.badImplementation();
+      }
+    },
+  },
+
+  addIntegration: {
+    async handler(req) {
+      try {
+        const { congregationId } = req.auth.credentials;
+        const { AlbaIntegration } = req.server.models();
+        const { account, language, source, anyLanguage } = req.payload;
+        return AlbaIntegration.query().insert({ congregation_id: congregationId, source, account, language: anyLanguage ? '*' : language });
+      } catch (ex) {
+        console.error(ex);
+        return Boom.badImplementation();
+      }
+    },
+  },
+
+  deleteIntegration: {
+    async handler(req) {
+      try {
+        const { congregationId } = req.auth.credentials;
+        const { AlbaIntegration } = req.server.models();
+        const { albaIntegrationId } = req.params;
+        return AlbaIntegration.query().where({ congregation_id: congregationId, alba_integration_id: albaIntegrationId }).del();
+      } catch (ex) {
+        console.error(ex);
+        return Boom.badImplementation();
+      }
+    },
+  },
+
 };

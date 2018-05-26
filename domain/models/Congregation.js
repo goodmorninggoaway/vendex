@@ -22,28 +22,9 @@ class Congregation extends Model {
   }
 
   static get relationMappings() {
-    const CongregationIntegration = require('./CongregationIntegration');
     const CongregationLocation = require('./CongregationLocation');
 
     return {
-      integrationSources: {
-        relation: Model.HasManyRelation,
-        modelClass: CongregationIntegration,
-        join: {
-          from: 'congregation.congregationId',
-          to: 'congregationIntegration.destinationCongregationId',
-        },
-      },
-
-      integrationDestinations: {
-        relation: Model.HasManyRelation,
-        modelClass: CongregationIntegration,
-        join: {
-          from: 'congregation.congregationId',
-          to: 'congregationIntegration.sourceCongregationId',
-        },
-      },
-
       congregationLocations: {
         relation: Model.HasManyRelation,
         modelClass: CongregationLocation,
@@ -56,7 +37,7 @@ class Congregation extends Model {
   }
 
   static async getCongregation(id) {
-    return await Congregation.query().findById(id).eager('[integrationSources, integrationSources.sourceCongregation]');
+    return await Congregation.query().findById(id);
   }
 }
 

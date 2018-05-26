@@ -28,15 +28,7 @@ exports.deleteCongregation = congregationId =>
 exports.getCongregationWithIntegrations = congregationId =>
   models.Congregation.query()
     .where({ congregationId })
-    .eager('[integrationSources, integrationSources.sourceCongregation]')
     .first();
-
-exports.addCongregationIntegration = values =>
-  models.CongregationIntegration.query().insert(values);
-exports.deleteCongregationIntegration = filter =>
-  models.CongregationIntegration.query()
-    .where(filter)
-    .del();
 
 exports.findLocation = filter =>
   models.Location.query()
@@ -74,7 +66,7 @@ exports.getTerritories = filter =>
     .where(filter);
 exports.findTerritory = filter => exports.getTerritories(filter).first();
 exports.findTerritoryContainingPoint = (congregationId,
-  { longitude, latitude },) =>
+  { longitude, latitude }) =>
   exports
     .getTerritories({ congregationId })
     .whereRaw('"boundary" @> point (?, ?)', [longitude, latitude]);
@@ -118,27 +110,6 @@ exports.addCongregationLocationActivity = ({ albaLocationImportId, ...values }) 
 
     return activity;
   });
-
-exports.getCongregationLocationActivity = ({
-  congregationId,
-  destination,
-  minCongregationLocationActivityId,
-}) =>
-  knex
-    .from('congregationLocationActivity')
-    .innerJoin(
-      'congregationIntegration',
-      'congregationLocationActivity.congregationId',
-      'congregationIntegration.sourceCongregationId',
-    )
-    .where(
-      'congregationLocationActivityId',
-      '>=',
-      minCongregationLocationActivityId,
-    )
-    .where('destinationCongregationId', congregationId)
-    .select('congregationLocationActivity.*')
-    .orderBy('congregationLocationActivityId');
 
 exports.reset = () => {
   const tables = [
