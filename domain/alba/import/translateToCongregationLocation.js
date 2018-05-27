@@ -2,7 +2,7 @@ const compact = require('lodash/compact');
 const { diff } = require('deep-diff');
 const { DAL } = require('../../dataAccess');
 const TAGS = require('../../models/enums/tags');
-const { AlbaIntegration } = require('../../models');
+const { AlbaIntegration, CongregationLocationActivity } = require('../../models');
 
 const sourceKindTagMap = {
   'foreign-language': TAGS.FOREIGN_LANGUAGE,
@@ -54,12 +54,11 @@ exports.handler = async function translateToCongregationLocation({
   // This congregationLocation was imported at one time, but the congregation integration is no longer active.
   // This can happen when the language is changed to another foreign language or the destination congregation's language.
   if (congregationLocation && !hasIntegration) {
-    await DAL.addCongregationLocationActivity({
-      congregationId,
-      locationId,
+    await CongregationLocationActivity.addAlbaActivity(albaLocationImportId, {
+      congregation_id: congregationId,
+      location_id: locationId,
       operation: 'D',
       source,
-      albaLocationImportId,
     });
     return null;
   } else if (!congregationLocation) {
@@ -70,24 +69,22 @@ exports.handler = async function translateToCongregationLocation({
     // New congregationLocation
     congregationLocation = await DAL.insertCongregationLocation(translatedCongregationLocation);
 
-    await DAL.addCongregationLocationActivity({
-      congregationId,
-      locationId,
+    await CongregationLocationActivity.addAlbaActivity(albaLocationImportId, {
+      congregation_id: congregationId,
+      location_id: locationId,
       operation: 'I',
       source,
-      albaLocationImportId,
     });
   } else {
     // Update only when there is a change
     const diffs = diff(congregationLocation, translatedCongregationLocation);
     if (diffs && diffs.length) {
       congregationLocation = await DAL.updateCongregationLocation({ congregationId, locationId }, translatedCongregationLocation);
-      await DAL.addCongregationLocationActivity({
-        congregationId,
-        locationId,
+      await CongregationLocationActivity.addAlbaActivity(albaLocationImportId, {
+        congregation_id: congregationId,
+        location_id: locationId,
         operation: 'U',
         source,
-        albaLocationImportId,
       });
     }
   }

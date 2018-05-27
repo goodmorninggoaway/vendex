@@ -120,7 +120,7 @@ class PreImport extends Component {
         </div>
         <div style={{ marginBottom: '1em' }}>
           <MessageBar>
-            Note that if a location is duplicated, the last one to be imported "wins".
+            If a location is duplicated, the last one to be imported "wins".
           </MessageBar>
         </div>
 
@@ -149,7 +149,7 @@ class PreImport extends Component {
                 {languages.map(({ language, count, enabled }) => (
                   <div key={language}>
                     <Checkbox
-                      label={`${language} (${count})`}
+                      label={`${language || 'Unknown'} (${count})`}
                       checked={enabled || allLanguagesEnabled}
                       styles={{ label: { marginLeft: '24px' } }}
                       disabled={allLanguagesEnabled}

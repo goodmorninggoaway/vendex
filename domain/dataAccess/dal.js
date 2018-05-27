@@ -25,10 +25,7 @@ exports.deleteCongregation = congregationId =>
     .skipUndefined()
     .del()
     .where({ congregationId });
-exports.getCongregationWithIntegrations = congregationId =>
-  models.Congregation.query()
-    .where({ congregationId })
-    .first();
+exports.getCongregationWithIntegrations = congregationId => models.Congregation.query().where({ congregationId }).first();
 
 exports.findLocation = filter =>
   models.Location.query()
@@ -47,10 +44,9 @@ exports.updateCongregationLocation = (filter, value) =>
     .skipUndefined()
     .where(filter)
     .patch(value);
+
 exports.insertCongregationLocation = values =>
   models.CongregationLocation.query().insert(values);
-exports.deleteCongregationLocation = filter =>
-  exports.updateCongregationLocation(filter, { deleted: true });
 
 exports.findGeocodeResponse = filter =>
   models.GeocodeResponse.query()
@@ -65,13 +61,13 @@ exports.getTerritories = filter =>
     .where({ deleted: false })
     .where(filter);
 exports.findTerritory = filter => exports.getTerritories(filter).first();
-exports.findTerritoryContainingPoint = (congregationId,
-  { longitude, latitude }) =>
-  exports
-    .getTerritories({ congregationId })
-    .whereRaw('"boundary" @> point (?, ?)', [longitude, latitude]);
-// exports.insertTerritory = values => models.Territory.query().insert(values);
-// exports.updateTerritory = (filter, updates) => models.Territory.query().skipUndefined().where(filter).patch(updates);
+
+exports.findTerritoryContainingPoint = (congregationId, { longitude, latitude }) =>
+  models.Territory.query()
+    .skipUndefined()
+    .where({ congregationId, deleted: false })
+    .whereRaw('("boundary" @> point (?, ?))', [longitude, latitude]);
+
 exports.deleteTerritory = territoryId =>
   models.Territory.query()
     .skipUndefined()
@@ -99,21 +95,10 @@ exports.getLastExportActivity = filter =>
 exports.insertExportActivity = values =>
   models.ExportActivity.query().insert(values);
 
-exports.addCongregationLocationActivity = ({ albaLocationImportId, ...values }) => transaction(
-  knex,
-  async (trx) => {
-    const activity = await models.CongregationLocationActivity.query(trx).insert(values);
-
-    await models.AlbaLocationImportLocation.query(trx)
-      .where({ alba_location_import_id: albaLocationImportId })
-      .patch({ operation: { value: values.operation } });
-
-    return activity;
-  });
-
 exports.reset = () => {
   const tables = [
     'exportActivity',
+    'congregation_location_activity',
     'congregationLocationActivity',
     'congregationLocation',
     'location',

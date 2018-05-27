@@ -1,4 +1,5 @@
 const { Model } = require('objection');
+const CongregationLocationActivity = require('./CongregationLocationActivity');
 
 class CongregationLocation extends Model {
   static get tableName() {
@@ -50,6 +51,12 @@ class CongregationLocation extends Model {
         },
       },
     };
+  }
+
+  static async detachCongregationLocation({ congregationId, locationId, source }) {
+    await CongregationLocation.query().where({ congregationId, locationId, source }).patch({ deleted: true });
+    await CongregationLocationActivity.addActivity({ congregation_id: congregationId, location_id: locationId, operation: 'D', source });
+    console.log(`Deleted "congregationLocation": ${JSON.stringify({ congregationId, locationId, source })}`);
   }
 }
 

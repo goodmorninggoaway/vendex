@@ -36,10 +36,10 @@ exports.handler = async function getStartCongregationLocationActivity({ congrega
 
   const minCongregationLocationActivityId = lastExport ? parseInt(lastExport.lastCongregationLocationActivityId) : 0;
   const activities = await CongregationLocationActivity.query()
-    .where('congregationLocationActivityId', '>', minCongregationLocationActivityId)
-    .where('congregationId', congregationId)
+    .where('congregation_location_activity_id', '>', minCongregationLocationActivityId)
+    .where('congregation_id', congregationId)
     .where('source', '!=', destination)
-    .orderBy('congregationLocationActivityId');
+    .orderBy('congregation_location_activity_id');
 
   return Object.values(groupBy(activities, 'locationId'))
     .reduce((memo, locationActivities) => {
