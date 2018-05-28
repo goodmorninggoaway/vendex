@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import autobind from 'react-autobind';
-import classnames from 'classnames';
 import axios from 'axios';
 import { Spinner } from 'office-ui-fabric-react/lib/Spinner';
-import sortBy from 'lodash/sortBy';
+import groupBy from 'lodash/groupBy';
 import find from 'lodash/find';
 import { MessageBar, MessageBarType } from 'office-ui-fabric-react/lib/MessageBar';
-import { Icon } from 'office-ui-fabric-react/lib/Icon';
 import { Checkbox } from 'office-ui-fabric-react/lib/Checkbox';
 import { ALBA, SYTHETIC_ALBA__OLD_APEX_SPANISH } from '../../../../domain/models/enums/locationInterfaces';
 import { withState } from './StateContext';
@@ -38,51 +36,35 @@ class PreImport extends Component {
 
   parseIntegrationAnalysis() {
     const analysis = this.state.preCheck.value && this.state.preCheck.value.congregationIntegrationAnalysis;
-    if (!analysis) {
+    if (!analysis || !analysis.length) {
       return null;
     }
 
-    let { existing, requested } = analysis;
+    return Object.values(groupBy(analysis, 'account'))
+      .map(it => {
+        const allLanguagesEnabled = find(it, { language: '*', enabled: true });
+        if (allLanguagesEnabled) {
+          return it.map(that => that === it ? that : { ...that, checkboxDisabled: true });
+        }
 
-    // Rather than sending each event to server immediately, use the queue to influence the displayed UI until they click next
-    const { events } = this.state;
-    if (events) {
-      existing = { ...existing };
-      events.forEach(({ account, language, operation }) => {
-        existing[account] = existing[account] || {};
-        existing[account][language] = operation === 'I';
+        return it;
       });
-    }
-
-    // Merge the requested and existing objects to something that can be useful client-side
-    const parse = Object.entries(requested).reduce((memo, [account, languages]) => {
-      const accountResult = {
-        name: account,
-        allLanguagesEnabled: !!(existing[account] && (existing[account]['*'])),
-        languages: [],
-      };
-
-      Object.entries(languages).forEach(([language, count]) => {
-        accountResult.languages.push({
-          language,
-          count,
-          enabled: existing[account] && (existing[account][language] || existing[account]['*']),
-        });
-      });
-
-      accountResult.languages = sortBy(accountResult.languages, 'language');
-
-      return memo.concat(accountResult);
-    }, []);
-
-    parse.sort((a, b) => {
-      return a.name < b.name ? -1 : 1;
-    });
-
-    return parse;
   }
 
   enqueueIntegrationEvent(account, language, operation) {
+    const analysis = this.state.preCheck.value && this.state.preCheck.value.congregationIntegrationAnalysis;
+    if (!analysis || !analysis.length) {
+      return null;
+    }
+
+    const found = find(analysis, { account, language });
+    if (!found) {
+      return;
+    }
+
+    // Yes, I'm mutating the exising object because I'm triggering a setState anyway and it's all in the same component
+    found.enabled = operation === 'I';
+
     this.setState(({ events }) => ({ events: [...(events || []), { account, language, operation }] }));
   }
 
@@ -131,35 +113,29 @@ class PreImport extends Component {
           </div>
         )}
         <div className="ms-font-m-plus">
-          {preCheck.value && this.parseIntegrationAnalysis().map(({ name, allLanguagesEnabled, languages }) => (
-            <div key={name} style={{ marginBottom: '1em' }}>
-              <span
-                className={classnames({
-                  'ms-fontColor-green ms-fontWeight-semibold': allLanguagesEnabled,
-                  'ms-fontColor-neutralSecondary': !allLanguagesEnabled,
-                })}
-              >
+          {preCheck.value && this.parseIntegrationAnalysis().map((accountGroup) => {
+            const [{ account, enabled: allLanguagesEnabled, matchCount: count }] = accountGroup;
+            return (
+              <div key={account}>
                 <Checkbox
-                  label={name}
+                  label={`${account} (${count})`}
                   checked={allLanguagesEnabled}
-                  onChange={(e, checked) => this.enqueueIntegrationEvent(name, '*', checked ? 'I' : 'D')}
+                  onChange={(e, checked) => this.enqueueIntegrationEvent(account, '*', checked ? 'I' : 'D')}
                 />
-              </span>
-              <div>
-                {languages.map(({ language, count, enabled }) => (
-                  <div key={language}>
+                <div style={{ marginLeft: '24px' }}>
+                  {accountGroup.slice(1).map(({ language, enabled: languageEnabled, matchCount }) => (
                     <Checkbox
-                      label={`${language || 'Unknown'} (${count})`}
-                      checked={enabled || allLanguagesEnabled}
-                      styles={{ label: { marginLeft: '24px' } }}
+                      key={language}
+                      label={`${language || 'Unknown'} (${matchCount})`}
+                      checked={allLanguagesEnabled || languageEnabled}
                       disabled={allLanguagesEnabled}
-                      onChange={(e, checked) => this.enqueueIntegrationEvent(name, language, checked ? 'I' : 'D')}
+                      onChange={(e, checked) => this.enqueueIntegrationEvent(account, language, checked ? 'I' : 'D')}
                     />
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     );
