@@ -93,19 +93,14 @@ class PreImport extends Component {
     const { preCheck } = this.state;
     return (
       <div>
-        <div style={{ marginBottom: '1em' }}>
-          <MessageBar multiline>
-            Enable data-sharing relationships with other congregations/groups by selecting them below.<br />
-            If you want to load all locations from a congregation, select the name.<br />
-            If you want to load selected locations based on the language, select the language.
-          </MessageBar>
+        <div style={{ marginBottom: '1em' }} className="ms-font-m-plus">
+          Which locations do you want to load?
+          <ul className="browser-default" style={{ margin: '0' }}>
+            <li>To load all locations from a congregation, select the name.</li>
+            <li>To load locations for a specific language, select the language.</li>
+            <li>You should only load data when the overseers of the congregations/groups have approved it.</li>
+          </ul>
         </div>
-        <div style={{ marginBottom: '1em' }}>
-          <MessageBar>
-            If a location is duplicated, the last one to be imported "wins".
-          </MessageBar>
-        </div>
-
         {!preCheck.value && !preCheck.error && <Spinner />}
         {preCheck.error && (
           <div style={{ marginBottom: '1em' }}>
@@ -116,23 +111,23 @@ class PreImport extends Component {
           {preCheck.value && this.parseIntegrationAnalysis().map((accountGroup) => {
             const [{ account, enabled: allLanguagesEnabled, matchCount: count }] = accountGroup;
             return (
-              <div key={account}>
+              <div key={account} style={{ marginBottom: '20px' }}>
                 <Checkbox
                   label={`${account} (${count})`}
                   checked={allLanguagesEnabled}
                   onChange={(e, checked) => this.enqueueIntegrationEvent(account, '*', checked ? 'I' : 'D')}
+                  styles={{ root: { marginBottom: '4px' } }}
                 />
-                <div style={{ marginLeft: '24px' }}>
-                  {accountGroup.slice(1).map(({ language, enabled: languageEnabled, matchCount }) => (
-                    <Checkbox
-                      key={language}
-                      label={`${language || 'Unknown'} (${matchCount})`}
-                      checked={allLanguagesEnabled || languageEnabled}
-                      disabled={allLanguagesEnabled}
-                      onChange={(e, checked) => this.enqueueIntegrationEvent(account, language, checked ? 'I' : 'D')}
-                    />
-                  ))}
-                </div>
+                {accountGroup.slice(1).map(({ language, enabled: languageEnabled, matchCount }) => (
+                  <Checkbox
+                    key={language}
+                    label={`${language || 'Unknown'} (${matchCount})`}
+                    checked={allLanguagesEnabled || languageEnabled}
+                    disabled={allLanguagesEnabled}
+                    onChange={(e, checked) => this.enqueueIntegrationEvent(account, language, checked ? 'I' : 'D')}
+                    styles={{ label: { marginLeft: '2em' }, root: { marginBottom: '4px' } }}
+                  />
+                ))}
               </div>
             );
           })}

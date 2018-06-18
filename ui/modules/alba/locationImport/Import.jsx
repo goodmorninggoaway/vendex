@@ -98,6 +98,11 @@ class Import extends Component {
     const { session: { locations: { length: rowCount } } } = this.props;
     return (
       <div>
+        <div style={{ marginBottom: '1em' }}>
+          <MessageBar>
+            If a location is duplicated, the last one to be imported "wins".
+          </MessageBar>
+        </div>
         {importStatus.started && (
           <ProgressIndicator
             label={`Importing ${rowCount} locations.`}
