@@ -18,9 +18,7 @@ module.exports = async ({ congregationId, fileStream, sourceData }) => {
     }
 
     const attributes = [];
-    const address = `${externalLocation.Address} ${externalLocation.City} ${
-      externalLocation.State
-      } ${externalLocation['Postal code']}`;
+    const address = `${externalLocation.Address} ${externalLocation.City} ${externalLocation.State} ${externalLocation['Postal code']}`;
     const translatedLocation = addressUtils.getAddressParts(address);
 
     if (externalLocation['Location Type'] === 'Language') {
@@ -56,7 +54,7 @@ module.exports = async ({ congregationId, fileStream, sourceData }) => {
         longitude: externalLocation.Longitude,
       });
       location = await DAL.insertLocation(location);
-      Logger.log(`Created "location": ${location.locationId}`);
+      console.log(`Created "location": ${location.locationId}`);
     }
 
     const { locationId } = location;
@@ -74,12 +72,8 @@ module.exports = async ({ congregationId, fileStream, sourceData }) => {
     }
 
     if (!congregationLocation) {
-      congregationLocation = await DAL.insertCongregationLocation(
-        translatedCongregationLocation,
-      );
-      Logger.log(
-        `Created "congregationLocation": locationId=${locationId}, congregationId=${congregationId}`,
-      );
+      congregationLocation = await DAL.insertCongregationLocation(translatedCongregationLocation);
+      console.log(`Created "congregationLocation": locationId=${locationId}, congregationId=${congregationId}`);
 
       await CongregationLocationActivity.addActivity({
         congregation_id: congregationId,
@@ -102,13 +96,8 @@ module.exports = async ({ congregationId, fileStream, sourceData }) => {
       );
 
       if (hasDiff) {
-        await DAL.updateCongregationLocation(
-          { congregationId, locationId },
-          diff,
-        );
-        Logger.log(
-          `Updated "congregationLocation": locationId=${locationId}, congregationId=${congregationId}`,
-        );
+        await DAL.updateCongregationLocation({ congregationId, locationId }, diff);
+        console.log(`Updated "congregationLocation": locationId=${locationId}, congregationId=${congregationId}`);
 
         await CongregationLocationActivity.addActivity({
           congregation_id: congregationId,
