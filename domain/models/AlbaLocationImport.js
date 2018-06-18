@@ -27,7 +27,7 @@ class AlbaLocationImport extends Model {
         version: { type: 'integer' },
         userId: { type: 'integer' },
         pendingLocationDeletions: { type: 'array', items: 'integer' },
-        congregationIntegrationAnalysis: { type: 'object' },
+        congregationIntegrationAnalysis: { type: 'array' },
         summary: { type: 'object' },
         source: { type: 'string' },
       },
@@ -109,35 +109,48 @@ class AlbaLocationImport extends Model {
     return await AlbaLocationImport.query().patchAndFetchById(this.$id(), { pendingLocationDeletions, summary });
   }
 
+  async analyzeIntegrations() {
+    return AlbaLocationImport.knex().raw(`
+select 
+	account, 
+	case "language" when '' then 'Unknown' else "language" end as "language", 
+	case max(enabled) when 1 then true else false end as enabled, 
+	sum(matches) as "matchCount" 
+from (
+	-- Requested, by Language
+	select 
+	  j."Account" as account, 
+	  j."Language" as "language", 
+	  0 as enabled, 
+	  1 as matches
+	from alba_location_import_by_location l
+	cross join lateral jsonb_to_record(l.payload) as j("Account" varchar(256), "Language"  varchar(256) )
+	where l.alba_location_import_id = ?
+	
+	union all 
+	
+	-- Requested, by Account
+	select j."Account" as account, '*' as "language", 0 as enabled, count(*) as matches
+	from alba_location_import_by_location l
+	cross join lateral jsonb_to_record(l.payload) as j("Account" varchar(256))
+	where l.alba_location_import_id = ?
+	group by j."Account"
+	
+	union all
+
+	-- Existing
+	select account, "language", 1 as enabled, 0 as matches
+	from alba_integration
+	where congregation_id = ? and "source" = ?
+) dt1
+group by account, "language"
+order by 1, 2 
+    `, [this.$id(), this.$id(), this.congregationId, this.source]);
+  }
+
   async preImportActions() {
-    const Congregation = require('./Congregation');
-
-    const congregation = await Congregation.getCongregation(this.congregationId);
-
-    // Map out the current integrations
-    const agreementMap = {};
-    if (congregation.integrationSources && congregation.integrationSources.length) {
-      congregation.integrationSources.reduce((memo, source) => {
-        memo[source.sourceCongregation.name] = memo[source.sourceCongregation.name] || {};
-        memo[source.sourceCongregation.name][source.language === 'Any' ? '*' : source.language] = true;
-        return memo;
-      }, agreementMap);
-    }
-
-    // Map out the session's dataset
-    const sessionMap = this.payload.reduce((memo, element) => {
-      const { Account: recordCongregation, Language: recordLanguage } = element;
-      memo[recordCongregation] = memo[recordCongregation] || {};
-      memo[recordCongregation][recordLanguage] = memo[recordCongregation][recordLanguage] || 0;
-      memo[recordCongregation][recordLanguage] += 1;
-      return memo;
-    }, {});
-
     return await AlbaLocationImport.query().patchAndFetchById(this.$id(), {
-      congregationIntegrationAnalysis: {
-        existing: agreementMap,
-        requested: sessionMap,
-      },
+      congregationIntegrationAnalysis: (await this.analyzeIntegrations()).rows,
     });
   }
 }

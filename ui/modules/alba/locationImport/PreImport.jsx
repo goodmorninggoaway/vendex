@@ -1,24 +1,25 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import autobind from 'react-autobind';
-import classnames from 'classnames';
-import ReactTable from 'react-table';
 import axios from 'axios';
 import { Spinner } from 'office-ui-fabric-react/lib/Spinner';
-import sortBy from 'lodash/sortBy';
+import groupBy from 'lodash/groupBy';
+import find from 'lodash/find';
 import { MessageBar, MessageBarType } from 'office-ui-fabric-react/lib/MessageBar';
+import { Checkbox } from 'office-ui-fabric-react/lib/Checkbox';
 import { ALBA, SYTHETIC_ALBA__OLD_APEX_SPANISH } from '../../../../domain/models/enums/locationInterfaces';
 import { withState } from './StateContext';
 
 class PreImport extends Component {
-  constructor(props, context) {
-    super(props, context);
+  constructor(props) {
+    super(props);
     autobind(this);
 
     this.state = { preCheck: {} };
   }
 
   componentDidMount() {
+    this.props.stepApi.onBeforeGoToNext(this.submitChanges);
     this.preImportAnalysis();
   }
 
@@ -33,69 +34,104 @@ class PreImport extends Component {
     }
   }
 
-  parseAnalysis() {
+  parseIntegrationAnalysis() {
     const analysis = this.state.preCheck.value && this.state.preCheck.value.congregationIntegrationAnalysis;
-    if (!analysis) {
+    if (!analysis || !analysis.length) {
       return null;
     }
 
-    const { existing, requested } = analysis;
-    const parsed = Object.entries(requested).reduce((memo, [congregation, languages]) => {
-      return Object.entries(languages).reduce((memo2, [language, count]) => {
-        return memo2.concat({
-          congregation,
-          language,
-          count,
-          enabled: existing[congregation] && (existing[congregation][language] || existing[congregation]['*'])
-        });
-      }, []).concat(memo);
-    }, []);
+    return Object.values(groupBy(analysis, 'account'))
+      .map(it => {
+        const allLanguagesEnabled = find(it, { language: '*', enabled: true });
+        if (allLanguagesEnabled) {
+          return it.map(that => that === it ? that : { ...that, checkboxDisabled: true });
+        }
 
-    return sortBy(parsed, ['congregation', 'language']);
+        return it;
+      });
+  }
+
+  enqueueIntegrationEvent(account, language, operation) {
+    const analysis = this.state.preCheck.value && this.state.preCheck.value.congregationIntegrationAnalysis;
+    if (!analysis || !analysis.length) {
+      return null;
+    }
+
+    const found = find(analysis, { account, language });
+    if (!found) {
+      return;
+    }
+
+    // Yes, I'm mutating the exising object because I'm triggering a setState anyway and it's all in the same component
+    found.enabled = operation === 'I';
+
+    this.setState(({ events }) => ({ events: [...(events || []), { account, language, operation }] }));
+  }
+
+  async submitChanges(done) {
+    const { events } = this.state;
+    const { source } = this.props;
+
+    if (events && events.length) {
+      const { data: existingIntegrations } = await axios.get(`/alba/integrations?source=${this.props.source}`);
+      for (let i = 0; i < events.length; i++) {
+        const { operation, account, language } = events[i];
+        const integration = find(existingIntegrations, { account, language });
+
+        if (!integration && operation === 'I') {
+          await axios.post('/alba/integrations', { source, account, language, anyLanguage: language === '*' });
+        } else if (integration && operation === 'D') {
+          await axios.delete(`/alba/integrations/${integration.albaIntegrationId}`);
+        }
+      }
+    }
+
+    return done();
   }
 
   render() {
     const { preCheck } = this.state;
-    const { congregationId } = this.props;
     return (
       <div>
-        <blockquote>
-          Setup relationships with other congregations by{' '}
-          <a href="/ui/congregations">adding</a> the congregation, then <a href={`/ui/congregations/${congregationId}`}>your congregation</a> to link them.
-          You should only import locations for congregations with whom you've agreed to share locations.
-        </blockquote>
-        <blockquote>
-          If an address exists more than once in the import data, the last one wins.
-        </blockquote>
+        <div style={{ marginBottom: '1em' }} className="ms-font-m-plus">
+          Which locations do you want to load?
+          <ul className="browser-default" style={{ margin: '0' }}>
+            <li>To load all locations from a congregation, select the name.</li>
+            <li>To load locations for a specific language, select the language.</li>
+            <li>You should only load data when the overseers of the congregations/groups have approved it.</li>
+          </ul>
+        </div>
         {!preCheck.value && !preCheck.error && <Spinner />}
-        {preCheck.error && <MessageBar messageBarType={MessageBarType.error} isMultiline>{preCheck.error}</MessageBar>}
-        {preCheck.value && (
-          <ReactTable
-            data={this.parseAnalysis()}
-            columns={[
-              { Header: 'Congregation', accessor: 'congregation' },
-              {
-                Header: 'Language',
-                accessor: 'language',
-                Cell: ({ original: { language } }) => (!language || !language.length ? <em>Unknown</em> : language),
-              },
-              { Header: 'Count', accessor: 'count' },
-            ]}
-            getTdProps={(state, rowInfo, column) => {
-              if (!rowInfo || column.id === 'actions') {
-                return {};
-              }
-
-              return ({
-                className: classnames({
-                  'ms-fontColor-green ms-fontWeight-semibold': rowInfo.original.enabled,
-                  'ms-fontColor-neutralSecondary': !rowInfo.original.enabled,
-                }),
-              });
-            }}
-            defaultPageSize={10}
-          />
+        {preCheck.error && (
+          <div style={{ marginBottom: '1em' }}>
+            <MessageBar messageBarType={MessageBarType.error} isMultiline>{preCheck.error}</MessageBar>
+          </div>
         )}
+        <div className="ms-font-m-plus">
+          {preCheck.value && this.parseIntegrationAnalysis().map((accountGroup) => {
+            const [{ account, enabled: allLanguagesEnabled, matchCount: count }] = accountGroup;
+            return (
+              <div key={account} style={{ marginBottom: '20px' }}>
+                <Checkbox
+                  label={`${account} (${count})`}
+                  checked={allLanguagesEnabled}
+                  onChange={(e, checked) => this.enqueueIntegrationEvent(account, '*', checked ? 'I' : 'D')}
+                  styles={{ root: { marginBottom: '4px' } }}
+                />
+                {accountGroup.slice(1).map(({ language, enabled: languageEnabled, matchCount }) => (
+                  <Checkbox
+                    key={language}
+                    label={`${language || 'Unknown'} (${matchCount})`}
+                    checked={allLanguagesEnabled || languageEnabled}
+                    disabled={allLanguagesEnabled}
+                    onChange={(e, checked) => this.enqueueIntegrationEvent(account, language, checked ? 'I' : 'D')}
+                    styles={{ label: { marginLeft: '2em' }, root: { marginBottom: '4px' } }}
+                  />
+                ))}
+              </div>
+            );
+          })}
+        </div>
       </div>
     );
   }

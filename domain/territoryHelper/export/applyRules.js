@@ -22,24 +22,14 @@ exports.handler = async function applyRules({
   congregation,
   operation,
 }) {
-  const isDoNotCall = sourceCongregationLocation.attributes.includes(
-    TAGS.DO_NOT_CALL,
-  );
-  const isForeignLanguageInSource =
-    sourceCongregationLocation.language !== congregation.language;
-  const isLocalLanguageInSource =
-    sourceCongregationLocation.language === congregation.language;
-  const isForeignLanguageInDestination =
-    destinationCongregationLocation &&
-    destinationCongregationLocation.attributes.includes(TAGS.FOREIGN_LANGUAGE);
-  const isActiveInSource =
-    sourceCongregationLocation.attributes.includes(TAGS.FOREIGN_LANGUAGE) &&
-    !sourceCongregationLocation.attributes.includes(TAGS.PENDING);
+  const isDoNotCall = sourceCongregationLocation.attributes.includes(TAGS.DO_NOT_CALL);
+  const isForeignLanguageInSource = sourceCongregationLocation.language !== congregation.language;
+  const isLocalLanguageInSource = sourceCongregationLocation.language === congregation.language;
+  const isForeignLanguageInDestination = destinationCongregationLocation && destinationCongregationLocation.attributes.includes(TAGS.FOREIGN_LANGUAGE);
+  const isActiveInSource = sourceCongregationLocation.attributes.includes(TAGS.FOREIGN_LANGUAGE) && !sourceCongregationLocation.attributes.includes(TAGS.PENDING);
 
   const { isInsert } = booleanOperation(operation);
-  const existsInDestination =
-    destinationCongregationLocation &&
-    Object.keys(destinationCongregationLocation).length > 1;
+  const existsInDestination = destinationCongregationLocation && Object.keys(destinationCongregationLocation).length > 1;
 
   // Converted to a local-language DNC in the foreign-language system, so add/update it as a DNC
   if (isDoNotCall && !isForeignLanguageInSource) {

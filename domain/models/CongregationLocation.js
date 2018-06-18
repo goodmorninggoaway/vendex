@@ -1,4 +1,5 @@
 const { Model } = require('objection');
+const CongregationLocationActivity = require('./CongregationLocationActivity');
 
 class CongregationLocation extends Model {
   static get tableName() {
@@ -24,7 +25,6 @@ class CongregationLocation extends Model {
         congregationId: { type: 'integer' },
         locationId: { type: ['integer', 'string'] }, // bigint
         territoryId: { type: ['integer', 'null'] },
-        sourceCongregationId: { type: 'integer' },
         language: { type: 'string', maxLength: 64 },
         source: { type: 'string', maxLength: 64 },
         sourceData: { type: ['string', 'null'] }, // TODO get rid of this; it's a crutch
@@ -51,6 +51,12 @@ class CongregationLocation extends Model {
         },
       },
     };
+  }
+
+  static async detachCongregationLocation({ congregationId, locationId, source }) {
+    await CongregationLocation.query().where({ congregationId, locationId, source }).patch({ deleted: true });
+    await CongregationLocationActivity.addActivity({ congregation_id: congregationId, location_id: locationId, operation: 'D', source });
+    console.log(`Deleted "congregationLocation": ${JSON.stringify({ congregationId, locationId, source })}`);
   }
 }
 

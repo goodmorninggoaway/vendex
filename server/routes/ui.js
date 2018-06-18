@@ -37,17 +37,6 @@ exports.plugin = {
         options: Controller.createCongregation,
       },
       {
-        method: 'POST',
-        path: '/congregationintegrations',
-        options: Controller.addCongregationIntegration,
-      },
-      {
-        method: 'GET',
-        path:
-          '/congregationintegrations/{sourceCongregationId}/{destinationCongregationId}/delete',
-        options: Controller.deleteCongregationIntegration,
-      },
-      {
         method: 'GET',
         path: '/languages/{languageId}',
         options: Controller.getLanguage,

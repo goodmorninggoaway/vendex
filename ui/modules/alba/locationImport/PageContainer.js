@@ -22,7 +22,7 @@ const AlbaLocationImportPage = ({ congregationId, source, title }) => (
         },
         {
           id: 'prepare',
-          name: 'Verify Congregations & Languages',
+          name: 'Choose Congregations & Languages',
           render: props => <PreImport congregationId={congregationId} {...props} />,
         },
         {
