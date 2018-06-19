@@ -9,10 +9,10 @@
   </div>
   <div class="row">
     <div class="input-field">
-      <select id="language" name="language" title="language" value="<%= congregation.language %>" required>
+      <select id="language" name="language" title="language" required>
         <option>Select a language</option>
         <% languages.map(({ language }) => { %>
-        <option value="<%= language %>"><%= language %></option>
+        <option value="<%= language %>" <%= language === congregation.language ? "selected" : "" %>><%= language %></option>
         <% }) %>
       </select>
     </div>

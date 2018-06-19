@@ -112,7 +112,7 @@ class Import extends Component {
         )}
         {importStatus.finished && (
           <MessageBar messageBarType={MessageBarType.success} isMultiline>
-            Alba locations have been updated. <a href="/ui/territoryhelper/territories">Click here to move on to Territory Helper data.</a>
+            Alba locations have been updated. <a href="/ui/territoryhelper/forward-conversion">Click here to move on to Territory Helper data.</a>
           </MessageBar>
         )}
         {results.slice(0, displayCount).map(x => <ActivityItem key={x.id} {...x} styles={{ root: { marginBottom: '8px' } }} />)}
