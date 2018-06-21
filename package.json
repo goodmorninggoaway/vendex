@@ -22,6 +22,8 @@
     "good": "github:hapijs/good",
     "good-console": "^6.4.1",
     "good-squeeze": "^5.0.2",
+    "grommet": "^2.0.0-beta.3",
+    "grommet-icons": "^1.0.0",
     "hapi": "^17.2.0",
     "hapi-auth-jwt2": "github:salzhrani/hapi-auth-jwt2#v-17",
     "http-status-codes": "^1.3.0",

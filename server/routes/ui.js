@@ -11,31 +11,31 @@ exports.plugin = {
           },
         },
       },
-      {
-        method: 'GET',
-        path: '/congregations/{congregationId}',
-        options: Controller.getCongregation,
-      },
-      {
-        method: 'POST',
-        path: '/congregations/{congregationId}',
-        options: Controller.updateCongregation,
-      },
-      {
-        method: 'GET',
-        path: '/congregations/{congregationId}/delete',
-        options: Controller.deleteCongregation,
-      },
-      {
-        method: 'GET',
-        path: '/congregations',
-        options: Controller.listCongregations,
-      },
-      {
-        method: 'POST',
-        path: '/congregations',
-        options: Controller.createCongregation,
-      },
+      //{
+      //  method: 'GET',
+      //  path: '/congregations/{congregationId}',
+      //  options: Controller.getCongregation,
+      //},
+      //{
+      //  method: 'POST',
+      //  path: '/congregations/{congregationId}',
+      //  options: Controller.updateCongregation,
+      //},
+      //{
+      //  method: 'GET',
+      //  path: '/congregations/{congregationId}/delete',
+      //  options: Controller.deleteCongregation,
+      //},
+      //{
+      //  method: 'GET',
+      //  path: '/congregations',
+      //  options: Controller.listCongregations,
+      //},
+      //{
+      //  method: 'POST',
+      //  path: '/congregations',
+      //  options: Controller.createCongregation,
+      //},
       {
         method: 'GET',
         path: '/languages/{languageId}',
@@ -203,6 +203,19 @@ exports.plugin = {
               template: 'reactView.ejs',
               context: { componentName: 'ResetPasswordPage' },
               options: { layout: 'homepageLayout' },
+            },
+          },
+          auth: false,
+        },
+      },
+      {
+        method: 'GET',
+        path: '/admin/congregations',
+        options: {
+          handler: {
+            view: {
+              template: 'reactView.ejs',
+              context: { componentName: 'CongregationsPage' },
             },
           },
           auth: false,

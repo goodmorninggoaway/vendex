@@ -52,6 +52,12 @@ const plugins = [
     },
   },
   {
+    plugin: './routes/congregation',
+    routes: {
+      prefix: '/congregations',
+    },
+  },
+  {
     plugin: './server-extensions',
   },
 ];

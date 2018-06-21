@@ -1,4 +1,5 @@
 import React from 'react';
+import { Grommet } from 'grommet/es6/components/Grommet';
 
 export const Header = ({ children }) => (
   <header className="ms-fontColor-themeDarkAlt ms-bgColor-neutralQuaternary">
@@ -35,7 +36,9 @@ export const Footer = ({ children }) => (
 );
 
 export const Page = ({ children }) => (
-  <article style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-    {children}
-  </article>
+  <Grommet>
+    <article style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      {children}
+    </article>
+  </Grommet>
 );
