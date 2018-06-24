@@ -35,14 +35,14 @@ class DeleteCongregation extends Component {
 
   render() {
     const { loading } = this.state;
-    const { initialCongregation } = this.props;
+    const { initialCongregation, onCancel } = this.props;
     return (
       <Box pad="medium">
         <Heading margin="small">Remove {initialCongregation.name}?</Heading>
         <Box direction="row" gap="small" justify="end" margin={{ top: 'medium' }}>
           {/* TODO The spinner is atrocious */}
           <Button label="Delete" onClick={this.save} disabled={loading} primary fill={false} icon={loading ? <Spinner /> : null} />
-          <Button label="Cancel" onClick={this.props.onCancel} disabled={loading} fill={false} />
+          <Button label="Cancel" onClick={onCancel} disabled={loading} fill={false} />
         </Box>
       </Box>
     );

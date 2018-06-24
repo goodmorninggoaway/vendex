@@ -4,7 +4,7 @@ import autobind from 'react-autobind';
 import { Box } from 'grommet/es6/components/Box';
 import { Button } from 'grommet/es6/components/Button';
 import { Layer } from 'grommet/es6/components/Layer';
-import { Edit, Trash, Add } from 'grommet-icons';
+import New from 'grommet-icons/es6/icons/New';
 import { Spinner } from 'office-ui-fabric-react/lib-es2015/Spinner';
 import { Table, TableBody, TableCell, TableHeader, TableRow } from 'grommet/es6/components/Table';
 import { Text } from 'grommet/es6/components/Text';
@@ -48,6 +48,14 @@ class Congregations extends Component {
     await this.loadCongregations();
   }
 
+  onRequestRemove() {
+    this.setState({ showDeleteDialog: true, showUpdateModal: false });
+  }
+
+  onCancelRequestRemove() {
+    this.setState({ showDeleteDialog: false, showUpdateModal: true });
+  }
+
   render() {
     const { loading, congregations, showCreateModal, showUpdateModal, showDeleteDialog, selected } = this.state;
     if (loading) {
@@ -62,17 +70,22 @@ class Congregations extends Component {
               <TableHeader>
                 <TableRow>
                   <TableCell scope="col" border="bottom">
-                    <Text>Congregation</Text>
+                    <Text>Name</Text>
                   </TableCell>
                   <TableCell scope="col" border="bottom">
-                    <Text>Language</Text>
+                    <Text>Primary Language</Text>
                   </TableCell>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 <TableRow>
                   <TableCell scope="row" direction="row">
-                    <Button label="Add a congregation" onClick={e => this.setState({ showCreateModal: true })} plain icon={<Add />} />
+                    <Button onClick={() => this.setState({ showCreateModal: true })} plain>
+                      <Box align="center" gap="xsmall" direction="row">
+                        <New />
+                        <Text color="brand">Add a congregation</Text>
+                      </Box>
+                    </Button>
                   </TableCell>
                   <TableCell scope="row" />
                 </TableRow>
@@ -81,9 +94,11 @@ class Congregations extends Component {
                   return (
                     <TableRow key={congregationId}>
                       <TableCell scope="row" direction="row">
-                        <Text>{name}</Text>
-                        <Button icon={<Edit />} plain active onClick={() => this.setState({ showUpdateModal: true, selected: congregation })} />
-                        <Button icon={<Trash />} plain active onClick={() => this.setState({ showDeleteDialog: true, selected: congregation })} />
+                        <Button plain active onClick={() => this.setState({ showUpdateModal: true, selected: congregation })}>
+                          <Box align="center" gap="xsmall" direction="row">
+                            <Text color="brand">{name}</Text>
+                          </Box>
+                        </Button>
                       </TableCell>
                       <TableCell scope="row">
                         <Text>{language}</Text>
@@ -95,18 +110,28 @@ class Congregations extends Component {
             </Table>
           </Box>
           {showCreateModal && (
-            <Layer position="top" onEsc={this.closeModal}>
+            <Layer position="top" onEsc={this.closeModal} margin="small">
               <CongregationForm onSubmit={this.onSubmit} onCancel={this.closeModal} create />
             </Layer>
           )}
           {showUpdateModal && (
-            <Layer position="top" onEsc={this.closeModal}>
-              <CongregationForm onSubmit={this.onSubmit} onCancel={this.closeModal} modify initialCongregation={selected} />
+            <Layer position="top" onEsc={this.closeModal} margin="small">
+              <CongregationForm
+                onSubmit={this.onSubmit}
+                onCancel={this.closeModal}
+                modify
+                initialCongregation={selected}
+                onRequestRemove={this.onRequestRemove}
+              />
             </Layer>
           )}
           {showDeleteDialog && (
-            <Layer position="top" onEsc={this.closeModal}>
-              <DeleteCongregation onSubmit={this.onSubmit} onCancel={this.closeModal} initialCongregation={selected} />
+            <Layer position="top" onEsc={this.onCancelRequestRemove} margin="small">
+              <DeleteCongregation
+                onSubmit={this.onSubmit}
+                onCancel={this.onCancelRequestRemove}
+                initialCongregation={selected}
+              />
             </Layer>
           )}
         </Box>
