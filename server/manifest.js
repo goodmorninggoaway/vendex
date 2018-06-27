@@ -1,3 +1,5 @@
+const Path = require('path');
+
 const plugins = [
   {
     plugin: './auth/auth-provider',
@@ -11,6 +13,12 @@ const plugins = [
   },
   {
     plugin: 'inert',
+  },
+  {
+    plugin: 'spazy',
+    options: {
+      folder: Path.resolve(__dirname, '../ui/dist'),
+    },
   },
   {
     plugin: './routes/users',
