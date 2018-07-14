@@ -81,6 +81,7 @@ class PendingInvitationList extends Component {
 
   render() {
     const { invitations, selectedRowIndex } = this.state;
+    const { congregations, isAdmin } = this.props;
     if (!invitations) {
       return <Spinner />;
     }
@@ -124,6 +125,15 @@ class PendingInvitationList extends Component {
           columns={[
             { accessor: 'email', Header: 'Email' },
             { accessor: 'name', Header: 'Name' },
+            {
+              accessor: 'congregationId',
+              Header: 'Congregation',
+              show: isAdmin,
+              Cell({ value }) {
+                const congregation = congregations.find(c => c.congregationId == value);
+                return (congregation && congregation.name) || '';
+              },
+            },
             { accessor: 'code', Header: 'Code' },
             {
               accessor: 'isExpired',
@@ -160,6 +170,8 @@ class PendingInvitationList extends Component {
 
 PendingInvitationList.propTypes = {
   congregationId: PropTypes.number,
+  congregations: PropTypes.array,
+  isAdmin: PropTypes.bool,
 };
 
 export default PendingInvitationList;

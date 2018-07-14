@@ -163,14 +163,19 @@ module.exports = {
           email,
           name,
           congregationId: requestedCongregationId,
+          roles: requestedRoles,
         } = req.payload;
-        const { congregationId, name: invitingUserName } = req.auth.credentials;
+        const { congregationId, roles, name: invitingUserName } = req.auth.credentials;
+        const isAdmin = roles.indexOf('admin') != -1;
+        if (!isAdmin && (requestedCongregationId != congregationId || requestedRoles.indexOf('admin') != -1)) {
+          return Boom.forbidden("Only administrators are allowed to create other administrators and users in different congregations.");
+        }
 
         return await Invitation.addInvitation({
           email,
           congregationId: requestedCongregationId || congregationId,
           name,
-          roles: ['admin'],
+          roles: requestedRoles,
           invitingUserName,
         });
       } catch (ex) {
@@ -220,12 +225,17 @@ module.exports = {
     async handler(req) {
       try {
         const { Invitation } = req.server.models();
-        const { congregationId } = req.auth.credentials;
+        const { congregationId, roles } = req.auth.credentials;
 
-        return Invitation.query()
-          .where({ congregationId })
+        const invitationQuery = Invitation.query()
           .eager('[congregation]')
           .select('*');
+
+        if (roles.indexOf("admin") == -1) {
+          invitationQuery.where({ congregationId });
+        }
+
+        return invitationQuery;
       } catch (ex) {
         console.log(ex);
         return Boom.badImplementation();

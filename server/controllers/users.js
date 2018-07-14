@@ -7,12 +7,16 @@ module.exports = {
     async handler(req) {
       try {
         const { User } = req.server.models();
-        const { congregationId } = req.auth.credentials;
-        const users = await User.query()
+        const { congregationId, roles } = req.auth.credentials;
+        const userQuery = User.query()
           .skipUndefined()
-          .where({ congregationId })
           .select('*');
 
+        if (roles.indexOf('admin') == -1) {
+          userQuery.where({ congregationId })
+        }
+
+        const users = await userQuery;
         return users.map(x => x.omitInternalFields());
       } catch (ex) {
         console.log(ex);
@@ -25,9 +29,14 @@ module.exports = {
   editUser: {
     async handler(req) {
       try {
+        const { congregationId, roles } = req.auth.credentials;
         const { User } = req.server.models();
         const { userId } = req.params;
-        const user = pick(req.payload, 'email', 'name');
+        const user = pick(req.payload, 'email', 'name', 'roles', 'congregationId', 'isActive');
+
+        if (user.congregationId != congregationId && roles.indexOf("admin") == -1) {
+          Boom.forbidden("You can only modify users in your own congregation.");
+        }
 
         const updated = await User.query()
           .skipUndefined()

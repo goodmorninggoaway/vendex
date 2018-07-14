@@ -13,6 +13,12 @@ const plugins = [
     plugin: 'inert',
   },
   {
+    plugin: './routes/congregations',
+    routes: {
+      prefix: '/congregations',
+    },
+  },
+  {
     plugin: './routes/users',
     routes: {
       prefix: '/users',

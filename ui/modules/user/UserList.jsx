@@ -27,15 +27,19 @@ class UserList extends Component {
       showModal: false,
       modalType: null,
       selectedRowIndex: undefined,
+      congregations: null,
       users: null,
     };
   }
 
   async componentDidMount() {
-    const response = await fetch('/users', { credentials: 'same-origin' });
-    const users = await response.json();
+    const [users, congregations] = await Promise.all([
+      fetch('/users', { credentials: 'same-origin' }).then((response) => response.json()),
+      fetch('/congregations', { credentials: 'same-origin' }).then((response) => response.json())
+    ]);
 
-    this.setState({ users });
+    congregations.sort((a, b) => a.name.localeCompare(b.name));
+    this.setState({ users, congregations });
   }
 
   async updateUser(user, index) {
@@ -45,6 +49,7 @@ class UserList extends Component {
   }
 
   async onSubmitInvitation(user) {
+    user.roles = (user.roles && user.roles[0] == true) ? ['admin'] : [];
     this.updateUser(user);
     this.setState({ showModal: false, modalType: null });
 
@@ -52,7 +57,6 @@ class UserList extends Component {
       method: 'POST',
       body: JSON.stringify({
         ...user,
-        congregationId: this.props.congregationId,
       }),
       headers: new Headers({
         'Content-Type': 'application/json',
@@ -66,6 +70,7 @@ class UserList extends Component {
   }
 
   async onSubmitUser(user) {
+    user.roles = (user.roles && (user.roles[0] == true || user.roles[0] === 'admin')) ? ['admin'] : [];
     this.updateUser(user);
     this.setState({ showModal: false, modalType: null });
 
@@ -113,8 +118,9 @@ class UserList extends Component {
   }
 
   render() {
-    const { users, selectedRowIndex, modalType } = this.state;
-    if (!users) {
+    const { users, congregations, selectedRowIndex, modalType } = this.state;
+    const { congregationId, isAdmin } = this.props
+    if (!users || !congregations) {
       return <Spinner />;
     }
 
@@ -149,6 +155,15 @@ class UserList extends Component {
           columns={[
             { accessor: 'email', Header: 'Email' },
             { accessor: 'name', Header: 'Name' },
+            {
+              accessor: 'congregationId',
+              Header: 'Congregation',
+              show: isAdmin,
+              Cell({ value }) {
+                const congregation = congregations.find(c => c.congregationId == value);
+                return (congregation && congregation.name) || '';
+              }
+            },
             {
               accessor: 'isActive',
               Header: 'Active',
@@ -192,11 +207,17 @@ class UserList extends Component {
           containerClassName="pad"
         >
           {modalType === 'invitation' && (
-            <EditUser type="invitation" onSubmit={this.onSubmitInvitation} />
+            <EditUser type="invitation"
+              isAdmin={isAdmin}
+              congregations={congregations}
+              user={{ congregationId }}
+              onSubmit={this.onSubmitInvitation} />
           )}
           {modalType === 'editUser' && (
             <EditUser
               type="edit"
+              isAdmin={isAdmin}
+              congregations={congregations}
               onSubmit={this.onSubmitUser}
               user={users[selectedRowIndex]}
             />
@@ -222,7 +243,7 @@ class UserList extends Component {
         </Dialog>
 
         <h5>Invitations</h5>
-        <PendingInvitationList {...this.props} />
+        <PendingInvitationList congregations={congregations} isAdmin={isAdmin} {...this.props} />
       </div>
     );
   }
@@ -230,6 +251,7 @@ class UserList extends Component {
 
 UserList.propTypes = {
   congregationId: PropTypes.number,
+  isAdmin: PropTypes.bool
 };
 
 export default UserList;
