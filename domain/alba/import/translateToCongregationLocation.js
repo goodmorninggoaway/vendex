@@ -2,6 +2,7 @@ const compact = require('lodash/compact');
 const { diff } = require('deep-diff');
 const { DAL } = require('../../dataAccess');
 const TAGS = require('../../models/enums/tags');
+const OPERATIONS = require('../../models/enums/activityOperations');
 const { AlbaIntegration, CongregationLocationActivity } = require('../../models');
 
 const sourceKindTagMap = {
@@ -9,7 +10,7 @@ const sourceKindTagMap = {
 };
 
 const sourceStatusTagMap = {
-  'Do not call': TAGS.DO_NOT_CALL,
+  'do not call': TAGS.DO_NOT_CALL,
   '': TAGS.PENDING,
 };
 
@@ -40,26 +41,36 @@ exports.handler = async function translateToCongregationLocation({
     attributes,
     sourceData: null, // TODO remove this
     sourceLocationId: externalLocation.Address_ID,
+    sourceCongregationId: null,
     isPendingTerritoryMapping: false,
     isDeleted: false, // TODO what to do with this?
+    deleted: null,
     isActive: true, // TODO what to do with this?
     notes: externalLocation.Notes,
     userDefined1: null,
     userDefined2: null,
     territoryId: null,
+    sourceAccount: externalLocation.Account
   };
 
-  let congregationLocation = await DAL.findCongregationLocation({ congregationId, locationId, source });
+  let congregationLocation = null;
+  if (translatedCongregationLocation.sourceLocationId) {
+    congregationLocation = await DAL.findCongregationLocation({ congregationId, locationId, source, sourceLocationId: translatedCongregationLocation.sourceLocationId });
+  } else {
+    congregationLocation = await DAL.findCongregationLocation({ congregationId, locationId, source });
+  }
 
   // This congregationLocation was imported at one time, but the congregation integration is no longer active.
   // This can happen when the language is changed to another foreign language or the destination congregation's language.
   if (congregationLocation && !hasIntegration) {
-    await CongregationLocationActivity.addAlbaActivity(albaLocationImportId, {
-      congregation_id: congregationId,
-      location_id: locationId,
-      operation: 'D',
-      source,
-    });
+    if (!congregationLocation.isDeleted) {
+      await CongregationLocationActivity.addAlbaActivity(albaLocationImportId, {
+        congregation_id: congregationId,
+        location_id: locationId,
+        operation: OPERATIONS.DELETE,
+        source,
+      });
+    }
     return null;
   } else if (!congregationLocation) {
     if (!hasIntegration) {
@@ -72,18 +83,18 @@ exports.handler = async function translateToCongregationLocation({
     await CongregationLocationActivity.addAlbaActivity(albaLocationImportId, {
       congregation_id: congregationId,
       location_id: locationId,
-      operation: 'I',
+      operation: OPERATIONS.INSERT,
       source,
     });
   } else {
     // Update only when there is a change
     const diffs = diff(congregationLocation, translatedCongregationLocation);
     if (diffs && diffs.length) {
-      congregationLocation = await DAL.updateCongregationLocation({ congregationId, locationId }, translatedCongregationLocation);
+      congregationLocation = await DAL.updateCongregationLocation({ congregationId, locationId, source }, translatedCongregationLocation);
       await CongregationLocationActivity.addAlbaActivity(albaLocationImportId, {
         congregation_id: congregationId,
         location_id: locationId,
-        operation: 'U',
+        operation: OPERATIONS.UPDATE,
         source,
       });
     }

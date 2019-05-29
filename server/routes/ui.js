@@ -116,6 +116,18 @@ exports.plugin = {
       },
       {
         method: 'GET',
+        path: '/territoryhelper/forward-conversion-retry/{path?}',
+        options: {
+          handler: {
+            view: {
+              template: 'reactView.ejs',
+              context: { componentName: 'TerritoryHelperForwardConversionRetryPage' },
+            },
+          },
+        },
+      },
+      {
+        method: 'GET',
         path: '/territoryhelper/forward-conversion-history/{path?}',
         options: {
           handler: {

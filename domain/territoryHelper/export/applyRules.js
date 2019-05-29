@@ -31,6 +31,9 @@ exports.handler = async function applyRules({
   const { isInsert } = booleanOperation(operation);
   const existsInDestination = destinationCongregationLocation && Object.keys(destinationCongregationLocation).length > 1;
 
+  // set the existing external ID on the source location if it exists.
+  sourceCongregationLocation.destinationLocationId = (destinationCongregationLocation && destinationCongregationLocation.sourceLocationId) || null;
+
   // Converted to a local-language DNC in the foreign-language system, so add/update it as a DNC
   if (isDoNotCall && !isForeignLanguageInSource) {
     if (isForeignLanguageInDestination && !isInsert) {

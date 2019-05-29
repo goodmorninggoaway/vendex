@@ -21,14 +21,9 @@ class TerritoryImport extends Component {
   }
 
   async upload(done) {
-    if (!this.fileEl.value.length) {
-      this.setState({ importStatus: { error: 'You need to attach a territory file.' } });
-      return;
-    }
-
     await this.setStateAsync({ importStatus: { loading: true } });
     try {
-      await axios.post('/territoryhelper/territories', new FormData(this.formEl));
+      await axios.post('/territoryhelper/territories');
       done();
     } catch (ex) {
       await this.setStateAsync({ importStatus: { error: ex.response.data.message } });
@@ -39,12 +34,7 @@ class TerritoryImport extends Component {
     const { importStatus: { loading, error } } = this.state;
     return (
       <React.Fragment>
-        <form ref={el => this.formEl = el}>
-          <label htmlFor="th-territory-file">
-            <p>Choose a <a target="_blank" href="https://territoryhelper.com/en/ImportExport">Territory Helper</a> territory export file to upload</p>
-            <input type="file" name="file" ref={el => this.fileEl = el} />
-          </label>
-        </form>
+        {!error && <MessageBar>Click next to being importing Territory Helper territories.</MessageBar>}
         {loading && <Spinner size={SpinnerSize.large} label="Updating territories" />}
         {error && <MessageBar messageBarType={MessageBarType.error} isMultiline>{error}</MessageBar>}
       </React.Fragment>

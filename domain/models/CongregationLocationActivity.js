@@ -1,5 +1,6 @@
 const { Model, snakeCaseMappers, transaction } = require('objection');
 const AlbaLocationImportLocation = require('./AlbaLocationImportLocation');
+const OPERATIONS = require('./enums/activityOperations');
 
 class CongregationLocationActivity extends Model {
   static get tableName() {
@@ -21,7 +22,7 @@ class CongregationLocationActivity extends Model {
       properties: {
         congregationId: { type: 'integer' },
         locationId: { type: ['integer', 'string'] }, // bigint
-        operation: { type: 'string', length: 1, enum: ['D', 'I', 'U'] },
+        operation: { type: 'string', length: 1, enum: [OPERATIONS.DELETE, OPERATIONS.INSERT, OPERATIONS.UPDATE] },
         source: { type: 'string', minLength: 3, maxLength: 32 },
       },
     };
@@ -29,7 +30,15 @@ class CongregationLocationActivity extends Model {
 
   static addAlbaActivity(albaLocationImportId, values) {
     return transaction(CongregationLocationActivity.knex(), async (trx) => {
-      const activity = await CongregationLocationActivity.query(trx).insert(values);
+      let activity;
+      const { operation } = values;
+      if (operation === OPERATIONS.DELETE) {
+        const { congregation_id: congregationId, location_id: locationId, source } = values
+        const CongregationLocation = require('./CongregationLocation');
+        activity = await CongregationLocation.detachCongregationLocation({ congregationId, locationId, source, trx });
+      } else {
+        activity = await CongregationLocationActivity.query(trx).insert(values);
+      }
 
       if (albaLocationImportId) {
         await AlbaLocationImportLocation.query(trx)
@@ -41,8 +50,8 @@ class CongregationLocationActivity extends Model {
     });
   }
 
-  static addActivity(values) {
-    return CongregationLocationActivity.query().insert(values);
+  static addActivity(values, trx) {
+    return CongregationLocationActivity.query(trx).insert(values);
   }
 
   $beforeInsert() {

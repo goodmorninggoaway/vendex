@@ -20,7 +20,8 @@ class Territory extends Model {
         boundary: { type: 'string' }, // actually a Postgres polygon
         userDefined1: {}, // TODO remove
         userDefined2: {}, // TODO remove
-        externalTerritoryId: { type: 'string', maxLength: 256 },
+        externalTerritoryId: { type: 'string', maxLength: 255 },
+        externalTerritoryName: { type: 'string', maxLength: 255},
         externalTerritorySource: { type: 'string', maxLength: 32 },
         deleted: { type: 'boolean' },
       },

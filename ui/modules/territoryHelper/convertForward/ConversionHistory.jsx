@@ -36,6 +36,8 @@ class ConversionHistory extends Component {
 
         const { inserts, updates, deletes } = e.summary;
         e.hasData = !!(inserts || deletes || updates);
+        e.summary.totalCount = inserts + updates + deletes;
+        e.summary.successCount = e.summary.successCount || 0;
       });
       this.setState({ history: { data } });
     } catch (ex) {
@@ -56,7 +58,6 @@ class ConversionHistory extends Component {
 
     if (data) {
       const visibleData = showAll ? data : data.filter(e => e.hasData);
-
       return (
         <React.Fragment>
           <blockquote>Empty exports are excluded from this list</blockquote>
@@ -75,10 +76,15 @@ class ConversionHistory extends Component {
                 <th>New</th>
                 <th>Updated</th>
                 <th>Deleted</th>
+                <th>Succeeded</th>
+                <th>Total Remaining</th>
+                <th>Territory Conflicts Remaining</th>
+                <th>Missing Territory</th>
+                <th>Errors</th>
               </tr>
             </thead>
             <tbody id="exports-list">
-              {visibleData.map(({ exportActivityId, timestamp, summary, hasData }) => (
+              {visibleData.map(({ exportActivityId, timestamp, summary, hasData }, index) => (
                 <tr key={exportActivityId}>
                   <td>
                     {hasData && (
@@ -97,6 +103,12 @@ class ConversionHistory extends Component {
                   <td>{summary ? summary.inserts : 'N/A'}</td>
                   <td>{summary ? summary.updates : 'N/A'}</td>
                   <td>{summary ? summary.deletes : 'N/A'}</td>
+                  <td>{summary ? summary.successCount : 'N/A'}</td>
+                  <td>{summary ? (summary.totalCount - summary.successCount - summary.missingTerritoryCount) : 'N/A'}</td>
+                  <td>{summary ? summary.territoryConflictCount : 'N/A'}</td>
+                  <td>{summary ? summary.missingTerritoryCount : 'N/A'}</td>
+                  <td>{summary ? summary.errorCount : 'N/A'}</td>
+                  {index == 0 && (summary.successCount + summary.missingTerritoryCount) < summary.totalCount && (<td><a href='/ui/territoryhelper/forward-conversion-retry'>Retry</a></td>)}
                 </tr>
               ))}
             </tbody>

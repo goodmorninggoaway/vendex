@@ -1,5 +1,6 @@
 const groupBy = require('lodash/groupBy');
-const { CongregationLocationActivity, ExportActivity } = require('../models');
+const { CongregationLocation, CongregationLocationActivity, ExportActivity } = require('../models');
+const OPERATION = require('../models/enums/activityOperations');
 
 const getActivityRange = locationActivities => ({
   initialActivity: locationActivities[0],
@@ -13,13 +14,13 @@ const determineExportOperation = ({ initialActivity, terminalActivity }) => {
   case 'UU':
   case 'ID':
   case 'UD':
-    return 'U';
+    return OPERATION.UPDATE;
   case 'DU':
   case 'DD':
-    return 'D';
+    return OPERATION.DELETE;
   case 'UI':
   case 'II':
-    return 'I';
+    return OPERATION.INSERT;
   case 'DI':
   default:
     return false;
@@ -41,10 +42,19 @@ exports.handler = async function getStartCongregationLocationActivity({ congrega
     .where('source', '!=', destination)
     .orderBy('congregation_location_activity_id');
 
-  return Object.values(groupBy(activities, 'locationId'))
-    .reduce((memo, locationActivities) => {
+  return await Object.values(groupBy(activities, 'locationId'))
+    .reduce(async (prevPromise, locationActivities) => {
+      const memo = await prevPromise;
       const range = getActivityRange(locationActivities);
-      const operation = determineExportOperation(range);
+      let operation = determineExportOperation(range);
+
+      const destinationCongregationLocation = await CongregationLocation.query()
+        .findOne({ congregationId, source: destination, locationId: locationActivities[0].locationId });
+
+      // If this location already exists in the destination with a valid id and this is an insert operation change it to an update.
+      if (operation === OPERATION.INSERT && destinationCongregationLocation && destinationCongregationLocation.sourceLocationId) {
+        operation = OPERATION.UPDATE;
+      }
 
       memo.push({
         operation,
@@ -53,5 +63,5 @@ exports.handler = async function getStartCongregationLocationActivity({ congrega
       });
 
       return memo;
-    }, []);
+    }, Promise.resolve([]));
 };
