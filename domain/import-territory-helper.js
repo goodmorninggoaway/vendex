@@ -1,31 +1,27 @@
-const util = require('util');
 const differenceBy = require('lodash/differenceBy');
 const hash = require('object-hash');
-const excelAsJson = require('./excelToJson');
+const { transaction } = require('objection');
 const addressUtils = require('./validateAddress');
 const DAL = require('./dataAccess').DAL;
-const convertExcelToJson = util.promisify(excelAsJson.processStream);
 const { serializeTasks } = require('./util');
 const TAGS = require('./models/enums/tags');
+const SOURCES = require('./models/enums/locationInterfaces');
+const OPERATIONS = require('./models/enums/activityOperations');
+const { diff } = require('deep-diff');
 const { CongregationLocationActivity, CongregationLocation } = require('./models');
 
-module.exports = async ({ congregationId, fileStream, sourceData }) => {
-  const source = 'TERRITORY HELPER';
-  const importLocation = async (locations, externalLocation) => {
-    // Ignore local-language DNCs
-    if (externalLocation.Status !== 'Language') {
-      return;
-    }
-
+module.exports = async ({ congregationId, externalLocations }) => {
+  const source = SOURCES.TERRITORY_HELPER;
+  const importLocation = async (externalLocation) => {
     const attributes = [];
-    const address = `${externalLocation.Address} ${externalLocation.City} ${externalLocation.State} ${externalLocation['Postal code']}`;
+    const address = `${externalLocation.Address || ''} ${externalLocation.City || ''} ${externalLocation.State || ''} ${externalLocation.PostalCode || ''}`.trim();
     const translatedLocation = addressUtils.getAddressParts(address);
 
-    if (externalLocation['Location Type'] === 'Language') {
+    if (externalLocation.TypeName === 'Language') {
       attributes.push(TAGS.FOREIGN_LANGUAGE);
     }
 
-    if (externalLocation.Status === 'Do not call') {
+    if (externalLocation.StatusName === 'DoNotCall') {
       attributes.push(TAGS.DO_NOT_CALL);
     }
 
@@ -33,98 +29,94 @@ module.exports = async ({ congregationId, fileStream, sourceData }) => {
       congregationId,
       source,
       attributes,
-      sourceData: externalLocation,
-      language: externalLocation.Language.toUpperCase(), // TODO create automanaged enumeration
-      sourceLocationId: null,
-      isPendingTerritoryMapping: 1,
-      isDeleted: 0,
-      isActive: 1,
-      notes: externalLocation.Notes,
+      sourceData: null,
+      language: externalLocation.LanguageName.toUpperCase(), // TODO create automanaged enumeration
+      sourceLocationId: externalLocation.Id + '',
+      isPendingTerritoryMapping: true,
+      isDeleted: false,
+      isActive: externalLocation.Approved,
+      notes: externalLocation.Notes || '',
+      userDefined1: null,
+      userDefined2: null,
+      sourceCongregationId: null,
+      deleted: null,
+      sourceAccount: externalLocation.CongregationId + ''
     };
 
+    const territory = await DAL.findTerritory({
+      congregationId,
+      externalTerritorySource: source,
+      externalTerritoryId: externalLocation.TerritoryId,
+    });
+
+    if (territory) {
+      translatedCongregationLocation.territoryId = parseInt(territory.territoryId);
+      translatedCongregationLocation.isPendingTerritoryMapping = false;
+    }
+
     const addressHash = hash.sha1(translatedLocation);
-    let { location, congregationLocation } =
-    locations.find(x => x.location.externalLocationId === addressHash) || {};
-    // TODO mark the address as "encountered" so we can handle the negative space
+    let location = await DAL.findLocation({ externalLocationId: addressHash });
+    let congregationLocation = await DAL.findCongregationLocation({ congregationId, source, sourceLocationId: externalLocation.Id });
 
     if (!location) {
+      const { lat, lng } = JSON.parse(externalLocation.LatLng) || {};
       location = Object.assign({}, translatedLocation, {
         externalLocationId: addressHash,
-        latitude: externalLocation.Latitude,
-        longitude: externalLocation.Longitude,
+        externalSource: source,
+        latitude: lat,
+        longitude: lng,
       });
       location = await DAL.insertLocation(location);
       console.log(`Created "location": ${location.locationId}`);
     }
 
     const { locationId } = location;
-    const territory = await DAL.findTerritory({
-      congregationId,
-      externalTerritorySource: source,
-      externalTerritoryId: externalLocation['Territory number'],
-    });
-
     translatedCongregationLocation.locationId = locationId;
-
-    if (territory) {
-      translatedCongregationLocation.territoryId = territory.territoryId;
-      translatedCongregationLocation.isPendingTerritoryMapping = 0;
-    }
 
     if (!congregationLocation) {
       congregationLocation = await DAL.insertCongregationLocation(translatedCongregationLocation);
       console.log(`Created "congregationLocation": locationId=${locationId}, congregationId=${congregationId}`);
-
       await CongregationLocationActivity.addActivity({
         congregation_id: congregationId,
         location_id: locationId,
-        operation: 'I',
+        operation: OPERATIONS.INSERT,
         source,
       });
     } else {
-      let hasDiff = false;
-      const diff = Object.entries(translatedCongregationLocation).reduce(
-        (memo, [key, value]) => {
-          if (congregationLocation[key] !== value) {
-            memo[key] = value;
-            hasDiff = true;
-          }
-
-          return memo;
-        },
-        {},
-      );
-
-      if (hasDiff) {
-        await DAL.updateCongregationLocation({ congregationId, locationId }, diff);
+      congregationLocation.territoryId = congregationLocation.territoryId && parseInt(congregationLocation.territoryId);
+      const diffs = diff(congregationLocation, translatedCongregationLocation);
+      if (diffs && diffs.length) {
+        const result = await DAL.updateCongregationLocation({ congregationId, locationId, source, sourceLocationId: externalLocation.Id }, translatedCongregationLocation);
+        congregationLocation = translatedCongregationLocation;
         console.log(`Updated "congregationLocation": locationId=${locationId}, congregationId=${congregationId}`);
 
         await CongregationLocationActivity.addActivity({
           congregation_id: congregationId,
           location_id: locationId,
-          operation: 'U',
+          operation: OPERATIONS.UPDATE,
           source,
         });
-        congregationLocation = Object.assign({}, congregationLocation, diff);
       }
     }
 
-    return { location, congregationLocation };
+    return { Location: location, CongregationLocation: congregationLocation };
   };
 
-  sourceData = sourceData || (await convertExcelToJson(fileStream, null, {}));
-  const existingLocations = await DAL.getLocationsForCongregationFromSource(congregationId, source);
+  const existingCongregationLocations = await DAL.findCongregationLocations({ congregationId, source, isDeleted: false }).select({ sourceLocationId: 'sourceLocationId', locationId: 'locationId' });
   const updatedLocations = await serializeTasks(
-    sourceData.map((x, index) => () => {
-      console.log(`Processing Territory Helper Location Import ${index + 1}/${sourceData.length}`);
-      return importLocation(existingLocations, x);
+    externalLocations.map((x, index) => () => {
+      console.log(`Processing Territory Helper Location Import ${index + 1}/${externalLocations.length}`);
+      return importLocation(x);
     }),
   );
 
-  await serializeTasks(
-    differenceBy(existingLocations, updatedLocations, 'location.locationId')
-      .map(({ location }) => async () => {
-        await CongregationLocation.detachCongregationLocation({ congregationId, locationId: location.locationId, source });
-      }),
-  );
+  const updatedCongregationLocations = updatedLocations.map(loc => loc.CongregationLocation);
+  await transaction(CongregationLocation.knex(), async (trx) => {
+    await serializeTasks(
+      differenceBy(existingCongregationLocations, updatedCongregationLocations, 'sourceLocationId')
+        .map((existingCongregationLocation) => async () => {
+          await CongregationLocation.detachCongregationLocationBySource({ congregationId, locationId: existingCongregationLocation.locationId, sourceLocationId: existingCongregationLocation.sourceLocationId, source, trx });
+        }),
+    );
+  });
 };

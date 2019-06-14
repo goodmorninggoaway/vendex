@@ -14,11 +14,15 @@ class Step extends Component {
 
     this.stepApi = {
       onBeforeGoToNext: this.setOnBeforeGoToNext,
-    };
+      goNextStep: this.next,
+      hideNextButton: isHidden => { this.setState({ hideNextButton: isHidden });}
+    }
 
     this.step = {
       onBeforeGoToNext: fn => fn(),
     };
+
+    this.state = {hideNextButton: false}
   }
 
   setOnBeforeGoToNext(callback) {
@@ -34,7 +38,7 @@ class Step extends Component {
 
   render() {
     const { render, component: RenderComponent, title, nextStep, steps, id, index } = this.props;
-
+    const { hideNextButton } = this.state;
     return (
       <Page>
         <Header>
@@ -87,7 +91,7 @@ class Step extends Component {
               })}
             </div>
 
-            {nextStep && (
+            {nextStep && !hideNextButton && (
               <DefaultButton
                 className="ms-bgColor-purple ms-fontColor-white ms-fontColor-white--hover ms-bgColor-purpleDark--hover"
                 text="Next"

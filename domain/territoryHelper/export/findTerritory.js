@@ -4,7 +4,7 @@ const MESSAGE_LEVEL = require('../../models/enums/exportMessageLevel');
 
 exports.requires = ['congregationId', 'location', 'nextCongregationLocation'];
 exports.optional = ['destinationCongregationLocation'];
-exports.returns = ['territory', '$messageLevel', '$message'];
+exports.returns = ['assignedTerritory', 'containingTerritories', '$messageLevel', '$message'];
 exports.handler = async function findTerritory({
   location,
   congregationId,
@@ -20,13 +20,15 @@ exports.handler = async function findTerritory({
   if (!containingTerritories.length) {
     if (originalTerritoryId) {
       return {
-        territory: originalTerritory,
+        assignedTerritory: originalTerritory,
+        containingTerritories,
         $message: 'Could not find a matching territory, but this location is assigned to a territory. You may need to import the latest territories.',
         $messageLevel: MESSAGE_LEVEL.CONFLICT,
       };
     } else {
       return {
-        territory: originalTerritory,
+        assignedTerritory: originalTerritory,
+        containingTerritories,
         $message: 'Could not find a matching territory. You may need to import the latest territories.',
         $messageLevel: MESSAGE_LEVEL.INFO,
       };
@@ -34,15 +36,17 @@ exports.handler = async function findTerritory({
   }
 
   if (containingTerritories.length === 1) {
-    const { territoryId, externalTerritoryId } = containingTerritories[0];
+    const { territoryId, externalTerritoryName } = containingTerritories[0];
 
     // No change or no original territory
     if (!originalTerritoryId || territoryId === originalTerritoryId) {
-      return { territory: containingTerritories[0] };
+      return { assignedTerritory: containingTerritories[0], containingTerritories };
     } else {
+      const otherTerrName = (originalTerritory && originalTerritory.externalTerritoryName) || originalTerritoryId;
       return {
-        territory: originalTerritory,
-        $message: `This location is within the boundaries of territory ${externalTerritoryId}, but is currently set to a different territory.`,
+        assignedTerritory: originalTerritory,
+        containingTerritories,
+        $message: `This location is within the boundaries of territory ${externalTerritoryName}, but is currently set to a different territory ${otherTerrName}.`,
         $messageLevel: MESSAGE_LEVEL.CONFLICT,
       };
     }
@@ -56,14 +60,15 @@ exports.handler = async function findTerritory({
 
       // Assume the existing system is already correct and do nothing
       if (matchesExistingTerritory) {
-        return { territory: originalTerritory };
+        return { assignedTerritory: originalTerritory, containingTerritories };
       }
     }
 
-    const idList = map(containingTerritories, 'externalTerritoryId').join(', ');
+    const nameList = map(containingTerritories, 'externalTerritoryName').join(', ');
     return {
-      territory: originalTerritory,
-      $message: `This location falls within the boundaries of ${containingTerritories.length} territories: ${idList}`,
+      assignedTerritory: originalTerritory,
+      containingTerritories,
+      $message: `This location falls within the boundaries of ${containingTerritories.length} territories: ${nameList}`,
       $messageLevel: MESSAGE_LEVEL.CONFLICT,
     };
   }

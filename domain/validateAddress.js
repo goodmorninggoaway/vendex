@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 const { parseLocation } = require('parse-address');
 
-const buildAddressString = (...parts) => parts.reduce((memo, part) => (part ? `${memo} ${part}` : memo), '').trim();
+const buildAddressString = (...parts) => parts.reduce((memo, part) => ((part && part != 'null') ? `${memo} ${part}` : memo), '').trim();
 
 module.exports.buildAddressString = buildAddressString;
 
@@ -27,7 +27,7 @@ module.exports.getAddressParts = address => {
     zip,
     sec_unit_type,
     sec_unit_num,
-    street: buildAddressString(prefix, street, type, suffix),
+    street: buildAddressString(prefix || '', street || '', type || '', suffix || ''),
   };
 };
 

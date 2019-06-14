@@ -39,6 +39,10 @@ exports.findCongregationLocation = filter =>
     .skipUndefined()
     .where(filter)
     .first();
+exports.findCongregationLocations = filter =>
+  models.CongregationLocation.query()
+    .skipUndefined()
+    .where(filter);
 exports.updateCongregationLocation = (filter, value) =>
   models.CongregationLocation.query()
     .skipUndefined()
@@ -60,7 +64,7 @@ exports.getTerritories = filter =>
     .skipUndefined()
     .where({ deleted: false })
     .where(filter);
-exports.findTerritory = filter => exports.getTerritories(filter).first();
+exports.findTerritory = filter => exports.getTerritories(filter).skipUndefined().first();
 
 exports.findTerritoryContainingPoint = (congregationId, { longitude, latitude }) =>
   models.Territory.query()
@@ -84,7 +88,13 @@ exports.getLocationsForCongregation = congregationId =>
 exports.getLocationsForCongregationFromSource = (congregationId, source) =>
   exports
     .getLocationsForCongregation(congregationId)
-    .where('externalSource', source);
+    .modifyEager('congregationLocations', builder =>
+      builder.where({ source, isDeleted: false })
+    );
+
+exports.getLocationByExternalLocationId = () =>
+  models.Location.query()
+    .where({ externalLocationId });
 
 exports.getLastExportActivity = filter =>
   models.ExportActivity.query()

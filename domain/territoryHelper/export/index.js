@@ -6,8 +6,16 @@ const getIndexedLocations = require('./getIndexedLocations');
 const convertActivitiesToExternalLocations = require('./convertActivitiesToExternalLocations');
 const createExcelFile = require('./createExcelFile');
 
-module.exports = async ({ congregationId, exportType, tracer }) => {
-  const pipeline = new Pipeline({ congregationId, destination: LOCATION_INTERFACES.TERRITORY_HELPER, exportTracer: tracer })
+module.exports = async ({ tokens, congregationId, exportType, tracer, destinationCongregationId, locationTypes, locationStatuses, locationLanguages }) => {
+  const pipeline = new Pipeline({
+    tokens,
+    congregationId,
+    destination: LOCATION_INTERFACES.TERRITORY_HELPER,
+    exportTracer: tracer,
+    destinationCongregationId,
+    locationTypes,
+    locationStatuses,
+    locationLanguages})
     .addHandler(getCongregation)
     .addHandler(getLatestActivities)
     .addHandler(getIndexedLocations)

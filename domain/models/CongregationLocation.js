@@ -1,5 +1,6 @@
 const { Model } = require('objection');
 const CongregationLocationActivity = require('./CongregationLocationActivity');
+const OPERATIONS = require('./enums/activityOperations');
 
 class CongregationLocation extends Model {
   static get tableName() {
@@ -28,7 +29,8 @@ class CongregationLocation extends Model {
         language: { type: 'string', maxLength: 64 },
         source: { type: 'string', maxLength: 64 },
         sourceData: { type: ['string', 'null'] }, // TODO get rid of this; it's a crutch
-        sourceLocationId: { type: 'string', maxLength: 64 },
+        sourceAccount: { type: ['string', 'null']},
+        sourceLocationId: { type: ['string', 'null'], maxLength: 64 },
         isPendingTerritoryMapping: { type: 'boolean' }, // TODO get rid of this
         isDeleted: { type: 'boolean' }, // TODO get rid of this
         isActive: { type: 'boolean' }, // TODO get rid of this until it does something
@@ -53,10 +55,16 @@ class CongregationLocation extends Model {
     };
   }
 
-  static async detachCongregationLocation({ congregationId, locationId, source }) {
-    await CongregationLocation.query().where({ congregationId, locationId, source }).patch({ deleted: true });
-    await CongregationLocationActivity.addActivity({ congregation_id: congregationId, location_id: locationId, operation: 'D', source });
+  static async detachCongregationLocation({ congregationId, locationId, source, trx }) {
+    await CongregationLocation.query(trx).where({ congregationId, locationId, source }).patch({ isDeleted: true });
+    await CongregationLocationActivity.addActivity({ congregation_id: congregationId, location_id: locationId, operation: OPERATIONS.DELETE, source, trx });
     console.log(`Deleted "congregationLocation": ${JSON.stringify({ congregationId, locationId, source })}`);
+  }
+
+  static async detachCongregationLocationBySource({ congregationId, locationId, sourceLocationId, source, trx }) {
+    await CongregationLocation.query(trx).where({ congregationId, locationId, sourceLocationId, source }).patch({ isDeleted: true });
+    await CongregationLocationActivity.addActivity({ congregation_id: congregationId, location_id: locationId, operation: OPERATIONS.DELETE, source, trx });
+    console.log(`Deleted "congregationLocation": ${JSON.stringify({ congregationId, locationId, sourceLocationId, source })}`);
   }
 }
 
