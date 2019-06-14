@@ -54,6 +54,9 @@ exports.handler = async function getStartCongregationLocationActivity({ congrega
       // If this location already exists in the destination with a valid id and this is an insert operation change it to an update.
       if (operation === OPERATION.INSERT && destinationCongregationLocation && destinationCongregationLocation.sourceLocationId) {
         operation = OPERATION.UPDATE;
+      } else if (operation === OPERATION.UPDATE && (destinationCongregationLocation == null || (destinationCongregationLocation && destinationCongregationLocation.sourceLocationId == null))) {
+        // This is a source update but a destination insert.
+        operation = OPERATION.INSERT;
       }
 
       memo.push({
