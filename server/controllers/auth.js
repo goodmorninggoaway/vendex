@@ -1,3 +1,4 @@
+const axios = require('axios');
 const Boom = require('boom');
 const HttpStatus = require('http-status-codes');
 const Moment = require('moment');
@@ -8,8 +9,9 @@ const PASSWORD_RESET_TOKEN_TTL =
 
 const COOKIE_PATH = '/';
 const SECURE_COOKIE = process.env.USE_SSL !== 'false';
-const cookieOptions = {
+const tokenCookieOptions = {
   path: COOKIE_PATH,
+  isSameSite: 'Lax',
   isSecure: SECURE_COOKIE,
   ttl: TOKEN_TTL * 60 * 1000,
 };
@@ -43,7 +45,7 @@ module.exports = {
         return h
           .response()
           .header('authorization', token)
-          .state('token', token, cookieOptions)
+          .state('token', token, tokenCookieOptions)
           .redirect('/ui');
       } catch (ex) {
         console.log(ex);
@@ -56,12 +58,62 @@ module.exports = {
     auth: false,
     async handler(req, h) {
       try {
-        return h.redirect('/ui/login').unstate('token', cookieOptions);
+        return h.redirect('/ui/login').unstate('token', tokenCookieOptions);
       } catch (ex) {
         console.log(ex);
         return Boom.badImplementation();
       }
     },
+  },
+
+  thAuthorize: {
+    handler: async function (req, res) {
+      const { code } = req.query;
+      if (code) {
+        const { TH_URL, TH_CLIENT_ID, TH_CLIENT_SECRET } = process.env;
+        const thTokenUrl = `${TH_URL}/api/token?grant_type=authorization_code&code=${code}&client_id=${TH_CLIENT_ID}&client_secret=${TH_CLIENT_SECRET}&redirect_uri=` + encodeURIComponent(`${req.server.info.protocol}://${req.info.host}/auth/th/authorize`);
+        const tokenResponse = await axios.post(thTokenUrl);
+        const { access_token, refresh_token, expires_in } = tokenResponse.data;
+        const userDetails = await axios.get(`${TH_URL}/api/publishers/me?access_token=${access_token}`);
+
+        const COOKIE_PATH = '/';
+        const SECURE_COOKIE = process.env.USE_SSL !== 'false';
+        const thCookieOptions = {
+          path: COOKIE_PATH,
+          isSameSite: 'Lax',
+          isSecure: SECURE_COOKIE,
+        };
+
+        const { User } = req.server.models();
+        const { Email } = userDetails.data;
+        const user = await User.thLogin(Email);
+        if (!user) {
+          console.warn(`${Email} is not setup in an account. Please contact your congregation administrator.`, { ...req.info });
+          return res.redirect('/ui/login?loginError=' + encodeURIComponent(`${Email} is not setup in an account. Please contact your congregation administrator.`));
+        }
+
+        const token = User.generateJWT(
+          user.userId,
+          {
+            congregationId: user.congregationId,
+            roles: user.roles,
+            email: user.email,
+            name: user.name,
+          },
+          TOKEN_TTL,
+        );
+
+        console.info(`Login succeeded for ${Email}`, { ...req.info });
+
+        return res
+          .redirect('/ui')
+          .header('authorization', token)
+          .state('token', token, tokenCookieOptions)
+          .state('th_access_token', access_token, { ...thCookieOptions, ttl: (expires_in * 1000) })
+          .state('th_refresh_token', refresh_token, thCookieOptions);
+      }
+    },
+    auth: false,
   },
 
   setPassword: {

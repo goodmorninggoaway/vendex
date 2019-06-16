@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import autobind from 'react-autobind';
-import { Form, Text, Radio, RadioGroup, Select, Checkbox } from 'react-form';
+import { Form } from 'react-form';
 import { DefaultButton } from 'office-ui-fabric-react/lib-es2015/Button';
 import { Spinner } from 'office-ui-fabric-react/lib-es2015/Spinner';
 import {
@@ -38,6 +38,18 @@ class Login extends Component {
 
   render() {
     const { error, loading } = this.state;
+    let errorMessage = null;
+    const urlParams = new URLSearchParams(window.location.search);
+    const loginError = urlParams.get('loginError');
+    if (error) {
+      errorMessage = 'Invalid password.'
+    } else if (loginError) {
+      errorMessage = loginError;
+    }
+
+    const TH_URL = process.env.TH_URL;
+    const TH_CLIENT_ID = process.env.TH_CLIENT_ID;
+    const thAuthorizeUrl = `${TH_URL}/api/auth?response_type=code&client_id=${TH_CLIENT_ID}&redirect_uri=` + encodeURIComponent(`${window.location.protocol}//${window.location.host}/auth/th/authorize`);
     return (
       <div className="ms-Grid">
         <style
@@ -62,14 +74,13 @@ class Login extends Component {
             <Form onSubmit={this.onSubmit}>
               {formApi => (
                 <form onSubmit={formApi.submitForm}>
-                  {error && (
+                  {errorMessage && (
                     <div style={{ margin: '12px 0' }}>
                       <MessageBar
                         messageBarType={MessageBarType.error}
                         isMultiline
-                        onDismiss={() => this.setState({ error: null })}
                       >
-                        Invalid password.
+                        {errorMessage}
                       </MessageBar>
                     </div>
                   )}
@@ -97,6 +108,10 @@ class Login extends Component {
                     <DefaultButton
                       text="Forgot Password"
                       href="/ui/forgot-password"
+                    />
+                    <DefaultButton
+                      text="Territory Helper Login"
+                      href={thAuthorizeUrl}
                     />
                   </div>
                 </form>

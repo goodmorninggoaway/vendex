@@ -1,0 +1,3 @@
+exports.SUCCESS = 'SUCCESS';
+exports.ERROR = 'ERROR';
+exports.MISSING_TERRITORY = 'MISSING_TERRITORY';

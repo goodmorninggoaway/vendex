@@ -31,6 +31,7 @@ class AlbaIntegration extends Model {
     const integration = await AlbaIntegration.query()
       .where({ source, account, congregation_id: congregationId })
       .whereRaw(`(language is null OR language = '*' OR language = ?)`, [language])
+      .skipUndefined()
       .first();
 
     return !!integration;

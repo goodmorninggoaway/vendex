@@ -73,7 +73,6 @@ class AlbaLocationImport extends Model {
   async postImportActions(source) {
     const Congregation = require('./Congregation');
     const CongregationLocation = require('./CongregationLocation');
-    const CongregationLocationActivity = require('./CongregationLocationActivity');
 
     const congregation = await Congregation.query().findById(this.congregationId).eager('[congregationLocations]');
     const { congregationId } = congregation;
@@ -87,9 +86,7 @@ class AlbaLocationImport extends Model {
     await transaction(AlbaLocationImport.knex(), async (trx) => {
       for (let i in pendingLocationDeletions) {
         const locationId = pendingLocationDeletions[i];
-        await CongregationLocation.query(trx).delete().where({ locationId, congregationId, source });
-        await CongregationLocationActivity.query(trx).insert({ congregationId, locationId, source, operation: 'D' });
-        console.log(`Deleted "congregationLocation": locationId=${locationId}, congregationId=${congregationId}, source=${source}`);
+        await CongregationLocation.detachCongregationLocation({ locationId, congregationId, source, trx });
       }
     });
 

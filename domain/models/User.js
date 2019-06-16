@@ -64,6 +64,25 @@ class User extends Model {
     return user;
   }
 
+  static async thLogin(email, db) {
+    let user = await User.query(db).findOne({ email, isActive: true });
+    if (!user) {
+      return null;
+    }
+
+    user.loginTimestamp = new Date();
+    user.authenticationCode = null;
+    user.authenticationCreationTimestamp = null;
+
+    user = await User.query(db)
+      .update(user)
+      .where({ userId: user.$id() })
+      .first()
+      .returning('*');
+
+    return user;
+  }
+
   static async generateJWT(userId, claims, ttl) {
     return await Jwt.sign(
       {

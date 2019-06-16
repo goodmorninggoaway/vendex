@@ -6,12 +6,14 @@ const WriteFileWebpackPlugin = require('write-file-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const { CommonsChunkPlugin } = require('webpack').optimize;
 const OUTPUT_PATH = Path.resolve(__dirname, 'dist');
+require('dotenv').config();
+const { EnvironmentPlugin } = require('webpack');
 
 function generateModule(resourcePath) {
   const output = `
 const React = require('react');
 const ReactDOM = require('react-dom');
-const Page = require('${resourcePath}').default;
+const Page = require('${resourcePath.replace(/\\/g, "/")}').default;
 const AppRoot = require('../modules/layouts/AppRoot').default;
 
 ReactDOM.render(React.createElement(AppRoot, window.vendexBootstrap, Page), document.getElementById('react-page'));
@@ -82,6 +84,7 @@ module.exports = generatePageWrapper()
             return module.context && module.context.includes('node_modules');
           },
         }),
+        new EnvironmentPlugin(['TH_URL', 'TH_CLIENT_ID']),
       ],
       devtool: 'source-map',
     };
