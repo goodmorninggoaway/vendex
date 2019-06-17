@@ -3,6 +3,12 @@ const { Territory } = require('../../models');
 exports.requires = ['externalTerritory', 'congregationId', 'source'];
 exports.returns = 'territory';
 exports.handler = async ({ externalTerritory, congregationId, source }) => {
+  const territoryTypeCode = (externalTerritory.TerritoryTypeCode || '').toLowerCase();
+  // Only include polygon territories and ignore territories that are markers or without a geometry since they cannot contain locations.
+  // Also exclude boundary territories with a territory type bdry.
+  if (externalTerritory.ShapeType !== 'polygon' || territoryTypeCode === 'bdry') {
+    return null;
+  }
   const vertices = JSON.parse(externalTerritory.Boundary).map(({ lat, lng }) => `(${lng}, ${lat})`);
 
   const boundary = `( ${vertices.join(', ')} )`;
