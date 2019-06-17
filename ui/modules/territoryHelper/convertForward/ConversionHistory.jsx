@@ -104,10 +104,10 @@ class ConversionHistory extends Component {
                   <td>{summary ? summary.updates : 'N/A'}</td>
                   <td>{summary ? summary.deletes : 'N/A'}</td>
                   <td>{summary ? summary.successCount : 'N/A'}</td>
-                  <td>{(summary && (summary.totalCount - summary.successCount - summary.missingTerritoryCount)) || 'N/A'}</td>
-                  <td>{(summary && summary.territoryConflictCount) || ''}</td>
-                  <td>{(summary && summary.missingTerritoryCount) || ''}</td>
-                  <td>{(summary && summary.errorCount) || ''}</td>
+                  <td>{summary && summary.missingTerritoryCount != null ? summary.totalCount - summary.successCount - summary.missingTerritoryCount : 'N/A'}</td>
+                  <td>{summary && summary.territoryConflictCount != null ? summary.territoryConflictCount : 'N/A'}</td>
+                  <td>{summary && summary.missingTerritoryCount != null ? summary.missingTerritoryCount : 'N/A'}</td>
+                  <td>{summary && summary.errorCount != null ? summary.errorCount : 'N/A'}</td>
                   {index == 0 && (summary.successCount + summary.missingTerritoryCount) < summary.totalCount && (<td><a href='/ui/territoryhelper/forward-conversion-retry'>Retry</a></td>)}
                 </tr>
               ))}

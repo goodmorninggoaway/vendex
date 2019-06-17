@@ -42,7 +42,9 @@ module.exports = {
       // Must get locations by territory
       await Promise.all(terrIds.map(async (terrId) => {
         const locs = await thOauthHelper.getLocations(tokens, res, terrId.externalTerritoryId);
-        locations.push(...locs);
+        // only include approved locations
+        const approvedLocations = locs.filter(l => l.Approved === true)
+        locations.push(...approvedLocations);
       }));
 
       const locationTypes = await thOauthHelper.getLocationTypes(tokens, res);

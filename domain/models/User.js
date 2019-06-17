@@ -65,7 +65,7 @@ class User extends Model {
   }
 
   static async thLogin(email, db) {
-    let user = await User.query(db).findOne({ email, isActive: true });
+    let user = await User.query(db).whereRaw(`LOWER(email) = ?`, email.toLowerCase()).where({ isActive: true }).first();
     if (!user) {
       return null;
     }
