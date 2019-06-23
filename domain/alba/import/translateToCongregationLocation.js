@@ -90,7 +90,7 @@ exports.handler = async function translateToCongregationLocation({
     // Update only when there is a change
     const diffs = diff(congregationLocation, translatedCongregationLocation);
     if (diffs && diffs.length) {
-      congregationLocation = await DAL.updateCongregationLocation({ congregationId, locationId, source }, translatedCongregationLocation);
+      congregationLocation = await DAL.updateCongregationLocation({ congregationId, locationId, source, sourceLocationId: translatedCongregationLocation.sourceLocationId }, translatedCongregationLocation);
       await CongregationLocationActivity.addAlbaActivity(albaLocationImportId, {
         congregation_id: congregationId,
         location_id: locationId,
