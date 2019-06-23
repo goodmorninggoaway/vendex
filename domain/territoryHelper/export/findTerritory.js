@@ -43,8 +43,9 @@ exports.handler = async function findTerritory({
       return { assignedTerritory: containingTerritories[0], containingTerritories };
     } else {
       const otherTerrName = (originalTerritory && originalTerritory.externalTerritoryName) || originalTerritoryId;
+      containingTerritories.push(originalTerritory);
       return {
-        assignedTerritory: originalTerritory,
+        assignedTerritory: null,
         containingTerritories,
         $message: `This location is within the boundaries of territory ${externalTerritoryName}, but is currently set to a different territory ${otherTerrName}.`,
         $messageLevel: MESSAGE_LEVEL.CONFLICT,

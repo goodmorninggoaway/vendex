@@ -205,7 +205,7 @@ module.exports = {
   thTerritories: {
     handler: async function (req, res) {
       const tokens = getTokens(req);
-      thOauthHelper.getTerritories(tokens, res);
+      return thOauthHelper.getTerritories(tokens, res);
     },
   },
 
