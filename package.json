@@ -5,12 +5,19 @@
   "private": true,
   "dependencies": {
     "@google/maps": "^0.4.3",
+    "@hapi/glue": "^7.0.0",
+    "@hapi/good": "^9.0.0",
+    "@hapi/good-console": "^9.0.0",
+    "@hapi/good-squeeze": "^6.0.0",
+    "@hapi/hapi": "^19.1.1",
+    "@hapi/inert": "^6.0.1",
     "@hapi/joi": "^15.0.3",
+    "@hapi/vision": "^6.0.0",
     "accesscontrol": "^2.2.0",
     "async": "^2.0.1",
     "axios": "^0.18.1",
     "babel-plugin-transform-react-jsx": "^6.24.1",
-    "bcrypt": "^1.0.3",
+    "bcrypt": "^5.0.0",
     "boom": "^7.1.1",
     "classnames": "^2.2.5",
     "csvtojson": "^1.1.7",
@@ -19,15 +26,8 @@
     "dotenv": "^8.0.0",
     "ejs": "^2.5.7",
     "excel": "^1.0.0",
-    "glue": "^6.0.0",
-    "good": "github:hapijs/good",
-    "good-console": "^6.4.1",
-    "good-squeeze": "^5.0.2",
-    "hapi": "^18.0.0",
     "hapi-auth-jwt2": "github:salzhrani/hapi-auth-jwt2#v-17",
     "http-status-codes": "^1.3.0",
-    "inert": "^5.1.0",
-    "joi": "^13.1.1",
     "jsonwebtoken": "^8.1.0",
     "knex": "^0.19.5",
     "lodash": "^4.17.15",
@@ -41,7 +41,7 @@
     "prop-types": "^15.6.0",
     "react": "^16.3.2",
     "react-autobind": "^1.0.6",
-    "react-dom": "^16.3.2",
+    "react-dom": "^16.13.1",
     "react-form": "^2.16.1",
     "react-router": "^4.2.0",
     "react-router-dom": "^4.2.2",
@@ -50,7 +50,6 @@
     "schwifty": "^4.0.0",
     "styled-components": "^3.2.1",
     "uuid": "^3.1.0",
-    "vision": "^5.3.0",
     "xlsx": "^0.11.15"
   },
   "devDependencies": {
@@ -98,6 +97,6 @@
   },
   "license": "",
   "engines": {
-    "node": "8"
+    "node": "12.x"
   }
 }

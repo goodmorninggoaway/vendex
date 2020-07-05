@@ -10,7 +10,7 @@ const plugins = [
     },
   },
   {
-    plugin: 'inert',
+    plugin: '@hapi/inert',
   },
   {
     plugin: './routes/congregations',
@@ -64,7 +64,7 @@ const plugins = [
 
 if (process.env.APP_ENV === 'DEV') {
   plugins.push({
-    plugin: 'good',
+    plugin: '@hapi/good',
     options: {
       ops: {
         interval: 1000,
@@ -72,11 +72,11 @@ if (process.env.APP_ENV === 'DEV') {
       reporters: {
         console: [
           {
-            module: 'good-squeeze',
+            module: '@hapi/good-squeeze',
             name: 'Squeeze',
             args: [{ log: '*', response: '*', error: '*' }],
           },
-          { module: 'good-console' },
+          { module: '@hapi/good-console' },
           'stdout',
         ],
       },
@@ -114,7 +114,7 @@ exports.options = {
   // otherwise it gives you an error => Cannot render view without a views manager configured
   // Not a perfect solution but it works OK
   preRegister: async server => {
-    await server.register(require('vision'));
+    await server.register(require('@hapi/vision'));
     server.views({
       engines: {
         ejs: require('ejs'),

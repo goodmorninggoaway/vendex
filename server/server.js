@@ -5,7 +5,7 @@ require('babel-core/register')({
   extensions: '.jsx',
 });
 
-const Glue = require('glue');
+const Glue = require('@hapi/glue');
 const serverConfig = require('./manifest');
 
 const startServer = async function() {
