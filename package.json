@@ -26,7 +26,7 @@
     "dotenv": "^8.0.0",
     "ejs": "^2.5.7",
     "excel": "^1.0.0",
-    "hapi-auth-jwt2": "github:salzhrani/hapi-auth-jwt2#91111ce184afa2871d49d8a027f91ae92ad2b2ed",
+    "hapi-auth-jwt2": "github:salzhrani/hapi-auth-jwt2#v-17",
     "http-status-codes": "^1.3.0",
     "jsonwebtoken": "^8.1.0",
     "knex": "^1.0.3",
