@@ -95,8 +95,5 @@
     "type": "git",
     "url": "https://github.com/goodmorninggoaway/vendex"
   },
-  "license": "",
-  "engines": {
-    "node": "12.x"
-  }
+  "license": ""
 }
