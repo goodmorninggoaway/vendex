@@ -2,8 +2,8 @@
 
 ## Getting Started
 1. Install git
-1. Install NodeJS >= 8.x
-1. Install npm >= 5.5.x
+1. Install NodeJS >= 16
+1. Install npm >= 8
 1. Install PostgreSQL >= 9.x.
 1. Create a new database. `./scripts/createDevDb.sh`
 1. Clone the repository: `git clone git@github.com:goodmorninggoaway/vendex.git`
