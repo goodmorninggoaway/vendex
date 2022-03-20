@@ -74,6 +74,9 @@ module.exports = {
         externalLocations: locations
       });
       return null;
+    },
+    timeout: {
+      socket: false
     }
   },
 
