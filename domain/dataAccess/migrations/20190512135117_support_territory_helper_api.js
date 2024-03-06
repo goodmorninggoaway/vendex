@@ -1,5 +1,5 @@
 
-exports.up = async function(knex, Promise) {
+exports.up = async function(knex) {
   await knex.schema.table('territory', table => {
     table.text('externalTerritoryName');
   });
@@ -25,7 +25,7 @@ exports.up = async function(knex, Promise) {
   `);
 };
 
-exports.down = async function (knex, Promise) {
+exports.down = async function (knex) {
   await knex.raw(`
     UPDATE territory SET "externalTerritoryId" = "externalTerritoryName";
   `);

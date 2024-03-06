@@ -1,4 +1,4 @@
-exports.up = function(knex, Promise) {
+exports.up = function(knex) {
   return Promise.all([
     knex.schema.raw(`
 create table "congregation" (
@@ -104,7 +104,7 @@ create table "exportActivity" (
   ]);
 };
 
-exports.down = function(knex, Promise) {
+exports.down = function(knex) {
   return Promise.all([
     knex.schema.dropTable('exportActivity'),
     knex.schema.dropTable('congregationLocationActivity'),
