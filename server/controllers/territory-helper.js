@@ -49,24 +49,20 @@ module.exports = {
 
       const locationTypes = await thOauthHelper.getLocationTypes(tokens, res);
       const locationStatuses = await thOauthHelper.getLocationStatuses(tokens, res);
-      const languages = await thOauthHelper.getLocationLanguages(tokens, res);
       const locTypeMap = new Map(locationTypes.map(x => [x.Id, x]));
       const locStatusMap = new Map(locationStatuses.map(x => [x.Id, x]));
-      const languagesMap = new Map(languages.map(x => [x.Id, x]));
 
       locations.forEach(loc => {
         const locType = locTypeMap.get(loc.TypeId);
         const locStatus = locStatusMap.get(loc.StatusId);
-        const language = languagesMap.get(loc.LanguageId) || { Name: "Unknown" };
         if (locType) {
           loc.TypeName = locType.InternalName;
         }
         if (locStatus) {
           loc.StatusName = locStatus.InternalName;
         }
-        if (language) {
-          loc.LanguageName = language.Name;
-        }
+        // For backwards compatibility. Not necessarily needed?
+        loc.LanguageName = "Unknown";
       });
 
       await importLocations({
@@ -271,13 +267,6 @@ module.exports = {
       } catch (error) {
         await handleThApiError(congregationId, location, error);
       }
-    },
-  },
-
-  thLocationLanguages: {
-    handler: async function (req, res) {
-      const tokens = getTokens(req);
-      return thOauthHelper.getLocationLanguages(tokens, res);
     },
   },
 

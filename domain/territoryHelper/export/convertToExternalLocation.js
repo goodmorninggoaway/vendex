@@ -21,7 +21,7 @@ const locationType = {
   },
 };
 
-exports.requires = ['nextCongregationLocation', 'location', '$messages', 'destinationCongregationId', 'locationTypes', 'locationStatuses', 'locationLanguages'];
+exports.requires = ['nextCongregationLocation', 'location', '$messages', 'destinationCongregationId', 'locationTypes', 'locationStatuses'];
 exports.optional = ['assignedTerritory', 'containingTerritories'];
 exports.returns = 'externalLocation';
 exports.handler = async function convertToExternalLocation({
@@ -32,16 +32,13 @@ exports.handler = async function convertToExternalLocation({
   containingTerritories,
   destinationCongregationId,
   locationTypes,
-  locationStatuses,
-  locationLanguages
+  locationStatuses
 }) {
   const internalLocationType = locationType.find(congregationLocation.attributes);
   const { Id: destinationLocationTypeId } = locationTypes.find(lt => lt.InternalName === internalLocationType) || {};
 
   const internalLocationStatus = locationStatus.find(congregationLocation.attributes);
   const { Id: destinationLocationStatusId } = locationStatuses.find(ls => ls.InternalName === internalLocationStatus) || {};
-
-  const { Id: destinationLocationLanguageId } = locationLanguages.find(ll => ll.Name.toLowerCase() === congregationLocation.language.toLowerCase()) || {};
 
   const notes = `${congregationLocation.notes}\n${$messages.map(
     ({ message, messageLevel }) => `${messageLevel}: ${message}\n`,
@@ -69,7 +66,6 @@ exports.handler = async function convertToExternalLocation({
     Approved: true,
     StatusId: destinationLocationStatusId,
     StatusName: internalLocationStatus,
-    LanguageId: destinationLocationLanguageId,
     LanguageName: congregationLocation.language,
     Address: address,
     Number: location.number,
