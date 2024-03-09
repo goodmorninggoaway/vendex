@@ -63,16 +63,6 @@ module.exports = {
       return axios.get(`${TH_URL}/api/territories/${territoryId}/locations?access_token=${accessToken}`);
     });
   },
-  getLocationLanguages: async (tokens, res) => {
-    return await executeThRequest(tokens, res, (accessToken) => {
-      return axios.get(`${TH_URL}/api/locationlanguages?access_token=${accessToken}`);
-    });
-  },
-  createLocationLanguage: async (tokens, res, locationLanguage) => {
-    return await executeThRequest(tokens, res, (accessToken) => {
-      return axios.post(`${TH_URL}/api/locationlanguages?access_token=${accessToken}`, locationLanguage);
-    });
-  },
   getLocationStatuses: async (tokens, res) => {
     return await executeThRequest(tokens, res, (accessToken) => {
       return axios.get(`${TH_URL}/api/locationstatuses?access_token=${accessToken}`);

@@ -20,8 +20,7 @@ exports.requires = [
   'exportTracer',
   'destinationCongregationId',
   'locationTypes',
-  'locationStatuses',
-  'locationLanguages'
+  'locationStatuses'
 ];
 exports.returns = ['externalLocations', 'exportActivityId'];
 exports.handler = async function convertActivitiesToExternalLocations({
@@ -33,8 +32,7 @@ exports.handler = async function convertActivitiesToExternalLocations({
   exportTracer,
   destinationCongregationId,
   locationTypes,
-  locationStatuses,
-  locationLanguages
+  locationStatuses
 }) {
   const worker = ({ operation, locationId, congregationLocationActivityId }) =>
     new Pipeline({
@@ -47,8 +45,7 @@ exports.handler = async function convertActivitiesToExternalLocations({
       location: indexedLocations[locationId],
       destinationCongregationId,
       locationTypes,
-      locationStatuses,
-      locationLanguages
+      locationStatuses
     })
       .addHandler(getActivityAttributes)
       .addHandler(isCongregationAuthorized)

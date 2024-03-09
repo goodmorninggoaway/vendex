@@ -84,11 +84,6 @@ exports.plugin = {
       },
       {
         method: 'GET',
-        path: '/th-location-languages',
-        options: Controller.thLocationLanguages,
-      },
-      {
-        method: 'GET',
         path: '/th-location-statuses',
         options: Controller.thLocationStatuses,
       },

@@ -1,4 +1,4 @@
-exports.up = async function (knex, Promise) {
+exports.up = async function (knex) {
   await knex.schema.createTable('alba_location_import', table => {
     table.increments('id');
     table.jsonb('payload').notNull();
@@ -27,7 +27,7 @@ exports.up = async function (knex, Promise) {
 
 };
 
-exports.down = async function (knex, Promise) {
+exports.down = async function (knex) {
   await knex.schema.dropTable('alba_location_import_by_location');
   await knex.schema.dropTable('alba_location_import');
 };

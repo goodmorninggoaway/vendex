@@ -6,7 +6,7 @@ const getIndexedLocations = require('./getIndexedLocations');
 const convertActivitiesToExternalLocations = require('./convertActivitiesToExternalLocations');
 const createExcelFile = require('./createExcelFile');
 
-module.exports = async ({ tokens, congregationId, exportType, tracer, destinationCongregationId, locationTypes, locationStatuses, locationLanguages }) => {
+module.exports = async ({ tokens, congregationId, exportType, tracer, destinationCongregationId, locationTypes, locationStatuses }) => {
   const pipeline = new Pipeline({
     tokens,
     congregationId,
@@ -14,8 +14,7 @@ module.exports = async ({ tokens, congregationId, exportType, tracer, destinatio
     exportTracer: tracer,
     destinationCongregationId,
     locationTypes,
-    locationStatuses,
-    locationLanguages})
+    locationStatuses})
     .addHandler(getCongregation)
     .addHandler(getLatestActivities)
     .addHandler(getIndexedLocations)
