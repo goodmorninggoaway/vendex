@@ -34,7 +34,7 @@ class TerritoryImport extends Component {
     const { importStatus: { loading, error } } = this.state;
     return (
       <React.Fragment>
-        {!error && <MessageBar>Click next to being importing Territory Helper territories.</MessageBar>}
+        {!error && <MessageBar>Click next to begin importing Territory Helper territories.</MessageBar>}
         {loading && <Spinner size={SpinnerSize.large} label="Updating territories" />}
         {error && <MessageBar messageBarType={MessageBarType.error} isMultiline>{error}</MessageBar>}
       </React.Fragment>

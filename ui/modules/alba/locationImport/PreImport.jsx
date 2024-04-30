@@ -27,49 +27,63 @@ class PreImport extends Component {
     try {
       this.setState({ preCheck: { loading: true } });
       const { data } = await axios.post(`/alba/${this.props.source}/location-import/analyze`);
-      this.setState({ preCheck: { loading: false, value: data } });
+      this.setState({ 
+        preCheck: { loading: false },
+        integrationAnalysis: this.groupIntegrationAnalysisByAccount(data)
+      });
     } catch (ex) {
       console.log(ex);
       this.setState({ preCheck: { error: ex } });
     }
   }
 
-  parseIntegrationAnalysis() {
-    const analysis = this.state.preCheck.value && this.state.preCheck.value.congregationIntegrationAnalysis;
-    if (!analysis || !analysis.length) {
-      return null;
+  groupIntegrationAnalysisByAccount(analysisResponse) {
+    var rawIntegrationAnalysis = analysisResponse && analysisResponse.congregationIntegrationAnalysis;
+    if (!rawIntegrationAnalysis || !rawIntegrationAnalysis.length) {
+      return {};
     }
 
-    return Object.values(groupBy(analysis, 'account'))
-      .map(it => {
-        const allLanguagesEnabled = find(it, { language: '*', enabled: true });
-        if (allLanguagesEnabled) {
-          return it.map(that => that === it ? that : { ...that, checkboxDisabled: true });
-        }
-
-        return it;
-      });
+    return groupBy(rawIntegrationAnalysis, 'account');
   }
 
-  enqueueIntegrationEvent(account, language, operation) {
-    const analysis = this.state.preCheck.value && this.state.preCheck.value.congregationIntegrationAnalysis;
-    if (!analysis || !analysis.length) {
+  updateIntegrationAnalysis(account, language, enabled) {
+    if (!this.state.integrationAnalysis) {
       return null;
     }
 
-    const found = find(analysis, { account, language });
+    const found = find(this.state.integrationAnalysis[account], { language });
     if (!found) {
       return;
     }
 
-    // Yes, I'm mutating the exising object because I'm triggering a setState anyway and it's all in the same component
-    found.enabled = operation === 'I';
+    this.setState(({integrationAnalysis}) => ({
+      integrationAnalysis: {
+        ...integrationAnalysis,
+        [account]: integrationAnalysis[account].map((acc) => ({
+          ...acc,
+          ...(acc.language === language && { enabled })
+        }))
+      }
+    }));
+  }
 
-    this.setState(({ events }) => ({ events: [...(events || []), { account, language, operation }] }));
+  // Maps selections to integration events
+  buildEvents() {
+    if (!this.state.integrationAnalysis) {
+      return null;
+    }
+
+    return Object.values(this.state.integrationAnalysis)
+      .flatMap(account => find(account, {language: '*', enabled: true}) || account)
+      .map(account => ({
+        account: account.account,
+        language: account.language,
+        operation: account.enabled ? 'I' : 'D'
+      }));
   }
 
   async submitChanges(done) {
-    const { events } = this.state;
+    const events = this.buildEvents();
     const { source } = this.props;
 
     if (events && events.length) {
@@ -101,21 +115,21 @@ class PreImport extends Component {
             <li>You should only load data when the overseers of the congregations/groups have approved it.</li>
           </ul>
         </div>
-        {!preCheck.value && !preCheck.error && <Spinner />}
+        {preCheck.loading && <Spinner />}
         {preCheck.error && (
           <div style={{ marginBottom: '1em' }}>
             <MessageBar messageBarType={MessageBarType.error} isMultiline>{preCheck.error}</MessageBar>
           </div>
         )}
         <div className="ms-font-m-plus">
-          {preCheck.value && this.parseIntegrationAnalysis().map((accountGroup) => {
+          {Object.values(this.state.integrationAnalysis || {}).map((accountGroup) => {
             const [{ account, enabled: allLanguagesEnabled, matchCount: count }] = accountGroup;
             return (
               <div key={account} style={{ marginBottom: '20px' }}>
                 <Checkbox
                   label={`${account} (${count})`}
                   checked={allLanguagesEnabled}
-                  onChange={(e, checked) => this.enqueueIntegrationEvent(account, '*', checked ? 'I' : 'D')}
+                  onChange={(e, checked) => this.updateIntegrationAnalysis(account, '*', checked)}
                   styles={{ root: { marginBottom: '4px' } }}
                 />
                 {accountGroup.slice(1).map(({ language, enabled: languageEnabled, matchCount }) => (
@@ -124,7 +138,7 @@ class PreImport extends Component {
                     label={`${language || 'Unknown'} (${matchCount})`}
                     checked={allLanguagesEnabled || languageEnabled}
                     disabled={allLanguagesEnabled}
-                    onChange={(e, checked) => this.enqueueIntegrationEvent(account, language, checked ? 'I' : 'D')}
+                    onChange={(e, checked) => this.updateIntegrationAnalysis(account, language, checked)}
                     styles={{ label: { marginLeft: '2em' }, root: { marginBottom: '4px' } }}
                   />
                 ))}
