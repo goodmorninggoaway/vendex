@@ -4,6 +4,7 @@ import autobind from 'react-autobind';
 import axios from 'axios';
 import { Spinner } from 'office-ui-fabric-react/lib/Spinner';
 import groupBy from 'lodash/groupBy';
+import sum from 'lodash/sum';
 import find from 'lodash/find';
 import { MessageBar, MessageBarType } from 'office-ui-fabric-react/lib/MessageBar';
 import { Checkbox } from 'office-ui-fabric-react/lib/Checkbox';
@@ -43,7 +44,23 @@ class PreImport extends Component {
       return {};
     }
 
-    return groupBy(rawIntegrationAnalysis, 'account');
+    const groupedAnalysis = groupBy(rawIntegrationAnalysis, 'account');
+
+    // Fix potentially missing all-language entries in the integration analysis
+    return Object.fromEntries(
+      Object.entries(groupedAnalysis).map(([accountName, account]) => {
+        const foundAllLanguagesForAcc = find(account, { language: '*' });
+        return [accountName, [
+          ...(!foundAllLanguagesForAcc ? [{
+            account: accountName,
+            enabled: false,
+            language: '*',
+            matchCount: sum(account.map(acc => acc.matchCount))
+          }] : []), 
+          ...account
+        ]];
+      })
+    );
   }
 
   updateIntegrationAnalysis(account, language, enabled) {
@@ -74,7 +91,7 @@ class PreImport extends Component {
     }
 
     return Object.values(this.state.integrationAnalysis)
-      .flatMap(account => find(account, {language: '*', enabled: true}) || account)
+      .flatMap(account => account)
       .map(account => ({
         account: account.account,
         language: account.language,
