@@ -54,8 +54,14 @@ module.exports = generatePageWrapper()
   .then(generateEntry)
   .then(entry => {
     return {
+      // TODO: Determine env dynamically
       mode: 'development',
       entry,
+      devServer: {
+        devMiddleware: {
+          writeToDisk: true,
+        },
+      },
       output: {
         path: OUTPUT_PATH,
         filename: '[name].js',
