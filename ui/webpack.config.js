@@ -54,8 +54,7 @@ module.exports = generatePageWrapper()
   .then(generateEntry)
   .then(entry => {
     return {
-      // TODO: Determine env dynamically
-      mode: 'development',
+      mode: (process.env.APP_ENV === 'PROD' ? 'production' : 'development'),
       entry,
       devServer: {
         devMiddleware: {
