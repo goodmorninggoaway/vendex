@@ -68,19 +68,7 @@ module.exports = generatePageWrapper()
       module: {
         rules: [
           { 
-            test: /\.js$/,
-            use: { 
-              loader: 'babel-loader',
-              options: {
-                presets: [
-                  ['@babel/preset-env', { targets: "defaults" }]
-                ]
-              }
-            }, 
-            exclude: /node_modules/
-          },
-          { 
-            test: /\.jsx$/,
+            test: /\.jsx?$/,
             use: { 
               loader: 'babel-loader',
               options: {
