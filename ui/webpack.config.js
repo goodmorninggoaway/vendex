@@ -2,9 +2,7 @@ const Fs = require('fs-extra');
 const Path = require('path');
 const Glob = require('glob');
 const { promisify } = require('util');
-const WriteFileWebpackPlugin = require('write-file-webpack-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
-const { CommonsChunkPlugin } = require('webpack').optimize;
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const OUTPUT_PATH = Path.resolve(__dirname, 'dist');
 require('dotenv').config();
 const { EnvironmentPlugin } = require('webpack');
@@ -56,34 +54,50 @@ module.exports = generatePageWrapper()
   .then(generateEntry)
   .then(entry => {
     return {
+      mode: (process.env.APP_ENV === 'PROD' ? 'production' : 'development'),
       entry,
+      devServer: {
+        devMiddleware: {
+          writeToDisk: true,
+        },
+      },
       output: {
         path: OUTPUT_PATH,
         filename: '[name].js',
       },
       module: {
-        loaders: [
-          { test: /\.js$/, loader: 'babel-loader', exclude: /node_modules/ },
-          { test: /\.jsx$/, loader: 'babel-loader', exclude: /node_modules/ },
+        rules: [
+          { 
+            test: /\.jsx?$/,
+            use: { 
+              loader: 'babel-loader',
+              options: {
+                presets: [
+                  ['@babel/preset-env', { targets: "defaults" }]
+                ]
+              }
+            }, 
+            exclude: /node_modules/ 
+          },
         ],
+      },
+      optimization: {
+        splitChunks: {
+          cacheGroups: {
+            commons: {
+              test: /[\\/]node_modules[\\/]/,
+              name: 'vendor',
+              chunks: 'all',
+            },
+          },
+        },
       },
       resolve: {
         extensions: ['.jsx', '.js', '.json'],
       },
       context: Path.resolve(__dirname),
       plugins: [
-        new WriteFileWebpackPlugin(),
-        new CleanWebpackPlugin(OUTPUT_PATH),
-        new CommonsChunkPlugin({
-          name: 'vendor',
-          // filename: "vendor.js"
-          // (Give the chunk a different name)
-
-          minChunks(module) {
-            // this assumes your vendor imports exist in the node_modules directory
-            return module.context && module.context.includes('node_modules');
-          },
-        }),
+        new CleanWebpackPlugin(),
         new EnvironmentPlugin(['TH_URL', 'TH_CLIENT_ID']),
       ],
       devtool: 'source-map',
